@@ -1,0 +1,5553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>北笑南欢 | 恋爱纪念</title>
+  <meta name="description" content="北笑南欢 — 我们的恋爱纪念空间">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css">
+  
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    :root {
+      --primary-text: #2d2d5a;
+      --soft-pink: #ff9a9e;
+      --soft-blue: #a18cd1;
+      --glass-bg: rgba(255, 255, 255, 0.15);
+      --glass-border: rgba(255, 255, 255, 0.35);
+      --shadow: 0 8px 32px rgba(45, 45, 90, 0.12);
+      --shadow-hover: 0 12px 40px rgba(45, 45, 90, 0.2);
+      --radius: 16px;
+      --transition: 0.4s ease-out;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+    
+    body {
+      font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: var(--primary-text);
+      background: linear-gradient(135deg, #a8c0ff 0%, #fbc2eb 100%);
+      background-attachment: fixed;
+      line-height: 1.6;
+    }
+    
+    /* Canvas background for starfield */
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    /* Page container */
+    .app {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+    }
+    
+    section {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity var(--transition), transform var(--transition);
+      padding: 24px 16px 80px;
+    }
+    
+    section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Typography */
+    .font-serif {
+      font-family: 'Noto Serif SC', 'Songti SC', serif;
+    }
+    
+    .font-wenkai {
+      font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+    }
+    
+    .font-body {
+      font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+    
+    .font-system {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      font-weight: 300;
+    }
+    
+    /* Glass card */
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Noto Sans SC', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--primary-text);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    
+    .btn:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-hover);
+      background: rgba(255, 255, 255, 0.25);
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(255, 154, 158, 0.85), rgba(161, 140, 209, 0.85));
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(255, 154, 158, 0.95), rgba(161, 140, 209, 0.95));
+    }
+    
+    .btn-lg {
+      padding: 16px 32px;
+      font-size: 16px;
+      min-height: 56px;
+    }
+    
+    /* Inputs */
+    .input {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 16px;
+      font-family: 'Noto Sans SC', sans-serif;
+      font-size: 16px;
+      color: var(--primary-text);
+      background: rgba(255, 255, 255, 0.25);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    
+    .input::placeholder {
+      color: rgba(45, 45, 90, 0.5);
+    }
+    
+    .input:focus {
+      background: rgba(255, 255, 255, 0.35);
+      border-color: var(--soft-pink);
+      box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.2);
+    }
+    
+    /* Skeleton shimmer */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.2) 75%);
+      background-size: 200% 100%;
+      border-radius: 8px;
+      animation: shimmer 1.5s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    
+    /* Breathing animation */
+    .breathing {
+      animation: breathing 4s ease-in-out infinite;
+    }
+    
+    @keyframes breathing {
+      0%, 100% { opacity: 0.85; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.02); }
+    }
+    
+    /* Header back button */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-top: 8px;
+    }
+    
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+    }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 40px;
+      padding: 8px 16px;
+      font-size: 14px;
+      border-radius: 50px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    
+    .back-btn:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .back-btn:active {
+      transform: scale(0.98);
+    }
+    
+    /* Music button */
+    .music-btn {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 1000;
+      pointer-events: auto;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    
+    .music-btn:hover {
+      transform: scale(1.08);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .music-btn:active {
+      transform: scale(0.95);
+    }
+    
+    /* Modal overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(45, 45, 90, 0.35);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+    
+    .modal-content {
+      width: 100%;
+      max-width: 420px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 28px;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      z-index: 1001;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      color: #fff;
+      background: rgba(45, 45, 90, 0.85);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    /* ========== Landing Page ========== */
+    #landing-page.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+    
+    .landing-title {
+      font-size: clamp(48px, 12vw, 96px);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #fff;
+      text-shadow: 0 4px 30px rgba(161, 140, 209, 0.5);
+      margin-bottom: 16px;
+    }
+    
+    .landing-subtitle {
+      font-size: clamp(16px, 4vw, 24px);
+      color: rgba(255, 255, 255, 0.92);
+      margin-bottom: 48px;
+      letter-spacing: 0.05em;
+      text-shadow: 0 2px 16px rgba(161, 140, 209, 0.4);
+    }
+    
+    .enter-btn {
+      min-width: 220px;
+      max-width: 90vw;
+      flex-direction: column;
+      gap: 2px;
+      padding: 18px 32px;
+      line-height: 1.4;
+    }
+    
+    .enter-btn .line1 {
+      font-size: 15px;
+      font-weight: 400;
+    }
+    
+    .enter-btn .line2 {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+    
+    /* ========== Password Page ========== */
+    #password-page.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    
+    .password-box {
+      width: 100%;
+      max-width: 360px;
+      padding: 36px 28px;
+      text-align: center;
+    }
+    
+    .password-title {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    
+    .password-hint {
+      font-size: 13px;
+      color: rgba(45, 45, 90, 0.65);
+      margin-bottom: 28px;
+    }
+    
+    .password-input {
+      text-align: center;
+      font-size: 24px;
+      letter-spacing: 0.3em;
+      margin-bottom: 20px;
+    }
+    
+    .password-error {
+      height: 20px;
+      font-size: 13px;
+      color: #e91e63;
+      margin-bottom: 16px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    .password-error.show {
+      opacity: 1;
+    }
+    
+    /* ========== Home Page ========== */
+    #home-page {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    
+    .home-welcome {
+      font-size: clamp(22px, 5vw, 30px);
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+      text-shadow: 0 2px 16px rgba(255, 255, 255, 0.3);
+    }
+    
+    .days-card {
+      padding: 28px 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .days-card .label {
+      font-size: 15px;
+      color: rgba(45, 45, 90, 0.75);
+      margin-bottom: 8px;
+    }
+    
+    .days-card .days-number {
+      font-size: clamp(56px, 14vw, 84px);
+      font-weight: 700;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--soft-pink), var(--soft-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .days-card .sub-text {
+      font-size: 13px;
+      color: rgba(45, 45, 90, 0.65);
+      margin-top: 12px;
+    }
+    
+    /* Latest message preview */
+    .latest-message-card {
+      padding: 20px;
+      margin-bottom: 24px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .latest-message-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .latest-message-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .latest-message-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    
+    .latest-message-date {
+      font-size: 12px;
+      color: rgba(45, 45, 90, 0.55);
+    }
+    
+    .latest-message-body {
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(45, 45, 90, 0.8);
+    }
+    
+    .latest-message-author {
+      font-size: 12px;
+      color: rgba(45, 45, 90, 0.55);
+      margin-top: 10px;
+      text-align: right;
+    }
+    
+    /* Quick entries grid */
+    .quick-entries {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    
+    .quick-entry {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 22px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    
+    .quick-entry:hover {
+      transform: scale(1.03) translateY(-2px);
+      box-shadow: var(--shadow-hover);
+      background: rgba(255, 255, 255, 0.22);
+    }
+    
+    .quick-entry:active {
+      transform: scale(0.98);
+    }
+    
+    .quick-entry .icon {
+      font-size: 32px;
+      line-height: 1;
+    }
+    
+    .quick-entry .text {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    /* Action buttons on home */
+    .home-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .draw-card-btn {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(255, 154, 158, 0.9), rgba(161, 140, 209, 0.9));
+      color: #fff;
+      border: none;
+      font-size: 16px;
+      min-height: 54px;
+    }
+    
+    .draw-card-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.25), transparent);
+      transform: rotate(30deg);
+      transition: transform 0.6s ease;
+    }
+    
+    .draw-card-btn:hover::before {
+      transform: rotate(30deg) translate(20%, 20%);
+    }
+    
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: rgba(45, 45, 90, 0.7);
+    }
+    
+    /* ========== Sub Pages ========== */
+    .sub-page {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: rgba(45, 45, 90, 0.55);
+    }
+    
+    .empty-state .emoji {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    .empty-state p {
+      font-size: 14px;
+    }
+    
+    /* Message board */
+    .messages-container {
+      padding-bottom: 240px;
+    }
+    
+    .messages-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 24px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary-text);
+    }
+    
+    .messages-section-title:first-child {
+      margin-top: 0;
+    }
+    
+    .pinned-limit-hint {
+      font-size: 13px;
+      color: rgba(255, 105, 180, 0.9);
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      text-align: center;
+      font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+    }
+    
+    .messages-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 28px 0 16px;
+      color: rgba(45, 45, 90, 0.6);
+      font-size: 14px;
+    }
+    
+    .messages-divider::before,
+    .messages-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.35);
+    }
+    
+    .message-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    
+    .message-item {
+      padding: 18px;
+      position: relative;
+      animation: fadeInUp 0.4s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .message-item.pinned {
+      border-color: rgba(255, 154, 158, 0.5);
+      background: rgba(255, 255, 255, 0.22);
+    }
+    
+    .message-reply-to {
+      font-size: 13px;
+      color: rgba(45, 45, 90, 0.7);
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      border-left: 3px solid var(--soft-pink);
+    }
+    
+    .message-item-body {
+      font-size: 15px;
+      line-height: 1.8;
+      color: rgba(45, 45, 90, 0.9);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    
+    .message-image {
+      margin-top: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      max-height: 240px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .message-image img {
+      width: 100%;
+      height: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    
+    .message-image:hover img {
+      transform: scale(1.02);
+    }
+    
+    .message-signature {
+      margin-top: 14px;
+      font-size: 13px;
+      color: rgba(45, 45, 90, 0.6);
+      text-align: right;
+    }
+    
+    .message-dates {
+      font-size: 12px;
+      color: rgba(45, 45, 90, 0.5);
+      margin-top: 6px;
+      text-align: right;
+    }
+    
+    .message-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      justify-content: flex-end;
+    }
+    
+    .message-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 32px;
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease;
+      color: var(--primary-text);
+    }
+    
+    .message-action-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: scale(1.02);
+    }
+    
+    .message-action-btn.delete:hover {
+      background: rgba(255, 154, 158, 0.25);
+    }
+    
+    .message-action-btn.pin-btn {
+      background: linear-gradient(135deg, #ffc1e3 0%, #d4a5f7 100%);
+      color: #fff;
+      border-color: transparent;
+      text-shadow: 0 1px 2px rgba(45, 45, 90, 0.15);
+    }
+    
+    .message-action-btn.pin-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(161, 140, 209, 0.3);
+    }
+    
+    .message-action-btn.pin-btn.pinned {
+      background: rgba(255, 255, 255, 0.25);
+      color: var(--primary-text);
+      border-color: var(--glass-border);
+    }
+    
+    .message-replies {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .message-reply-bubble {
+      display: flex;
+      align-items: stretch;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .message-reply-line {
+      width: 3px;
+      background: linear-gradient(180deg, var(--soft-pink), #d4a5f7);
+      flex-shrink: 0;
+    }
+    
+    .message-reply-content {
+      padding: 10px 12px;
+      font-size: 14px;
+      color: rgba(45, 45, 90, 0.85);
+      line-height: 1.6;
+      word-break: break-word;
+    }
+    
+    .message-reply-form {
+      display: none;
+      margin-top: 12px;
+    }
+    
+    .message-reply-form.active {
+      display: block;
+    }
+    
+    .message-reply-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)) padding-box,
+                  linear-gradient(135deg, #ffc1e3 0%, #d4a5f7 100%) border-box;
+      border: 2px solid transparent;
+    }
+    
+    .reply-paw {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    
+    .reply-textarea {
+      flex: 1;
+      min-height: 24px;
+      max-height: 80px;
+      padding: 4px 6px;
+      font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+      font-size: 14px;
+      color: var(--primary-text);
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      overflow-y: auto;
+    }
+    
+    .reply-textarea::placeholder {
+      color: rgba(45, 45, 90, 0.5);
+    }
+    
+    .reply-send-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #ffc1e3 0%, #d4a5f7 100%);
+      color: #fff;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(161, 140, 209, 0.3);
+      transition: transform 0.15s ease;
+    }
+    
+    .reply-send-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    .edit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .edit-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 12px;
+      font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+      font-size: 15px;
+      color: var(--primary-text);
+      background: rgba(255, 255, 255, 0.25);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      outline: none;
+      resize: vertical;
+    }
+    
+    .edit-textarea::placeholder {
+      color: rgba(45, 45, 90, 0.5);
+    }
+    
+    .edit-textarea:focus {
+      background: rgba(255, 255, 255, 0.35);
+      border-color: var(--soft-pink);
+      box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.2);
+    }
+    
+    .edit-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    
+    .edit-actions .btn {
+      min-height: 36px;
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+    
+    /* Fixed bottom input */
+    .message-input-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      padding: 12px 16px 16px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--glass-border);
+      display: none;
+    }
+    
+    .message-input-bar.active {
+      display: block;
+    }
+    
+    .message-input-fields {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    
+    .message-input-fields .input-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    
+    .message-textarea-wrap {
+      position: relative;
+      width: 100%;
+    }
+    
+    .message-input-fields textarea {
+      width: 100%;
+      min-height: 48px;
+      max-height: 150px;
+      padding: 12px 90px 12px 14px;
+      font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+      font-size: 15px;
+      color: var(--primary-text);
+      background: rgba(255, 255, 255, 0.25);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      outline: none;
+      resize: none;
+      overflow-y: auto;
+    }
+    
+    .message-input-fields textarea::placeholder {
+      color: rgba(45, 45, 90, 0.5);
+    }
+    
+    .message-input-fields textarea:focus {
+      background: rgba(255, 255, 255, 0.35);
+      border-color: var(--soft-pink);
+      box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.2);
+    }
+    
+    .message-image-url-input {
+      width: 100%;
+      margin-top: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--primary-text);
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      outline: none;
+    }
+    
+    .message-image-url-input::placeholder {
+      color: rgba(45, 45, 90, 0.45);
+    }
+    
+    .message-image-url-input:focus {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: var(--soft-pink);
+    }
+    
+    .message-send-capsule {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 36px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ffc1e3 0%, #d4a5f7 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(161, 140, 209, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      flex-shrink: 0;
+      text-shadow: 0 1px 2px rgba(45, 45, 90, 0.15);
+    }
+    
+    .message-send-capsule:hover {
+      transform: translateY(-50%) scale(1.04);
+      box-shadow: 0 6px 16px rgba(161, 140, 209, 0.4);
+    }
+    
+    .message-send-capsule:active {
+      transform: translateY(-50%) scale(0.96);
+    }
+    
+    .message-send-capsule .send-icon {
+      font-size: 15px;
+      line-height: 1;
+    }
+    
+    /* Lightbox */
+    .lightbox-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1002;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(45, 45, 90, 0.85);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .lightbox-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+    
+    .lightbox-overlay img {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: var(--shadow-hover);
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+    
+    .lightbox-overlay.active img {
+      transform: scale(1);
+    }
+    
+    /* Delete modal */
+    .delete-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1003;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(45, 45, 90, 0.4);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .delete-modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+    
+    .delete-modal-content {
+      width: 100%;
+      max-width: 320px;
+      padding: 28px;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(255, 210, 220, 0.55), rgba(220, 190, 255, 0.55));
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      box-shadow: 0 12px 40px rgba(45, 45, 90, 0.15);
+    }
+    
+    .delete-modal-content p {
+      font-size: 16px;
+      margin-bottom: 24px;
+      color: var(--primary-text);
+    }
+    
+    .delete-modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    
+    .delete-modal-actions .btn {
+      min-height: 40px;
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+    
+    .delete-modal-actions .confirm-delete {
+      background: linear-gradient(135deg, rgba(255, 154, 158, 0.85), rgba(255, 182, 193, 0.85));
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .delete-modal-actions .confirm-delete:hover {
+      background: linear-gradient(135deg, rgba(255, 154, 158, 0.95), rgba(255, 182, 193, 0.95));
+    }
+    
+    /* Timeline */
+    .timeline-wrapper {
+      position: relative;
+      padding: 8px 0 32px;
+    }
+
+    .timeline {
+      position: relative;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      background: linear-gradient(to bottom, var(--soft-blue), var(--soft-pink));
+      border-radius: 3px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 28px;
+      width: 100%;
+      padding-left: 56px;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 16px;
+      top: 18px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid var(--soft-pink);
+      box-shadow: 0 0 0 4px rgba(255, 154, 158, 0.2);
+      z-index: 2;
+    }
+
+    .timeline-item.faded {
+      opacity: 0.5;
+    }
+
+    .timeline-item.faded .timeline-card {
+      background: rgba(220, 220, 230, 0.22);
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .timeline-card {
+      padding: 20px;
+      animation: fadeInUp 0.45s ease-out both;
+    }
+
+    .timeline-date {
+      font-size: 14px;
+      color: var(--soft-blue);
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .timeline-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .timeline-desc {
+      font-size: 15px;
+      line-height: 1.7;
+      color: rgba(45, 45, 90, 0.85);
+      margin-bottom: 10px;
+    }
+
+    .timeline-image {
+      margin: 10px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      max-height: 180px;
+      background: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+    }
+
+    .timeline-image img {
+      width: 100%;
+      height: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .timeline-image:hover img {
+      transform: scale(1.02);
+    }
+
+    .timeline-signature {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.25);
+      color: rgba(45, 45, 90, 0.75);
+      margin-top: 6px;
+    }
+
+    .timeline-card.interactive {
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .timeline-card.interactive:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .timeline-card.interactive.editing {
+      cursor: default;
+      transform: none;
+    }
+
+    .timeline-action-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+      margin-top: 0;
+    }
+
+    .timeline-action-bar.active {
+      max-height: 100px;
+      opacity: 1;
+      margin-top: 14px;
+    }
+
+    .timeline-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 36px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Noto Sans SC', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary-text);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+      flex: 1;
+    }
+
+    .timeline-action-btn:hover {
+      transform: scale(1.03);
+      box-shadow: var(--shadow-hover);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .timeline-action-btn.delete:hover {
+      background: rgba(255, 154, 158, 0.2);
+    }
+
+    .timeline-edit-form {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+      margin-top: 0;
+    }
+
+    .timeline-edit-form.active {
+      max-height: 520px;
+      opacity: 1;
+      margin-top: 16px;
+      overflow-y: auto;
+      border-radius: 16px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 154, 158, 0.85) rgba(255, 255, 255, 0.3);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .timeline-edit-form.active::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .timeline-edit-form.active::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .timeline-edit-form.active::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(255, 154, 158, 0.95), rgba(200, 160, 255, 0.95));
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .timeline-edit-form.active::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, rgba(255, 154, 158, 1), rgba(200, 160, 255, 1));
+    }
+
+    .timeline-tag-select {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .timeline-tag-option {
+      position: relative;
+      flex: 1;
+      min-width: 90px;
+      cursor: pointer;
+    }
+
+    .timeline-tag-option input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .timeline-tag-option span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 44px;
+      padding: 10px 14px;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--glass-border);
+      font-size: 14px;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .timeline-tag-option input:checked + span {
+      background: rgba(255, 154, 158, 0.2);
+      border-color: var(--soft-pink);
+      color: var(--soft-pink);
+      font-weight: 500;
+    }
+
+    .timeline-tag-option:hover span {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .page-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 32px;
+      padding-bottom: 8px;
+    }
+
+    @media (min-width: 769px) {
+      .timeline::before {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .timeline-item {
+        width: calc(50% - 48px);
+        padding-left: 0;
+      }
+
+      .timeline-item:nth-child(odd) {
+        margin-right: auto;
+        margin-left: 0;
+      }
+
+      .timeline-item:nth-child(even) {
+        margin-left: auto;
+        margin-right: 0;
+      }
+
+      .timeline-item:nth-child(odd) .timeline-dot {
+        left: calc(100% + 31px);
+        right: auto;
+      }
+
+      .timeline-item:nth-child(even) .timeline-dot {
+        right: calc(100% + 31px);
+        left: auto;
+      }
+    }
+
+    /* Photo wall */
+    .photo-wall {
+      column-count: 2;
+      column-gap: 16px;
+      padding-bottom: 8px;
+    }
+
+    @media (min-width: 769px) {
+      .photo-wall {
+        column-count: 3;
+      }
+    }
+
+    .photo-item {
+      position: relative;
+      break-inside: avoid;
+      margin-bottom: 16px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeInUp 0.5s ease forwards;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .photo-item:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .photo-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+    }
+
+    .photo-action-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(45, 45, 90, 0.15);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .photo-action-btn:hover {
+      transform: scale(1.1);
+      background: #fff;
+    }
+
+    .photo-edit-form {
+      display: none;
+      padding: 14px;
+    }
+
+    .photo-edit-form.active {
+      display: block;
+    }
+
+    .photo-edit-form .input,
+    .photo-edit-form .edit-textarea {
+      margin-bottom: 8px;
+    }
+
+    .photo-item.skeleton {
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .photo-item img {
+      width: 100%;
+      display: block;
+      border-radius: var(--radius) var(--radius) 0 0;
+      cursor: pointer;
+    }
+
+    .photo-info {
+      padding: 14px;
+    }
+
+    .photo-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .photo-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(45, 45, 90, 0.8);
+      margin-bottom: 10px;
+    }
+
+    .photo-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(45, 45, 90, 0.6);
+    }
+
+    /* Profiles */
+    .profiles-desktop {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .profile-column {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .profile-divider {
+      width: 1px;
+      align-self: stretch;
+      background: rgba(255, 255, 255, 0.35);
+      margin: 12px 0;
+      flex-shrink: 0;
+    }
+
+    .profile-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .profile-section-header .profile-name {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .profile-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .profile-item {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      animation: fadeInUp 0.4s ease-out;
+      position: relative;
+    }
+
+    .profile-item .profile-edit-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 22px;
+      height: 22px;
+      min-height: 22px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 11px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.3;
+      transition: opacity 0.2s ease, background 0.2s ease, transform 0.15s ease;
+    }
+
+    .profile-item .profile-edit-btn:hover {
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+
+    .profile-display {
+      transition: opacity 0.2s ease;
+    }
+
+    .profile-edit-form {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+    }
+
+    .profile-edit-form.active {
+      max-height: 260px;
+      opacity: 1;
+      margin-top: 10px;
+    }
+
+    .profile-edit-form .edit-form {
+      gap: 10px;
+    }
+
+    .profile-item .profile-label {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      font-weight: 300;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 14px;
+    }
+
+    .profile-item .profile-value {
+      font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+      font-size: 15px;
+      color: var(--primary-text);
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .profile-empty-value {
+      color: rgba(45, 45, 90, 0.45);
+      font-style: italic;
+    }
+
+    .profile-item-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .profile-item-actions .btn {
+      min-height: 32px;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .profiles-mobile-tabs {
+      display: none;
+    }
+
+    .profiles-mobile-tabs.active {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .profile-tab-btn {
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .profiles-mobile-detail {
+      display: none;
+    }
+
+    .profiles-mobile-detail.active {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .profiles-desktop {
+        display: none;
+      }
+
+      .profiles-mobile-tabs.active {
+        display: flex;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .profiles-mobile-tabs,
+      .profiles-mobile-tabs.active {
+        display: none !important;
+      }
+    }
+
+    /* Countdown */
+    .countdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .countdown-card {
+      padding: 24px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .countdown-card .countdown-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .countdown-card .countdown-action-btn {
+      width: 28px;
+      height: 28px;
+      min-height: 28px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.3;
+      transition: opacity 0.2s ease, background 0.2s ease, transform 0.15s ease;
+    }
+
+    .countdown-card .countdown-action-btn:hover {
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+
+    .countdown-card .countdown-action-btn.delete:hover {
+      background: rgba(255, 154, 158, 0.25);
+    }
+
+    .countdown-edit-form {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+    }
+
+    .countdown-edit-form.active {
+      max-height: 320px;
+      opacity: 1;
+      margin-top: 16px;
+    }
+
+    .countdown-edit-form .edit-form {
+      gap: 10px;
+    }
+
+    .countdown-display {
+      transition: opacity 0.2s ease;
+    }
+
+    .countdown-label {
+      font-size: 14px;
+      color: rgba(45, 45, 90, 0.7);
+      margin-bottom: 10px;
+      padding-right: 70px;
+    }
+
+    .countdown-number {
+      font-size: clamp(40px, 10vw, 64px);
+      font-weight: 700;
+      color: var(--soft-pink);
+      line-height: 1.1;
+    }
+
+    .countdown-unit {
+      font-size: 16px;
+      color: rgba(45, 45, 90, 0.7);
+    }
+
+    .countdown-target {
+      font-size: 13px;
+      color: rgba(45, 45, 90, 0.6);
+      margin-top: 10px;
+    }
+
+    .countdown-set-inline {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .countdown-set-inline input {
+      width: 150px;
+      min-height: 36px;
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+
+    /* Anniversaries */
+    .anni-actions {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .anni-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .anni-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      gap: 12px;
+    }
+
+    .anni-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .anni-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .anni-desc {
+      font-size: 13px;
+      color: rgba(45, 45, 90, 0.65);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .anni-date {
+      font-size: 12px;
+      color: rgba(45, 45, 90, 0.6);
+    }
+
+    .anni-days {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--soft-blue);
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .anni-item {
+      position: relative;
+      flex-wrap: wrap;
+    }
+
+    .anni-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .anni-action-btn {
+      width: 26px;
+      height: 26px;
+      min-height: 26px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.3;
+      transition: opacity 0.2s ease, background 0.2s ease, transform 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .anni-action-btn:hover {
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+
+    .anni-action-btn.delete:hover {
+      background: rgba(255, 154, 158, 0.25);
+    }
+
+    .anni-display {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .anni-edit-form {
+      width: 100%;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+    }
+
+    .anni-edit-form.active {
+      max-height: 320px;
+      opacity: 1;
+      margin-top: 14px;
+    }
+
+    .anni-edit-form .edit-form {
+      gap: 10px;
+    }
+
+    /* Anniversary today overlay */
+    .anniversary-today-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1004;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(45, 45, 90, 0.45);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .anniversary-today-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .anniversary-today-content {
+      width: 100%;
+      max-width: 380px;
+      padding: 36px 28px;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.4s ease;
+    }
+
+    .anniversary-today-overlay.active .anniversary-today-content {
+      transform: scale(1);
+    }
+
+    .anniversary-today-content .celebrate {
+      font-size: 56px;
+      margin-bottom: 12px;
+    }
+
+    .anniversary-today-content h3 {
+      font-size: 22px;
+      margin-bottom: 16px;
+      color: var(--soft-pink);
+    }
+
+    .anniversary-today-content p {
+      font-size: 15px;
+      line-height: 1.8;
+      color: rgba(45, 45, 90, 0.85);
+      margin-bottom: 24px;
+    }
+
+    /* Memory modal */
+    .memory-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(45, 45, 90, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .memory-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .memory-content {
+      width: 100%;
+      max-width: 460px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 32px 28px 28px;
+      position: relative;
+      transform: scale(0.92);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .memory-overlay.active .memory-content {
+      transform: scale(1);
+    }
+
+    .memory-close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      min-height: 36px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 26px;
+      line-height: 1;
+      font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+      color: var(--soft-pink);
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.15s ease;
+      user-select: none;
+    }
+
+    .memory-close-btn:hover {
+      background: rgba(255, 255, 255, 0.45);
+      transform: scale(1.08);
+    }
+
+    .memory-close-btn:active {
+      transform: scale(0.95);
+    }
+
+    .memory-source-tag {
+      display: inline-block;
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.25);
+      color: rgba(45, 45, 90, 0.7);
+      margin-bottom: 16px;
+    }
+
+    .memory-image {
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .memory-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--primary-text);
+    }
+
+    .memory-body {
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(45, 45, 90, 0.85);
+      margin-bottom: 16px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .memory-meta {
+      font-size: 13px;
+      color: rgba(45, 45, 90, 0.6);
+    }
+
+    .memory-empty {
+      font-size: 16px;
+      color: rgba(45, 45, 90, 0.7);
+      padding: 20px;
+    }
+
+    /* Form checkbox row */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+      font-size: 14px;
+      color: rgba(45, 45, 90, 0.8);
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--soft-pink);
+      cursor: pointer;
+    }
+
+    /* ========== Responsive ========== */
+    @media (min-width: 769px) {
+      section {
+        padding: 32px 32px 80px;
+      }
+      
+      .quick-entries {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      
+      .home-actions {
+        flex-direction: row;
+        justify-content: center;
+      }
+      
+      .draw-card-btn, .logout-btn {
+        flex: 1;
+        max-width: 240px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .quick-entries {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .page-title {
+        font-size: 18px;
+      }
+      
+      .back-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      
+      .messages-container {
+        padding-bottom: 220px;
+      }
+      
+      .message-input-bar {
+        padding: 10px 12px 14px;
+      }
+      
+      .message-input-fields textarea {
+        font-size: 14px;
+        padding: 10px 80px 10px 12px;
+      }
+      
+      .message-send-capsule {
+        height: 32px;
+        padding: 0 12px;
+        font-size: 13px;
+        right: 6px;
+      }
+      
+      .message-send-capsule .send-icon {
+        font-size: 14px;
+      }
+      
+      .message-reply-input-wrap {
+        padding: 6px 10px;
+      }
+      
+      .reply-textarea {
+        font-size: 13px;
+      }
+      
+      .reply-send-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+      }
+
+      .countdown-card {
+        padding: 22px 18px;
+      }
+
+      .countdown-card .countdown-action-btn {
+        opacity: 0.65;
+        width: 26px;
+        height: 26px;
+        min-height: 26px;
+        font-size: 12px;
+      }
+
+      .countdown-label {
+        padding-right: 62px;
+      }
+
+      .anni-action-btn {
+        opacity: 0.65;
+        width: 24px;
+        height: 24px;
+        min-height: 24px;
+        font-size: 11px;
+      }
+
+      .profile-item .profile-edit-btn {
+        opacity: 0.6;
+        width: 20px;
+        height: 20px;
+        min-height: 20px;
+        font-size: 10px;
+      }
+
+      .timeline-edit-form.active {
+        position: fixed;
+        top: 50%;
+        left: 16px;
+        right: 16px;
+        transform: translateY(-50%);
+        width: auto;
+        max-height: 85vh;
+        margin-top: 0;
+        padding: 16px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius);
+        box-shadow: 0 24px 70px rgba(45, 45, 90, 0.28);
+        z-index: 1000;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        transition: none;
+      }
+
+      .timeline-edit-form.active::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .memory-content {
+        padding: 28px 22px 24px;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      .quick-entry .icon {
+        font-size: 26px;
+      }
+      
+      .quick-entry .text {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+  
+  <div class="app">
+    <!-- 1. Landing Page -->
+    <section id="landing-page" class="active">
+      <h1 class="landing-title font-serif breathing">北笑南欢</h1>
+      <p class="landing-subtitle font-serif">世界で一番大切な人は君だ</p>
+      <button class="btn btn-primary btn-lg enter-btn" id="enter-btn">
+        <span class="line1">用小嘴胶粘的声音跟我说</span>
+        <span class="line2">niangniangniang</span>
+      </button>
+    </section>
+    
+    <!-- 2. Password Page -->
+    <section id="password-page">
+      <div class="glass-card password-box">
+        <h2 class="password-title font-serif">输入密码</h2>
+        <p class="password-hint">请输入我们的密码</p>
+        <input type="password" class="input password-input" id="password-input" placeholder="••••" maxlength="4" inputmode="numeric" autocomplete="off">
+        <div class="password-error" id="password-error">这不是我们的密码哦～</div>
+        <button class="btn btn-primary" id="password-submit" style="width:100%">进入</button>
+      </div>
+    </section>
+    
+    <!-- 3. Home Page -->
+    <section id="home-page">
+      <h1 class="home-welcome font-serif" id="home-welcome">欢迎回家 💕</h1>
+      
+      <div class="glass-card days-card">
+        <div class="label">我们已经重新在一起</div>
+        <div class="days-number breathing" id="days-reunited">0</div>
+        <div class="label">天了</div>
+        <div class="sub-text" id="days-first">从我们第一次在一起已 0 天（2023.1.18）</div>
+      </div>
+      
+      <div class="glass-card latest-message-card" id="latest-message-card">
+        <div class="latest-message-header">
+          <span class="latest-message-title">最新留言</span>
+          <span class="latest-message-date" id="latest-message-date">--</span>
+        </div>
+        <div class="latest-message-body font-wenkai" id="latest-message-body">
+          <div class="skeleton" style="height:16px;width:90%;margin-bottom:8px"></div>
+          <div class="skeleton" style="height:16px;width:70%"></div>
+        </div>
+        <div class="latest-message-author font-wenkai" id="latest-message-author">--</div>
+      </div>
+      
+      <div class="quick-entries" id="quick-entries">
+        <div class="glass-card quick-entry" data-page="messages-page">
+          <span class="icon">💌</span>
+          <span class="text">留言板</span>
+        </div>
+        <div class="glass-card quick-entry" data-page="timeline-page">
+          <span class="icon">⏳</span>
+          <span class="text">时光轴</span>
+        </div>
+        <div class="glass-card quick-entry" data-page="photos-page">
+          <span class="icon">📸</span>
+          <span class="text">照片墙</span>
+        </div>
+        <div class="glass-card quick-entry" data-page="profiles-page">
+          <span class="icon">📋</span>
+          <span class="text">彼此档案</span>
+        </div>
+        <div class="glass-card quick-entry" data-page="countdown-page">
+          <span class="icon">⏱️</span>
+          <span class="text">倒计时</span>
+        </div>
+        <div class="glass-card quick-entry" data-page="anniversaries-page">
+          <span class="icon">🎂</span>
+          <span class="text">纪念日</span>
+        </div>
+      </div>
+      
+      <div class="home-actions">
+        <button class="btn btn-primary draw-card-btn" id="draw-card-btn">✨ 抽一张甜蜜卡片</button>
+        <button class="btn logout-btn" id="logout-btn">退出登录</button>
+      </div>
+    </section>
+    
+    <!-- 4. Messages Page -->
+    <section id="messages-page" class="sub-page">
+      <div class="page-header">
+        <button class="back-btn" data-back="home-page">💒 返回首页</button>
+        <h2 class="page-title font-serif">💌 我们的情书墙</h2>
+        <div style="width:60px"></div>
+      </div>
+      
+      <div class="messages-container" id="messages-container">
+        <div class="messages-section-title">📌 置顶留言</div>
+        <div class="pinned-limit-hint" id="pinned-limit-hint" style="display:none">
+          置顶小窝已经被 5 只小猫咪占满啦，先取消一条才能迎接新的留言哦 🐱
+        </div>
+        <div class="message-list" id="pinned-message-list">
+          <div class="glass-card message-item pinned">
+            <div class="skeleton" style="height:16px;width:100%;margin-bottom:8px"></div>
+            <div class="skeleton" style="height:14px;width:80%"></div>
+          </div>
+        </div>
+        
+        <div class="messages-divider">💬 全部留言</div>
+        <div class="message-list" id="message-list">
+          <div class="glass-card message-item">
+            <div class="skeleton" style="height:16px;width:100%;margin-bottom:8px"></div>
+            <div class="skeleton" style="height:14px;width:70%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 5. Timeline Page -->
+    <section id="timeline-page" class="sub-page">
+      <div class="page-header">
+        <button class="back-btn" data-back="home-page">💒 返回首页</button>
+        <h2 class="page-title font-serif">⏳ 我们的时光轴</h2>
+        <div style="width:60px"></div>
+      </div>
+      
+      <div class="timeline-wrapper">
+        <ul class="timeline" id="timeline-list">
+          <li class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card glass-card">
+              <div class="timeline-date skeleton" style="height:12px;width:90px;margin-bottom:10px"></div>
+              <div class="timeline-title skeleton" style="height:16px;width:130px;margin-bottom:10px"></div>
+              <div class="timeline-desc skeleton" style="height:14px;width:100%;margin-bottom:8px"></div>
+              <div class="timeline-desc skeleton" style="height:14px;width:70%"></div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="page-actions">
+        <button class="btn btn-primary" id="add-timeline-event-btn">➕ 添加事件</button>
+      </div>
+    </section>
+    
+    <!-- 6. Photos Page -->
+    <section id="photos-page" class="sub-page">
+      <div class="page-header">
+        <button class="back-btn" data-back="home-page">💒 返回首页</button>
+        <h2 class="page-title font-serif">📸 我们的瞬间</h2>
+        <div style="width:60px"></div>
+      </div>
+      
+      <div class="photo-wall" id="photo-grid">
+        <div class="photo-item skeleton">🖼️</div>
+        <div class="photo-item skeleton">🖼️</div>
+        <div class="photo-item skeleton">🖼️</div>
+        <div class="photo-item skeleton">🖼️</div>
+      </div>
+      
+      <div class="empty-state" id="photos-empty" style="display:none">
+        <div class="emoji">📷</div>
+        <p>这里还没有照片，快去记录美好瞬间吧～</p>
+      </div>
+      
+      <div class="page-actions">
+        <button class="btn btn-primary" id="add-photo-btn">➕ 添加照片</button>
+      </div>
+    </section>
+    
+    <!-- 7. Profiles Page -->
+    <section id="profiles-page" class="sub-page">
+      <div class="page-header">
+        <button class="back-btn" data-back="home-page">💒 返回首页</button>
+        <h2 class="page-title font-serif">📋 彼此档案</h2>
+        <div style="width:60px"></div>
+      </div>
+      
+      <!-- Desktop side-by-side -->
+      <div class="profiles-desktop" id="profiles-desktop">
+        <div class="profile-column">
+          <div class="profile-section-header">
+            <div class="profile-name font-serif">🐖 桐桐猪</div>
+            <button class="btn" id="add-profile-beidou-btn">➕ 添加条目</button>
+          </div>
+          <div class="profile-list" id="profile-list-beidou">
+            <div class="glass-card profile-item">
+              <div class="profile-label skeleton" style="height:12px;width:70px;margin-bottom:6px"></div>
+              <div class="profile-value skeleton" style="height:14px;width:90%"></div>
+            </div>
+            <div class="glass-card profile-item">
+              <div class="profile-label skeleton" style="height:12px;width:80px;margin-bottom:6px"></div>
+              <div class="profile-value skeleton" style="height:14px;width:75%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="profile-divider"></div>
+        <div class="profile-column">
+          <div class="profile-section-header">
+            <div class="profile-name font-serif">🐱 小语涵</div>
+            <button class="btn" id="add-profile-xiaoxiao-btn">➕ 添加条目</button>
+          </div>
+          <div class="profile-list" id="profile-list-xiaoxiao">
+            <div class="glass-card profile-item">
+              <div class="profile-label skeleton" style="height:12px;width:70px;margin-bottom:6px"></div>
+              <div class="profile-value skeleton" style="height:14px;width:90%"></div>
+            </div>
+            <div class="glass-card profile-item">
+              <div class="profile-label skeleton" style="height:12px;width:80px;margin-bottom:6px"></div>
+              <div class="profile-value skeleton" style="height:14px;width:75%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Mobile tab switch -->
+      <div class="profiles-mobile-tabs active" id="profiles-mobile-tabs">
+        <button class="btn btn-lg profile-tab-btn" data-person="北斗">🐖 桐桐猪</button>
+        <button class="btn btn-lg profile-tab-btn" data-person="笑笑">🐱 小语涵</button>
+      </div>
+      <div class="profiles-mobile-detail" id="profiles-mobile-detail">
+        <div class="page-header" style="margin-bottom:16px">
+          <button class="back-btn" id="profile-mobile-back">← 返回选择</button>
+          <h2 class="page-title font-serif" id="profile-mobile-name">桐桐猪</h2>
+          <div style="width:60px"></div>
+        </div>
+        <div class="profile-section-header">
+          <div></div>
+          <button class="btn" id="add-profile-mobile-btn">➕ 添加条目</button>
+        </div>
+        <div class="profile-list" id="profile-list-mobile"></div>
+      </div>
+    </section>
+    
+    <!-- 8. Countdown Page -->
+    <section id="countdown-page" class="sub-page">
+      <div class="page-header">
+        <button class="back-btn" data-back="home-page">💒 返回首页</button>
+        <h2 class="page-title font-serif">⏱️ 倒计时</h2>
+        <div style="width:60px"></div>
+      </div>
+      
+      <div class="countdown-list" id="countdown-list">
+        <div class="glass-card countdown-card">
+          <div class="countdown-label skeleton" style="height:14px;width:120px;margin:0 auto 12px"></div>
+          <div class="countdown-number skeleton" style="height:48px;width:80px;margin:0 auto 8px"></div>
+          <div class="countdown-unit skeleton" style="height:14px;width:40px;margin:0 auto"></div>
+        </div>
+      </div>
+      
+      <div class="page-actions">
+        <button class="btn btn-primary" id="add-countdown-btn">➕ 添加倒计时</button>
+      </div>
+    </section>
+    
+    <!-- 9. Anniversaries Page -->
+    <section id="anniversaries-page" class="sub-page">
+      <div class="page-header">
+        <button class="back-btn" data-back="home-page">💒 返回首页</button>
+        <h2 class="page-title font-serif">🎂 纪念日</h2>
+        <div style="width:60px"></div>
+      </div>
+      
+      <div class="anni-actions">
+        <button class="btn btn-primary" id="add-anniversary-btn">➕ 添加纪念日</button>
+      </div>
+      
+      <div class="anni-list" id="anni-list">
+        <div class="glass-card anni-item">
+          <div class="anni-info">
+            <div class="anni-name skeleton" style="height:16px;width:120px"></div>
+            <div class="anni-date skeleton" style="height:12px;width:100px"></div>
+          </div>
+          <div class="anni-days skeleton" style="height:24px;width:60px"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  <!-- Message Input Bar -->
+  <div class="message-input-bar" id="message-input-bar">
+    <div class="message-input-fields">
+      <div class="input-col">
+        <div class="message-textarea-wrap">
+          <textarea id="message-input" class="font-wenkai" placeholder="写下想对 Ta 说的话..." maxlength="500"></textarea>
+          <button class="message-send-capsule" id="send-message-btn" type="button" aria-label="发送">
+            <span class="send-text">发送</span><span class="send-icon">🐱</span>
+          </button>
+        </div>
+        <input type="text" id="message-image-url" class="message-image-url-input" placeholder="粘贴图片链接（可选）" maxlength="1000">
+      </div>
+    </div>
+  </div>
+  
+  <!-- Background Music -->
+  <audio id="bg-music" src="assets/bg-music.mp3" loop preload="auto" style="display:none"></audio>
+  
+  <!-- Music Button -->
+  <button class="music-btn" id="music-btn" title="音乐开关">🔇</button>
+  
+  <!-- Lightbox -->
+  <div class="lightbox-overlay" id="lightbox">
+    <img src="" alt="放大图片" id="lightbox-img">
+  </div>
+  
+  <!-- Delete Modal -->
+  <div class="delete-modal-overlay" id="delete-modal">
+    <div class="glass-card modal-content delete-modal-content">
+      <p class="font-wenkai" id="delete-modal-message">真的要删掉这条甜蜜回忆吗？💔</p>
+      <div class="delete-modal-actions">
+        <button class="btn" id="cancel-delete-btn">取消</button>
+        <button class="btn confirm-delete" id="confirm-delete-btn">确认删除</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Memory Modal -->
+  <div class="memory-overlay" id="memory-modal">
+    <div class="glass-card memory-content">
+      <button class="memory-close-btn" id="close-memory-btn" aria-label="关闭">×</button>
+      <div id="memory-body">
+        <div class="memory-source-tag" id="memory-source">来自留言板</div>
+        <img class="memory-image" id="memory-image" src="" alt="回忆照片" style="display:none">
+        <h3 class="memory-title font-serif" id="memory-title" style="display:none"></h3>
+        <p class="memory-body font-wenkai" id="memory-text"></p>
+        <div class="memory-meta font-system" id="memory-meta"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Add Timeline Event Modal -->
+  <div class="modal-overlay" id="timeline-add-modal">
+    <div class="glass-card modal-content">
+      <h3 class="font-serif" style="font-size:20px;margin-bottom:20px;color:var(--soft-pink)">➕ 添加事件</h3>
+      <form id="timeline-add-form" class="edit-form" style="text-align:left">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">日期</label>
+        <input type="date" class="input" name="date" required>
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin:10px 0 4px;display:block">标题</label>
+        <input type="text" class="input" name="title" placeholder="事件标题" required maxlength="100">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin:10px 0 4px;display:block">描述</label>
+        <textarea class="edit-textarea font-wenkai" name="description" placeholder="写下这段回忆..." rows="3" maxlength="500"></textarea>
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin:10px 0 4px;display:block">标签</label>
+        <select class="input" name="tag">
+          <option value="异地">异地</option>
+          <option value="见面">见面</option>
+        </select>
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin:10px 0 4px;display:block">图片链接（可选）</label>
+        <input type="url" class="input" name="image_url" placeholder="https://..." maxlength="1000">
+        <div class="edit-actions" style="margin-top:16px">
+          <button type="button" class="btn" id="cancel-timeline-add">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Photo Modal -->
+  <div class="modal-overlay" id="photo-add-modal">
+    <div class="glass-card modal-content">
+      <h3 class="font-serif" style="font-size:20px;margin-bottom:20px;color:var(--soft-pink)">➕ 添加照片</h3>
+      <form id="photo-add-form" class="edit-form" style="text-align:left">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">图片链接</label>
+        <input type="url" class="input" name="image_url" placeholder="https://..." required maxlength="1000">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin:10px 0 4px;display:block">标题（可选）</label>
+        <input type="text" class="input" name="title" placeholder="照片标题" maxlength="100">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin:10px 0 4px;display:block">描述</label>
+        <textarea class="edit-textarea font-wenkai" name="description" placeholder="这张照片的故事..." rows="3" maxlength="500"></textarea>
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin:10px 0 4px;display:block">日期</label>
+        <input type="date" class="input" name="date" required>
+        <div class="edit-actions" style="margin-top:16px">
+          <button type="button" class="btn" id="cancel-photo-add">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Profile Item Modal -->
+  <div class="modal-overlay" id="profile-add-modal">
+    <div class="glass-card modal-content">
+      <h3 class="font-serif" style="font-size:20px;margin-bottom:20px;color:var(--soft-pink)" id="profile-add-modal-title">添加档案标签</h3>
+      <form id="profile-add-form" class="edit-form" style="text-align:left">
+        <input type="hidden" name="person">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">标签</label>
+        <input type="text" class="input" name="label" placeholder="例如：喜欢的食物" required maxlength="50">
+        <div class="edit-actions" style="margin-top:16px">
+          <button type="button" class="btn" id="cancel-profile-add">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Countdown Modal -->
+  <div class="modal-overlay" id="countdown-add-modal">
+    <div class="glass-card modal-content">
+      <h3 class="font-serif" style="font-size:20px;margin-bottom:20px;color:var(--soft-pink)">➕ 添加倒计时</h3>
+      <form id="countdown-add-form" class="edit-form" style="text-align:left">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">标题</label>
+        <input type="text" class="input" name="title" placeholder="例如：下次见面" required maxlength="100">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin:10px 0 4px;display:block">目标日期</label>
+        <input type="date" class="input" name="target_date" required>
+        <label class="checkbox-row" style="margin-top:12px">
+          <input type="checkbox" name="is_recurring" value="true">
+          <span>每年重复（如生日、纪念日）</span>
+        </label>
+        <div class="edit-actions" style="margin-top:16px">
+          <button type="button" class="btn" id="cancel-countdown-add">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Anniversary Modal -->
+  <div class="modal-overlay" id="anniversary-add-modal">
+    <div class="glass-card modal-content">
+      <h3 class="font-serif" style="font-size:20px;margin-bottom:20px;color:var(--soft-pink)">➕ 添加纪念日</h3>
+      <form id="anniversary-add-form" class="edit-form" style="text-align:left">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">日期</label>
+        <input type="date" class="input" name="date" required>
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin:10px 0 4px;display:block">标题</label>
+        <input type="text" class="input" name="title" placeholder="例如：第一次约会" required maxlength="100">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin:10px 0 4px;display:block">描述</label>
+        <textarea class="edit-textarea font-wenkai" name="description" placeholder="这个日子的故事..." rows="3" maxlength="500"></textarea>
+        <div class="edit-actions" style="margin-top:16px">
+          <button type="button" class="btn" id="cancel-anniversary-add">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Anniversary Today Overlay -->
+  <div class="anniversary-today-overlay" id="anniversary-today-overlay">
+    <div class="glass-card anniversary-today-content">
+      <div class="celebrate">🎉</div>
+      <h3 class="font-serif" id="anniversary-today-title">今天是个特别的日子！</h3>
+      <p class="font-wenkai" id="anniversary-today-desc"></p>
+      <button class="btn btn-primary" id="anniversary-today-close">收下这份甜蜜</button>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+  
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // ===== Supabase Config =====
+    const SUPABASE_URL = 'https://liqurcmqldtrfrehozfi.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_X6-Sh2laXQ3WylgIkUF6Zw_IO5H05hz';
+    let supabase = null;
+    let currentUser = null;
+    if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+    
+    // ===== State =====
+    function safeGetItem(key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
+    function safeSetItem(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) {}
+    }
+    function safeRemoveItem(key) {
+      try { localStorage.removeItem(key); } catch (e) {}
+    }
+    
+    const identity = safeGetItem('identity');
+    let isMuted = safeGetItem('musicMuted') === 'true';
+    let isPlaying = false;
+    let mouseX = -1000, mouseY = -1000;
+    let messagesCache = [];
+
+    let deleteConfirmCallback = null;
+    
+    // New feature state
+    let countdownsCache = [];
+    let anniversariesCache = [];
+    let memorySources = [];
+    let drawnMemoryIds = new Set();
+
+    
+    // ===== DOM Elements =====
+    const pages = [
+      'landing-page', 'password-page', 'home-page',
+      'messages-page', 'timeline-page', 'photos-page',
+      'profiles-page', 'countdown-page', 'anniversaries-page'
+    ];
+    
+    const bgMusic = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-btn');
+    
+    // ===== Page Routing =====
+    function showPage(pageId) {
+      pages.forEach(id => {
+        const el = document.getElementById(id);
+        if (id === pageId) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.showPage = showPage;
+    
+    async function refreshCurrentUser() {
+      currentUser = null;
+      if (!supabase) return;
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (!error && data && data.user) {
+          currentUser = data.user;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    
+    function requireAuth() {
+      if (!currentUser) {
+        showToast('需登录后使用');
+        return false;
+      }
+      return true;
+    }
+    
+    async function checkAuth() {
+      await refreshCurrentUser();
+      const id = safeGetItem('identity');
+      if (!id) {
+        showPage('landing-page');
+      } else {
+        initHome();
+        showPage('home-page');
+        // 先加载纪念日数据，再检测今天是否是纪念日，避免仅使用本地预设
+        await loadAnniversaries();
+        checkTodayAnniversary();
+      }
+    }
+    
+    // ===== Music =====
+    /**
+     * 初始化音乐状态（不自动播放）
+     */
+    function initMusic() {
+      if (!bgMusic) return;
+      bgMusic.muted = isMuted;
+      // 仅初始化音量状态，不再自动播放，播放完全由右下角按钮控制
+    }
+    
+    /**
+     * 切换音乐播放/暂停状态
+     */
+    function toggleMusic() {
+      if (!bgMusic) return;
+      if (isPlaying) {
+        bgMusic.pause();
+        isPlaying = false;
+        if (musicBtn) musicBtn.textContent = '🔇';
+        showToast('音乐已暂停');
+      } else {
+        bgMusic.muted = false;
+        bgMusic.play().then(() => {
+          isPlaying = true;
+          if (musicBtn) musicBtn.textContent = '🔊';
+          showToast('音乐已播放 🎵');
+        }).catch((e) => {
+          console.error(e);
+          showToast('音乐播放失败');
+        });
+      }
+    }
+    window.toggleMusic = toggleMusic;
+    
+    if (musicBtn) {
+      musicBtn.textContent = '🔇';
+      musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMusic();
+      });
+    }
+    
+    // ===== Date Utilities =====
+    function daysBetween(start, end) {
+      const s = new Date(start);
+      const e = end ? new Date(end) : new Date();
+      s.setHours(0, 0, 0, 0);
+      e.setHours(0, 0, 0, 0);
+      return Math.floor((e - s) / (1000 * 60 * 60 * 24));
+    }
+    
+    /**
+     * 把 YYYY-MM-DD 字符串按本地日历日期解析（避免被解析成 UTC 导致跨天时区偏差）
+     */
+    function parseLocalDate(ymd) {
+      const [y, m, d] = ymd.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+    
+    /**
+     * 把 Date 对象格式化为 YYYY-MM-DD（基于本地日期）
+     */
+    function formatDateToYMD(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    
+    function formatDateCN(dateInput) {
+      const isYmd = typeof dateInput === 'string'
+        && dateInput.length === 10
+        && dateInput[4] === '-'
+        && dateInput[7] === '-';
+      const d = isYmd ? parseLocalDate(dateInput) : new Date(dateInput);
+      return `${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`;
+    }
+    
+    function formatDateCNFull(date) {
+      const d = new Date(date);
+      const options = { timeZone: 'Asia/Shanghai', year: 'numeric', month: 'numeric', day: 'numeric' };
+      const parts = new Intl.DateTimeFormat('zh-CN', options).formatToParts(d);
+      const year = parts.find(p => p.type === 'year').value;
+      const month = parts.find(p => p.type === 'month').value;
+      const day = parts.find(p => p.type === 'day').value;
+      return `${year}年${month}月${day}日`;
+    }
+    
+    function formatDateCNShort(date) {
+      const d = new Date(date);
+      const options = { timeZone: 'Asia/Shanghai', month: 'numeric', day: 'numeric' };
+      const parts = new Intl.DateTimeFormat('zh-CN', options).formatToParts(d);
+      const month = parts.find(p => p.type === 'month').value;
+      const day = parts.find(p => p.type === 'day').value;
+      return `${month}月${day}日`;
+    }
+    
+    /**
+     * 获取今天的日期字符串 YYYY-MM-DD（上海时区）
+     */
+    function getTodayString() {
+      const now = new Date();
+      const options = { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' };
+      const parts = new Intl.DateTimeFormat('zh-CN', options).formatToParts(now);
+      const y = parts.find(p => p.type === 'year').value;
+      const m = parts.find(p => p.type === 'month').value;
+      const d = parts.find(p => p.type === 'day').value;
+      return `${y}-${m}-${d}`;
+    }
+    
+    /**
+     * 从日期字符串提取月日 MM-DD
+     */
+    function getMonthDay(dateStr) {
+      const d = new Date(dateStr);
+      const options = { timeZone: 'Asia/Shanghai', month: '2-digit', day: '2-digit' };
+      const parts = new Intl.DateTimeFormat('zh-CN', options).formatToParts(d);
+      const m = parts.find(p => p.type === 'month').value;
+      const day = parts.find(p => p.type === 'day').value;
+      return `${m}-${day}`;
+    }
+    
+    /**
+     * 计算倒计时剩余天数，支持每年重复。
+     * 全部按本地日历日期计算，返回的 targetStr 也是 YYYY-MM-DD，避免 ISO 时区偏差。
+     */
+    function computeCountdownDays(targetDateStr, isRecurring) {
+      const today = parseLocalDate(getTodayString());
+      
+      if (!targetDateStr) {
+        return { days: null, targetStr: null, expired: false };
+      }
+      
+      const base = parseLocalDate(targetDateStr);
+      let target = base;
+      
+      if (isRecurring) {
+        // 每年重复：以今年的月日为准
+        const currentYear = today.getFullYear();
+        target = new Date(currentYear, base.getMonth(), base.getDate());
+        if (target < today) {
+          target = new Date(currentYear + 1, base.getMonth(), base.getDate());
+        }
+      }
+      
+      const diff = Math.floor((target - today) / (1000 * 60 * 60 * 24));
+      return {
+        days: diff,
+        targetStr: formatDateToYMD(target),
+        expired: diff < 0
+      };
+    }
+    
+    // ===== Home Init =====
+    function initHome() {
+      const id = safeGetItem('identity');
+      const welcomeEl = document.getElementById('home-welcome');
+      if (id === '北斗') {
+        welcomeEl.textContent = '欢迎回家，北斗 💙';
+      } else if (id === '笑笑') {
+        welcomeEl.textContent = '欢迎回家，笑笑 💗';
+      } else {
+        welcomeEl.textContent = '欢迎回家 💕';
+      }
+      
+      const reunited = daysBetween('2025-07-06');
+      const first = daysBetween('2023-01-18');
+      document.getElementById('days-reunited').textContent = reunited;
+      document.getElementById('days-first').textContent = `从我们第一次在一起已 ${first} 天（2023.1.18）`;
+      
+      loadLatestMessage();
+    }
+    
+    // ===== Messages / Supabase =====
+    async function loadLatestMessage() {
+      const body = document.getElementById('latest-message-body');
+      const dateEl = document.getElementById('latest-message-date');
+      const authorEl = document.getElementById('latest-message-author');
+      
+      if (!supabase) {
+        body.innerHTML = '<span class="font-wenkai">留言区已准备好，等待第一条留言～</span>';
+        dateEl.textContent = '--';
+        authorEl.textContent = '--';
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .is('reply_to', null)
+          .order('created_at', { ascending: false })
+          .limit(1);
+        
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const msg = data[0];
+          const text = msg.content || '';
+          const preview = text.length > 50 ? text.slice(0, 50) + '...' : text;
+          body.innerHTML = `<span class="font-wenkai">${escapeHtml(preview)}</span>`;
+          dateEl.textContent = formatDateCN(msg.created_at);
+          authorEl.textContent = `— ${escapeHtml(msg.author || '匿名')}`;
+        } else {
+          body.innerHTML = '<span class="font-wenkai">还没有留言，去留言板写下第一句话吧～</span>';
+          dateEl.textContent = '--';
+          authorEl.textContent = '--';
+        }
+      } catch (e) {
+        console.error(e);
+        body.innerHTML = '<span class="font-wenkai">留言加载失败，请检查 Supabase 配置</span>';
+        dateEl.textContent = '--';
+        authorEl.textContent = '--';
+      }
+    }
+    
+    async function loadMessages() {
+      const pinnedList = document.getElementById('pinned-message-list');
+      const regularList = document.getElementById('message-list');
+      const pinnedHint = document.getElementById('pinned-limit-hint');
+      
+      if (!supabase) {
+        pinnedList.innerHTML = '';
+        regularList.innerHTML = `
+          <div class="empty-state">
+            <div class="emoji">💌</div>
+            <p>Supabase 未配置，留言板功能暂不可用</p>
+          </div>`;
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        const allMessages = data || [];
+        messagesCache = allMessages;
+        const messageMap = {};
+        allMessages.forEach(m => messageMap[m.id] = m);
+        
+        const isReplyMessage = m => m.reply_to && m.reply_to !== 'null' && String(m.reply_to).trim() !== '';
+        const topLevelMessages = allMessages.filter(m => !isReplyMessage(m));
+        const repliesByParent = {};
+        allMessages.filter(isReplyMessage).forEach(reply => {
+          if (!repliesByParent[reply.reply_to]) repliesByParent[reply.reply_to] = [];
+          repliesByParent[reply.reply_to].push(reply);
+        });
+        Object.keys(repliesByParent).forEach(parentId => {
+          repliesByParent[parentId].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        });
+        
+        const pinned = topLevelMessages
+          .filter(m => m.is_pinned)
+          .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+          .slice(0, 5);
+        
+        if (pinnedHint) {
+          pinnedHint.style.display = pinned.length >= 5 ? 'block' : 'none';
+        }
+        
+        const regular = topLevelMessages
+          .filter(m => !m.is_pinned)
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        if (pinned.length === 0) {
+          pinnedList.innerHTML = `
+            <div class="empty-state">
+              <div class="emoji">📌</div>
+              <p>还没有置顶留言</p>
+            </div>`;
+        } else {
+          pinnedList.innerHTML = pinned.map(m => renderMessageItem(m, messageMap, repliesByParent, true)).join('');
+        }
+        
+        if (regular.length === 0) {
+          regularList.innerHTML = `
+            <div class="empty-state">
+              <div class="emoji">💌</div>
+              <p>还没有留言，写下第一条吧～</p>
+            </div>`;
+        } else {
+          regularList.innerHTML = regular.map(m => renderMessageItem(m, messageMap, repliesByParent, false)).join('');
+        }
+        
+        attachMessageActionListeners();
+      } catch (e) {
+        console.error(e);
+        pinnedList.innerHTML = '';
+        regularList.innerHTML = `
+          <div class="empty-state">
+            <div class="emoji">⚠️</div>
+            <p>加载失败：${escapeHtml(e.message || '未知错误')}</p>
+          </div>`;
+      }
+    }
+    
+    function renderMessageItem(msg, messageMap, repliesByParent, isPinned) {
+      const currentIdentity = safeGetItem('identity');
+      const isAuthor = currentIdentity && currentIdentity === msg.author;
+      const safeId = escapeHtml(msg.id);
+      
+      let imageUrl = msg.image_url || null;
+      let displayContent = msg.content || '';
+      if (!imageUrl) {
+        const extracted = extractImageUrl(displayContent);
+        imageUrl = extracted.url;
+        displayContent = extracted.text;
+      }
+      
+      const signature = `——${escapeHtml(msg.author || '匿名')}，发送于${formatDateCNFull(msg.created_at)}`;
+      
+      let imageHtml = '';
+      if (imageUrl) {
+        imageHtml = `<div class="message-image" data-lightbox="${escapeHtml(imageUrl)}"><img src="${escapeHtml(imageUrl)}" alt="留言图片" loading="lazy"></div>`;
+      }
+      
+      const pinnedAttr = msg.is_pinned ? 'true' : 'false';
+      const authorButtons = isAuthor ? `
+        <button class="message-action-btn pin-btn ${msg.is_pinned ? 'pinned' : ''}" data-id="${safeId}" data-pinned="${pinnedAttr}" data-action="pin">
+          📌 ${msg.is_pinned ? '取消置顶' : '置顶'}
+        </button>
+        <button class="message-action-btn delete-btn" data-id="${safeId}" data-action="delete">🗑️ 删除</button>
+      ` : '';
+      
+      const replyButton = `<button class="message-action-btn reply-btn" data-id="${safeId}" data-action="reply">💬 回复</button>`;
+      
+      const replies = repliesByParent[msg.id] || [];
+      const repliesHtml = replies.map(reply => renderReplyBubble(reply, messageMap)).join('');
+      
+      return `
+        <div class="glass-card message-item ${isPinned ? 'pinned' : ''}" data-message-id="${safeId}">
+          <div class="message-item-body font-wenkai">${escapeHtml(displayContent)}</div>
+          ${imageHtml}
+          <div class="message-signature font-wenkai">${signature}</div>
+          <div class="message-actions">
+            ${replyButton}
+            ${authorButtons}
+          </div>
+          ${repliesHtml ? `<div class="message-replies">${repliesHtml}</div>` : ''}
+          <div class="message-reply-form" id="reply-form-${safeId}">
+            <div class="message-reply-input-wrap">
+              <span class="reply-paw">🐾</span>
+              <textarea class="reply-textarea font-wenkai" id="reply-textarea-${safeId}" placeholder="写下回复..." maxlength="300" rows="1"></textarea>
+              <button class="reply-send-btn" data-id="${safeId}" data-is-main="true" title="发送回复">🐱</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderReplyBubble(reply, messageMap) {
+      const parent = messageMap && messageMap[reply.reply_to];
+      const currentName = reply.author || '';
+      const parentName = parent ? (parent.author || '') : '';
+      return `
+        <div class="message-reply-bubble" data-reply-id="${escapeHtml(reply.id)}">
+          <div class="message-reply-line"></div>
+          <div class="message-reply-content font-wenkai">🐱 ${escapeHtml(currentName)} 回复 ${escapeHtml(parentName)}：${escapeHtml(reply.content || '')}</div>
+        </div>
+      `;
+    }
+    
+    function attachMessageActionListeners() {
+      document.querySelectorAll('.message-action-btn').forEach(btn => {
+        btn.addEventListener('click', handleMessageAction);
+      });
+      document.querySelectorAll('.message-image').forEach(img => {
+        img.addEventListener('click', () => openLightbox(img.dataset.lightbox));
+      });
+      document.querySelectorAll('.reply-send-btn').forEach(btn => {
+        btn.addEventListener('click', handleReplySend);
+      });
+      document.querySelectorAll('.reply-textarea').forEach(textarea => {
+        textarea.addEventListener('keydown', handleReplyKeydown);
+        textarea.addEventListener('input', () => autoResizeTextarea(textarea));
+      });
+    }
+    
+    function handleMessageAction(e) {
+      const btn = e.currentTarget;
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      if (action === 'delete') {
+        openDeleteModal('真的要删掉这条甜蜜回忆吗？💔', () => deleteMessage(id));
+      } else if (action === 'reply') {
+        toggleReplyForm(id);
+      } else if (action === 'pin') {
+        const isPinned = btn.dataset.pinned === 'true';
+        togglePinMessage(id, isPinned);
+      }
+    }
+    
+    function toggleReplyForm(id) {
+      const form = document.getElementById(`reply-form-${id}`);
+      if (!form) return;
+      const isActive = form.classList.contains('active');
+      document.querySelectorAll('.message-reply-form.active').forEach(f => f.classList.remove('active'));
+      if (!isActive) {
+        form.classList.add('active');
+        const textarea = document.getElementById(`reply-textarea-${id}`);
+        if (textarea) {
+          textarea.focus();
+          autoResizeTextarea(textarea);
+        }
+      }
+    }
+    
+    function handleReplySend(e) {
+      const btn = e.currentTarget;
+      const id = btn.dataset.id;
+      const isMain = btn.dataset.isMain === 'true';
+      sendReply(id, isMain);
+    }
+    
+    function handleReplyKeydown(e) {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        const textarea = e.currentTarget;
+        const id = textarea.id.replace('reply-textarea-', '');
+        const form = textarea.closest('.message-reply-form');
+        const sendBtn = form && form.querySelector('.reply-send-btn');
+        const isMain = sendBtn ? sendBtn.dataset.isMain === 'true' : true;
+        sendReply(id, isMain);
+      }
+    }
+    
+    function findMessageById(id) {
+      if (!id) return null;
+      const searchId = String(id).trim();
+      return messagesCache.find(m => m.id === searchId) || null;
+    }
+    
+    function extractImageUrl(text) {
+      if (!text) return { text: '', url: null };
+      const imageExtRegex = /(https?:\/\/[^\s]+?\.(?:jpg|jpeg|png|gif|webp|bmp|svg))\s*$/i;
+      const standaloneRegex = /^(https?:\/\/[^\s]+)$/i;
+      
+      let url = null;
+      let cleaned = text.trim();
+      
+      const endMatch = cleaned.match(imageExtRegex);
+      if (endMatch) {
+        url = endMatch[1];
+        cleaned = cleaned.slice(0, endMatch.index).trim();
+      } else {
+        const standaloneMatch = cleaned.match(standaloneRegex);
+        if (standaloneMatch) {
+          url = standaloneMatch[1];
+          cleaned = '';
+        }
+      }
+      return { text: cleaned, url };
+    }
+    
+    async function sendMessage() {
+      if (!requireAuth()) return;
+      const input = document.getElementById('message-input');
+      const imageInput = document.getElementById('message-image-url');
+      const content = input.value.trim();
+      const imageUrl = imageInput.value.trim();
+      
+      if (!content && !imageUrl) {
+        showToast('写点什么或贴张图再发送吧～');
+        return;
+      }
+      
+      if (!supabase) {
+        showToast('Supabase 未配置，无法发送留言');
+        return;
+      }
+      
+      const author = safeGetItem('identity') || '匿名';
+      const insertData = { content, author };
+      if (imageUrl) insertData.image_url = imageUrl;
+      
+      try {
+        const { error } = await supabase.from('messages').insert([insertData]);
+        if (error) throw error;
+        
+        input.value = '';
+        imageInput.value = '';
+        autoResizeTextarea(input);
+        showToast('留言发送成功 💌');
+        loadMessages();
+        loadLatestMessage();
+        loadMemorySources();
+      } catch (e) {
+        console.error(e);
+        showToast('发送失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    async function deleteMessage(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法删除留言');
+        return;
+      }
+      try {
+        const replyIds = messagesCache
+          .filter(m => m.reply_to === id)
+          .map(m => m.id);
+        const idsToDelete = [id, ...replyIds];
+        const { error } = await supabase.from('messages').delete().in('id', idsToDelete);
+        if (error) throw error;
+        showToast('回忆已珍藏 💌');
+        loadMessages();
+        loadLatestMessage();
+        loadMemorySources();
+      } catch (e) {
+        console.error(e);
+        showToast('删除失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    async function togglePinMessage(id, currentPinned) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法操作置顶');
+        return;
+      }
+      if (!id) {
+        showToast('找不到该留言');
+        return;
+      }
+      try {
+        const newPinState = !currentPinned;
+        
+        if (newPinState) {
+          const { count, error: countError } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .is('reply_to', null)
+            .eq('is_pinned', true);
+          if (countError) throw countError;
+          if ((count || 0) >= 5) {
+            const hint = document.getElementById('pinned-limit-hint');
+            if (hint) hint.style.display = 'block';
+            showToast('置顶小窝已经满啦，先取消一条吧 🐱');
+            return;
+          }
+        }
+        
+        const { error } = await supabase.from('messages')
+          .update({ is_pinned: newPinState })
+          .eq('id', id);
+        if (error) throw error;
+        showToast(newPinState ? '留言已置顶 📌' : '已取消置顶');
+        await loadMessages();
+        loadLatestMessage();
+        loadMemorySources();
+      } catch (e) {
+        console.error(e);
+        showToast('操作失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    async function sendReply(parentId, isMain) {
+      if (!requireAuth()) return;
+      if (!parentId) {
+        showToast('找不到要回复的留言哦～');
+        return;
+      }
+      if (!isMain) {
+        showToast('只能回复主留言哦～');
+        return;
+      }
+      const textarea = document.getElementById(`reply-textarea-${parentId}`);
+      if (!textarea) return;
+      const content = textarea.value.trim();
+      if (!content) {
+        showToast('回复内容不能为空哦～');
+        return;
+      }
+      
+      if (!supabase) {
+        showToast('Supabase 未配置，无法发送回复');
+        return;
+      }
+      
+      const author = safeGetItem('identity') || '匿名';
+      const insertData = {
+        content,
+        author,
+        reply_to: parentId
+      };
+      
+      try {
+        const { error } = await supabase.from('messages').insert([insertData]);
+        if (error) throw error;
+        
+        textarea.value = '';
+        const form = document.getElementById(`reply-form-${parentId}`);
+        if (form) form.classList.remove('active');
+        showToast('回复发送成功 💌');
+        await loadMessages();
+        loadLatestMessage();
+        loadMemorySources();
+      } catch (e) {
+        console.error(e);
+        showToast('回复发送失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    function autoResizeTextarea(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      const lineHeight = parseInt(getComputedStyle(el).lineHeight, 10) || 24;
+      const maxHeight = lineHeight * 5;
+      el.style.height = Math.min(el.scrollHeight, maxHeight) + 'px';
+      el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
+    }
+    
+    function openLightbox(url) {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      img.src = url;
+      lightbox.classList.add('active');
+    }
+    
+    function closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      lightbox.classList.remove('active');
+      setTimeout(() => { img.src = ''; }, 300);
+    }
+    
+    function openDeleteModal(message, callback) {
+      deleteConfirmCallback = callback;
+      document.getElementById('delete-modal-message').textContent = message || '真的要删除吗？';
+      document.getElementById('delete-modal').classList.add('active');
+    }
+    
+    function closeDeleteModal() {
+      deleteConfirmCallback = null;
+      document.getElementById('delete-modal').classList.remove('active');
+    }
+    
+    async function confirmDelete() {
+      if (typeof deleteConfirmCallback === 'function') {
+        await deleteConfirmCallback();
+      }
+      closeDeleteModal();
+    }
+    
+    function toggleMessageInputBar(show) {
+      const bar = document.getElementById('message-input-bar');
+      if (show) {
+        bar.classList.add('active');
+        updateMessagePlaceholder();
+      } else {
+        bar.classList.remove('active');
+      }
+    }
+    
+    function updateMessagePlaceholder() {
+      const input = document.getElementById('message-input');
+      const id = safeGetItem('identity');
+      if (id === '北斗') input.placeholder = '写下想对笑笑说的话...';
+      else if (id === '笑笑') input.placeholder = '写下想对北斗说的话...';
+      else input.placeholder = '写下想对 Ta 说的话...';
+    }
+    
+    // ===== Static Data =====
+    const presetTimelineEvents = [
+      { id: 'preset-1', date: '2023-01-18', title: '第一次在一起', description: '我们的故事开始了', tag: '异地', isPreset: true },
+      { id: 'preset-2', date: '2023-02-18', title: '暂时分开', description: '各自成长的日子', tag: '异地', faded: true, isPreset: true },
+      { id: 'preset-3', date: '2025-06-17', title: '重新联系', description: '兜兜转转，我们又找到了彼此', tag: '异地', isPreset: true },
+      { id: 'preset-4', date: '2025-07-06', title: '重新复合', description: '这一次，我们要一直走下去', tag: '异地', isPreset: true }
+    ];
+    
+    const profilePresets = {
+      '北斗': [
+        { label: '喜欢的食物', value: '' },
+        { label: '讨厌的食物', value: '' },
+        { label: '生日', value: '' },
+        { label: '过敏源', value: '' },
+        { label: '喜欢的颜色', value: '' },
+        { label: '喜欢的音乐', value: '' },
+        { label: '喜欢的电影', value: '' }
+      ],
+      '笑笑': [
+        { label: '喜欢的食物', value: '' },
+        { label: '讨厌的食物', value: '' },
+        { label: '生日', value: '' },
+        { label: '过敏源', value: '' },
+        { label: '喜欢的颜色', value: '' },
+        { label: '喜欢的音乐', value: '' },
+        { label: '喜欢的电影', value: '' }
+      ]
+    };
+    
+    // 倒计时预设数据（含前端兜底）
+    const presetCountdowns = [
+      { title: '距离下次见面', target_date: null, is_recurring: false },
+      { title: '桐桐猪的生日', target_date: '2007-06-19', is_recurring: true },
+      { title: '小语涵的生日', target_date: '2009-01-07', is_recurring: true },
+      { title: '恋爱纪念日', target_date: '2025-07-06', is_recurring: true }
+    ];
+    
+    // 纪念日预设数据（含前端兜底）
+    const presetAnniversaries = [
+      { date: '2023-01-18', title: '第一次在一起', description: '我们的故事从这里开始 💕' },
+      { date: '2025-07-06', title: '重新复合', description: '兜兜转转，我们又回到彼此身边 💍' },
+      { date: '2009-01-07', title: '小语涵生日', description: '小咪宝宝的诞生日 🐱' },
+      { date: '2007-06-19', title: '桐桐猪生日', description: '小猪宝宝的诞生日 🐖' }
+    ];
+    
+    let currentMobileProfilePerson = null;
+    let cachedProfiles = [];
+    
+    function timelineSignature(tag) {
+      return tag === '见面' ? '桐桐猪 & 小语涵' : '北斗 & 笑笑';
+    }
+
+    function getLocalTimelinePresets() {
+      try {
+        const stored = safeGetItem('timeline_presets');
+        if (stored !== null) return JSON.parse(stored);
+      } catch (e) {
+        console.error(e);
+      }
+      return null;
+    }
+
+    function saveLocalTimelinePresets(presets) {
+      safeSetItem('timeline_presets', JSON.stringify(presets));
+    }
+
+    function loadTimelinePresets() {
+      const stored = getLocalTimelinePresets();
+      if (stored === null) {
+        const presets = presetTimelineEvents.map(e => ({ ...e }));
+        saveLocalTimelinePresets(presets);
+        return presets;
+      }
+      return stored;
+    }
+    
+    async function loadTimeline() {
+      const container = document.getElementById('timeline-list');
+      container.innerHTML = `
+        <li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-card glass-card">
+          <div class="timeline-date skeleton" style="height:12px;width:90px;margin-bottom:10px"></div>
+          <div class="timeline-title skeleton" style="height:16px;width:130px;margin-bottom:10px"></div>
+          <div class="timeline-desc skeleton" style="height:14px;width:100%;margin-bottom:8px"></div>
+          <div class="timeline-desc skeleton" style="height:14px;width:70%"></div>
+        </div></li>`;
+      
+      let dbEvents = [];
+      if (supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('timeline')
+            .select('*')
+            .order('event_date', { ascending: true })
+            .order('created_at', { ascending: true });
+          if (error) throw error;
+          dbEvents = (data || []).map(e => ({ ...e, date: e.event_date }));
+        } catch (e) {
+          console.error(e);
+          showToast('时光轴加载失败：' + (e.message || '未知错误'));
+        }
+      }
+      
+      const presets = loadTimelinePresets().map(e => ({ ...e, isPreset: true }));
+      const allEvents = [
+        ...presets,
+        ...dbEvents.map(e => ({ ...e, isPreset: false }))
+      ];
+      
+      allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+      renderTimelineList(allEvents);
+    }
+    
+    function renderTimelineList(events) {
+      const container = document.getElementById('timeline-list');
+      if (events.length === 0) {
+        container.innerHTML = `
+          <li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-card glass-card empty-state" style="text-align:center">
+            <div class="emoji">⏳</div>
+            <p>还没有时光记录，去添加第一个美好瞬间吧～</p>
+          </div></li>`;
+        return;
+      }
+      
+      container.innerHTML = events.map(event => {
+        const imageHtml = event.image_url
+          ? `<div class="timeline-image" data-lightbox="${escapeHtml(event.image_url)}"><img src="${escapeHtml(event.image_url)}" alt="${escapeHtml(event.title || '')}" loading="lazy"></div>`
+          : '';
+        const fadedClass = event.faded ? 'faded' : '';
+        const isPreset = !!event.isPreset;
+        const eventId = event.id || '';
+        const actionBarHtml = `
+          <div class="timeline-action-bar" data-role="action-bar">
+            <button type="button" class="timeline-action-btn" data-role="edit">编辑 ✏️</button>
+            <button type="button" class="timeline-action-btn delete" data-role="delete">删除 🗑️</button>
+          </div>`;
+        const editFormHtml = `
+          <div class="timeline-edit-form" data-role="edit-form">
+            <form class="edit-form" data-event-id="${escapeHtml(eventId)}">
+              <label style="font-size:13px;color:rgba(45,45,90,0.7);display:block">日期</label>
+              <input type="date" class="input" name="date" required value="${escapeHtml((event.date || '').slice(0, 10))}">
+              <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-top:6px;display:block">标题</label>
+              <input type="text" class="input" name="title" placeholder="事件标题" required maxlength="100" value="${escapeHtml(event.title || '')}">
+              <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-top:6px;display:block">描述</label>
+              <textarea class="edit-textarea font-wenkai" name="description" placeholder="写下这段回忆..." rows="3" maxlength="500">${escapeHtml(event.description || '')}</textarea>
+              <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-top:6px;display:block">标签</label>
+              <div class="timeline-tag-select">
+                <label class="timeline-tag-option">
+                  <input type="radio" name="tag" value="异地" ${event.tag !== '见面' ? 'checked' : ''} required>
+                  <span>🌙 异地</span>
+                </label>
+                <label class="timeline-tag-option">
+                  <input type="radio" name="tag" value="见面" ${event.tag === '见面' ? 'checked' : ''} required>
+                  <span>🏠 见面</span>
+                </label>
+              </div>
+              <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-top:6px;display:block">图片链接（可选）</label>
+              <input type="url" class="input" name="image_url" placeholder="https://..." maxlength="1000" value="${escapeHtml(event.image_url || '')}">
+              <div class="edit-actions" style="margin-top:6px">
+                <button type="button" class="btn" data-role="cancel">取消 ❌</button>
+                <button type="submit" class="btn btn-primary">保存 💾</button>
+              </div>
+            </form>
+          </div>`;
+        return `
+          <li class="timeline-item ${fadedClass}" data-event-id="${escapeHtml(eventId)}" data-preset="${isPreset ? '1' : '0'}">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card glass-card interactive">
+              <div class="timeline-view" data-role="view">
+                <div class="timeline-date font-system">${formatDateCNFull(event.date)}</div>
+                <div class="timeline-title font-serif">${escapeHtml(event.title || '')}</div>
+                <div class="timeline-desc font-wenkai">${escapeHtml(event.description || '')}</div>
+                ${imageHtml}
+                <div class="timeline-signature font-system">${escapeHtml(timelineSignature(event.tag))}</div>
+              </div>
+              ${actionBarHtml}
+              ${editFormHtml}
+            </div>
+          </li>
+        `;
+      }).join('');
+      
+      container.querySelectorAll('.timeline-image').forEach(img => {
+        img.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openLightbox(img.dataset.lightbox);
+        });
+      });
+      
+      container.querySelectorAll('.timeline-card.interactive').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.timeline-action-btn') || e.target.closest('[data-role="edit-form"]')) return;
+          const item = card.closest('.timeline-item');
+          if (card.classList.contains('editing')) return;
+          toggleTimelineActionBar(item.dataset.eventId);
+        });
+      });
+      
+      container.querySelectorAll('.timeline-action-btn[data-role="edit"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const item = btn.closest('.timeline-item');
+          openTimelineEditForm(item.dataset.eventId);
+        });
+      });
+      
+      container.querySelectorAll('.timeline-action-btn[data-role="delete"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const item = btn.closest('.timeline-item');
+          deleteTimelineEvent(item.dataset.eventId);
+        });
+      });
+      
+      container.querySelectorAll('.timeline-edit-form form').forEach(form => {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const item = form.closest('.timeline-item');
+          await saveTimelineEdit(item.dataset.eventId, form);
+        });
+      });
+      
+      container.querySelectorAll('.timeline-edit-form [data-role="cancel"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const item = btn.closest('.timeline-item');
+          closeTimelineEditForm(item.dataset.eventId);
+        });
+      });
+    }
+    
+    async function addTimelineEvent(formData) {
+      if (!requireAuth()) throw new Error('需登录后使用');
+      if (!supabase) {
+        throw new Error('需连接数据库后使用');
+      }
+      const insertData = {
+        event_date: formData.date,
+        title: formData.title,
+        description: formData.description || '',
+        tag: formData.tag,
+        image_url: formData.image_url || null
+      };
+      const { error } = await supabase.from('timeline').insert([insertData]);
+      if (error) throw error;
+    }
+
+    function closeAllTimelineActionBars() {
+      document.querySelectorAll('.timeline-action-bar.active').forEach(bar => bar.classList.remove('active'));
+    }
+
+    function closeAllTimelineEditForms() {
+      document.querySelectorAll('.timeline-edit-form.active').forEach(form => {
+        form.classList.remove('active');
+        const card = form.closest('.timeline-card');
+        if (card) card.classList.remove('editing');
+        const view = card && card.querySelector('[data-role="view"]');
+        if (view) view.style.display = '';
+      });
+    }
+
+    function toggleTimelineActionBar(eventId) {
+      if (!eventId) return;
+      const item = document.querySelector(`.timeline-item[data-event-id="${eventId}"]`);
+      const bar = item && item.querySelector('[data-role="action-bar"]');
+      if (!bar) return;
+      const isActive = bar.classList.contains('active');
+      closeAllTimelineActionBars();
+      closeAllTimelineEditForms();
+      if (!isActive) bar.classList.add('active');
+    }
+
+    function openTimelineEditForm(eventId) {
+      if (!eventId) return;
+      const item = document.querySelector(`.timeline-item[data-event-id="${eventId}"]`);
+      if (!item) return;
+      closeAllTimelineActionBars();
+      closeAllTimelineEditForms();
+      const card = item.querySelector('.timeline-card');
+      const view = item.querySelector('[data-role="view"]');
+      const form = item.querySelector('[data-role="edit-form"]');
+      if (card) card.classList.add('editing');
+      if (view) view.style.display = 'none';
+      if (form) form.classList.add('active');
+    }
+
+    function closeTimelineEditForm(eventId) {
+      if (!eventId) return;
+      const item = document.querySelector(`.timeline-item[data-event-id="${eventId}"]`);
+      if (!item) return;
+      const card = item.querySelector('.timeline-card');
+      const view = item.querySelector('[data-role="view"]');
+      const form = item.querySelector('[data-role="edit-form"]');
+      if (form) form.classList.remove('active');
+      if (card) card.classList.remove('editing');
+      if (view) view.style.display = '';
+    }
+
+    async function saveTimelineEdit(eventId, form) {
+      if (!eventId) return;
+      const formData = Object.fromEntries(new FormData(form));
+      const imageUrl = formData.image_url ? formData.image_url.trim() : '';
+      const presetUpdateData = {
+        date: formData.date,
+        title: formData.title,
+        description: formData.description || '',
+        tag: formData.tag,
+        image_url: imageUrl || null
+      };
+      const dbUpdateData = {
+        event_date: formData.date,
+        title: formData.title,
+        description: formData.description || '',
+        tag: formData.tag,
+        image_url: imageUrl || null
+      };
+
+      if (eventId.startsWith('preset-')) {
+        const presets = loadTimelinePresets();
+        const idx = presets.findIndex(p => p.id === eventId);
+        if (idx !== -1) {
+          presets[idx] = { ...presets[idx], ...presetUpdateData };
+          saveLocalTimelinePresets(presets);
+        }
+        closeTimelineEditForm(eventId);
+        showToast('时光已更新 ✨');
+        loadTimeline();
+        loadMemorySources();
+        return;
+      }
+
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('需连接数据库后使用');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('timeline').update(dbUpdateData).eq('id', eventId);
+        if (error) throw error;
+        closeTimelineEditForm(eventId);
+        showToast('时光已更新 ✨');
+        loadTimeline();
+        loadMemorySources();
+      } catch (err) {
+        console.error(err);
+        showToast('保存失败：' + (err.message || '未知错误'));
+      }
+    }
+
+    async function deleteTimelineEvent(eventId) {
+      if (!eventId) return;
+      openDeleteModal('真的要删掉这段时光吗？⏳', async () => {
+        if (eventId.startsWith('preset-')) {
+          const presets = loadTimelinePresets().filter(p => p.id !== eventId);
+          saveLocalTimelinePresets(presets);
+          showToast('时光已删除 🍃');
+          loadTimeline();
+          loadMemorySources();
+          return;
+        }
+        if (!requireAuth()) return;
+        if (!supabase) {
+          showToast('需连接数据库后使用');
+          return;
+        }
+        try {
+          const { error } = await supabase.from('timeline').delete().eq('id', eventId);
+          if (error) throw error;
+          showToast('时光已删除 🍃');
+          loadTimeline();
+          loadMemorySources();
+        } catch (err) {
+          console.error(err);
+          showToast('删除失败：' + (err.message || '未知错误'));
+        }
+      });
+    }
+    
+    async function loadPhotos() {
+      const grid = document.getElementById('photo-grid');
+      const empty = document.getElementById('photos-empty');
+      grid.innerHTML = `
+        <div class="photo-item skeleton">🖼️</div>
+        <div class="photo-item skeleton">🖼️</div>
+        <div class="photo-item skeleton">🖼️</div>
+        <div class="photo-item skeleton">🖼️</div>`;
+      empty.style.display = 'none';
+      
+      if (!supabase) {
+        grid.innerHTML = `
+          <div class="empty-state" style="column-span:all">
+            <div class="emoji">📷</div>
+            <p>Supabase 未配置，照片墙功能暂不可用</p>
+          </div>`;
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('photos')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        renderPhotos(data || []);
+      } catch (e) {
+        console.error(e);
+        grid.innerHTML = `
+          <div class="empty-state" style="column-span:all">
+            <div class="emoji">⚠️</div>
+            <p>加载失败：${escapeHtml(e.message || '未知错误')}</p>
+          </div>`;
+      }
+    }
+    
+    function renderPhotos(photos) {
+      const grid = document.getElementById('photo-grid');
+      const empty = document.getElementById('photos-empty');
+      if (photos.length === 0) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+      grid.innerHTML = photos.map((photo, idx) => {
+        const photoId = photo.id || '';
+        const safeId = escapeHtml(String(photoId));
+        const titleHtml = photo.title ? `<div class="photo-title font-serif">${escapeHtml(photo.title)}</div>` : '';
+        const descHtml = photo.description ? `<div class="photo-desc font-wenkai">${escapeHtml(photo.description)}</div>` : '';
+        const dateValue = escapeHtml((photo.date || '').slice(0, 10));
+        return `
+          <div class="photo-item glass-card" data-photo-id="${safeId}" style="animation-delay:${idx * 0.05}s">
+            <div class="photo-actions">
+              <button type="button" class="photo-action-btn edit-photo-btn" data-id="${safeId}" title="编辑">✏️</button>
+              <button type="button" class="photo-action-btn delete-photo-btn" data-id="${safeId}" title="删除">🗑️</button>
+            </div>
+            <img src="${escapeHtml(photo.image_url)}" alt="${escapeHtml(photo.title || '照片')}" loading="lazy" data-lightbox="${escapeHtml(photo.image_url)}">
+            <div class="photo-view" id="photo-view-${safeId}">
+              <div class="photo-info">
+                ${titleHtml}
+                ${descHtml}
+                <div class="photo-meta">
+                  <span class="font-system">${photo.date ? formatDateCN(photo.date) : '--'}</span>
+                  <span class="font-wenkai">${escapeHtml(photo.author || '匿名')}</span>
+                </div>
+              </div>
+            </div>
+            <div class="photo-edit-form" id="photo-edit-form-${safeId}">
+              <form class="edit-form" onsubmit="event.preventDefault(); window.savePhotoEdit('${safeId}');">
+                <input type="url" class="input" id="photo-edit-image-url-${safeId}" value="${escapeHtml(photo.image_url || '')}" placeholder="图片链接" required maxlength="1000">
+                <input type="text" class="input" id="photo-edit-title-${safeId}" value="${escapeHtml(photo.title || '')}" placeholder="标题" maxlength="100">
+                <textarea class="edit-textarea font-wenkai" id="photo-edit-desc-${safeId}" placeholder="描述" rows="2" maxlength="500">${escapeHtml(photo.description || '')}</textarea>
+                <input type="date" class="input" id="photo-edit-date-${safeId}" value="${dateValue}">
+                <div class="edit-actions">
+                  <button type="submit" class="btn btn-primary">保存 💾</button>
+                  <button type="button" class="btn" onclick="window.closePhotoEditForm('${safeId}')">取消 ❌</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      grid.querySelectorAll('.photo-item img').forEach(img => {
+        img.addEventListener('click', () => openLightbox(img.dataset.lightbox));
+      });
+      
+      grid.querySelectorAll('.edit-photo-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.openPhotoEditForm(btn.dataset.id);
+        });
+      });
+      
+      grid.querySelectorAll('.delete-photo-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openDeleteModal('真的要删掉这张照片吗？📷', () => deletePhoto(btn.dataset.id));
+        });
+      });
+    }
+    
+    async function addPhoto(formData) {
+      if (!requireAuth()) throw new Error('需登录后使用');
+      if (!supabase) {
+        showToast('Supabase 未配置，无法添加照片');
+        throw new Error('Supabase not configured');
+      }
+      const author = safeGetItem('identity') || '匿名';
+      const insertData = {
+        image_url: formData.image_url,
+        title: formData.title || null,
+        description: formData.description || '',
+        date: formData.date,
+        author
+      };
+      const { error } = await supabase.from('photos').insert([insertData]);
+      if (error) throw error;
+    }
+    
+    /**
+     * 打开照片编辑表单
+     */
+    window.openPhotoEditForm = function(id) {
+      const view = document.getElementById(`photo-view-${id}`);
+      const form = document.getElementById(`photo-edit-form-${id}`);
+      if (view && form) {
+        view.style.display = 'none';
+        form.classList.add('active');
+      }
+    };
+    
+    /**
+     * 关闭照片编辑表单
+     */
+    window.closePhotoEditForm = function(id) {
+      const view = document.getElementById(`photo-view-${id}`);
+      const form = document.getElementById(`photo-edit-form-${id}`);
+      if (view && form) {
+        form.classList.remove('active');
+        view.style.display = '';
+      }
+    };
+    
+    /**
+     * 保存照片编辑
+     */
+    window.savePhotoEdit = async function(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法编辑照片');
+        return;
+      }
+      
+      const imageUrlInput = document.getElementById(`photo-edit-image-url-${id}`);
+      const titleInput = document.getElementById(`photo-edit-title-${id}`);
+      const descInput = document.getElementById(`photo-edit-desc-${id}`);
+      const dateInput = document.getElementById(`photo-edit-date-${id}`);
+      
+      const image_url = imageUrlInput ? imageUrlInput.value.trim() : '';
+      const title = titleInput ? titleInput.value.trim() : '';
+      const description = descInput ? descInput.value.trim() : '';
+      const date = dateInput ? dateInput.value : '';
+      
+      if (!image_url) {
+        showToast('图片链接不能为空');
+        return;
+      }
+      
+      try {
+        const { error } = await supabase.from('photos')
+          .update({ image_url, title: title || null, description, date })
+          .eq('id', id);
+        if (error) throw error;
+        showToast('照片已更新 📸');
+        loadPhotos();
+        loadMemorySources();
+      } catch (e) {
+        console.error(e);
+        showToast('更新失败：' + (e.message || '未知错误'));
+      }
+    };
+    
+    /**
+     * 删除照片
+     */
+    async function deletePhoto(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法删除照片');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('photos').delete().eq('id', id);
+        if (error) throw error;
+        showToast('照片已删除');
+        loadPhotos();
+        loadMemorySources();
+      } catch (e) {
+        console.error(e);
+        showToast('删除失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    async function loadProfiles() {
+      currentMobileProfilePerson = null;
+      document.getElementById('profiles-mobile-tabs').classList.add('active');
+      document.getElementById('profiles-mobile-detail').classList.remove('active');
+      cachedProfiles = [];
+      
+      if (!supabase) {
+        renderProfilesFromFallback();
+        return;
+      }
+      
+      try {
+        let { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: true });
+        if (error) throw error;
+        
+        if (!currentUser) {
+          // 未登录时使用本地预设兜底，避免页面空白
+          renderProfilesFromFallback();
+          return;
+        }
+        
+        const hasBeidou = (data || []).some(p => p.person === '北斗');
+        const hasXiaoxiao = (data || []).some(p => p.person === '笑笑');
+        if (!hasBeidou || !hasXiaoxiao) {
+          await initProfilePresets(data || []);
+          const res = await supabase
+            .from('profiles')
+            .select('*')
+            .order('created_at', { ascending: true });
+          if (res.error) throw res.error;
+          data = res.data || [];
+        }
+        
+        cachedProfiles = (data || []).map(p => ({ ...p, label: p.name, value: p.bio }));
+        renderProfiles(cachedProfiles);
+      } catch (e) {
+        console.error(e);
+        showToast('档案加载失败：' + (e.message || '未知错误'));
+        renderProfilesFromFallback();
+      }
+    }
+    
+    function renderProfilesFromFallback() {
+      const fallback = [];
+      ['北斗', '笑笑'].forEach(person => {
+        profilePresets[person].forEach((p, idx) => fallback.push({ person, label: p.label, value: p.value, id: `preset-${person}-${idx}` }));
+      });
+      cachedProfiles = fallback;
+      renderProfiles(fallback);
+    }
+    
+    async function initProfilePresets(existingData = []) {
+      if (!supabase) return;
+      if (!currentUser) return;
+      const existingLabelsByPerson = {
+        '北斗': new Set((existingData || []).filter(p => p.person === '北斗').map(p => (p.name || '').trim())),
+        '笑笑': new Set((existingData || []).filter(p => p.person === '笑笑').map(p => (p.name || '').trim()))
+      };
+      const inserts = [];
+      ['北斗', '笑笑'].forEach(person => {
+        if (existingLabelsByPerson[person].size === 0) {
+          profilePresets[person].forEach(p => {
+            inserts.push({ person, name: p.label, bio: p.value });
+          });
+        }
+      });
+      if (inserts.length === 0) return;
+      const { error } = await supabase.from('profiles').insert(inserts);
+      if (error) throw error;
+    }
+    
+    function renderProfiles(items) {
+      const beidouList = document.getElementById('profile-list-beidou');
+      const xiaoxiaoList = document.getElementById('profile-list-xiaoxiao');
+      const mobileList = document.getElementById('profile-list-mobile');
+      const byLabel = (a, b) => a.label.localeCompare(b.label, 'zh-CN');
+      const beidouItems = items.filter(i => i.person === '北斗').sort(byLabel);
+      const xiaoxiaoItems = items.filter(i => i.person === '笑笑').sort(byLabel);
+      
+      beidouList.innerHTML = beidouItems.map(p => renderProfileItem(p)).join('') || emptyProfileHtml('北斗');
+      xiaoxiaoList.innerHTML = xiaoxiaoItems.map(p => renderProfileItem(p)).join('') || emptyProfileHtml('笑笑');
+      
+      if (currentMobileProfilePerson) {
+        renderMobileProfile(currentMobileProfilePerson);
+      } else {
+        mobileList.innerHTML = '';
+      }
+    }
+    
+    function renderMobileProfile(person) {
+      const list = document.getElementById('profile-list-mobile');
+      const items = cachedProfiles
+        .filter(p => p.person === person)
+        .sort((a, b) => a.label.localeCompare(b.label, 'zh-CN'));
+      list.innerHTML = items.map(p => renderProfileItem(p)).join('') || emptyProfileHtml(person);
+    }
+    
+    function renderProfileItem(item) {
+      const valueHtml = item.value
+        ? `<div class="profile-value">${escapeHtml(item.value)}</div>`
+        : `<div class="profile-value profile-empty-value">未填写</div>`;
+      const itemId = item.id || '';
+      const editButton = `<button class="profile-edit-btn edit-profile-btn" data-id="${escapeHtml(itemId)}" title="编辑">✏️</button>`;
+      return `
+        <div class="glass-card profile-item" data-profile-id="${escapeHtml(itemId)}">
+          ${editButton}
+          <div class="profile-display" id="profile-display-${itemId}">
+            <div class="profile-label">${escapeHtml(item.label)}</div>
+            ${valueHtml}
+          </div>
+          <div class="profile-edit-form" id="profile-edit-form-${itemId}">
+            <form class="edit-form" onsubmit="event.preventDefault(); window.saveProfileEdit('${itemId}');">
+              <input type="text" class="input" id="profile-edit-label-${itemId}" value="${escapeHtml(item.label)}" placeholder="标签名称" maxlength="50" required>
+              <input type="text" class="input" id="profile-edit-value-${itemId}" value="${escapeHtml(item.value)}" placeholder="内容" maxlength="200">
+              <div class="edit-actions">
+                <button type="submit" class="btn btn-primary">保存 💾</button>
+                <button type="button" class="btn profile-edit-delete-btn" data-id="${escapeHtml(itemId)}">删除 🗑️</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+    
+    function emptyProfileHtml(person) {
+      const displayName = person === '北斗' ? '桐桐猪' : (person === '笑笑' ? '小语涵' : person);
+      return `
+        <div class="glass-card profile-item empty-state" style="text-align:center;padding:24px">
+          <div class="emoji">📋</div>
+          <p>${escapeHtml(displayName)} 的档案还是空的，去添加第一条吧～</p>
+        </div>
+      `;
+    }
+    
+    async function addProfileItem(person, label, value) {
+      if (!requireAuth()) throw new Error('需登录后使用');
+      if (!supabase) {
+        throw new Error('需连接数据库后使用');
+      }
+      const trimmedLabel = (label || '').trim();
+      if (!trimmedLabel) throw new Error('标签名称不能为空');
+      
+      const otherPerson = person === '北斗' ? '笑笑' : '北斗';
+      const inserts = [{ person, name: trimmedLabel, bio: (value || '').trim() }];
+      
+      // 同步给另一方添加同名标签（若不存在），内容为空
+      const otherHasLabel = cachedProfiles.some(p =>
+        p.person === otherPerson &&
+        p.label.trim().toLowerCase() === trimmedLabel.toLowerCase()
+      );
+      if (!otherHasLabel) {
+        inserts.push({ person: otherPerson, name: trimmedLabel, bio: '' });
+      }
+      
+      const { error } = await supabase.from('profiles').insert(inserts);
+      if (error) throw error;
+    }
+    
+    async function deleteProfileItem(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('需连接数据库后使用');
+        return;
+      }
+      try {
+        // 1. 先从数据库拿到当前条目（避免依赖缓存状态）
+        const { data: rows, error: fetchError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', id)
+          .single();
+        if (fetchError) throw fetchError;
+        if (!rows) throw new Error('找不到该档案条目');
+        
+        const label = (rows.name || '').trim();
+        const person = rows.person;
+        const otherPerson = person === '北斗' ? '笑笑' : '北斗';
+        
+        // 2. 删除当前 person 的条目
+        const { error: delError } = await supabase.from('profiles').delete().eq('id', id);
+        if (delError) throw delError;
+        
+        // 3. 同步删除另一个人档案中 label（name）完全一致的条目
+        if (label && otherPerson) {
+          const { error: mirrorError } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('person', otherPerson)
+            .eq('name', label);
+          if (mirrorError) throw mirrorError;
+        }
+        
+        showToast('档案条目已删除');
+        loadProfiles();
+      } catch (e) {
+        console.error(e);
+        showToast('删除失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    /**
+     * 打开档案条目的内联编辑表单
+     */
+    window.openProfileEditForm = function(id) {
+      const display = document.getElementById(`profile-display-${id}`);
+      const form = document.getElementById(`profile-edit-form-${id}`);
+      if (display && form) {
+        display.style.display = 'none';
+        form.classList.add('active');
+      }
+    };
+    
+    /**
+     * 关闭档案条目的内联编辑表单
+     */
+    window.closeProfileEditForm = function(id) {
+      const display = document.getElementById(`profile-display-${id}`);
+      const form = document.getElementById(`profile-edit-form-${id}`);
+      if (display && form) {
+        form.classList.remove('active');
+        display.style.display = 'block';
+      }
+    };
+    
+    /**
+     * 保存档案条目编辑
+     */
+    window.saveProfileEdit = async function(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('需连接数据库后使用');
+        return;
+      }
+      
+      const labelInput = document.getElementById(`profile-edit-label-${id}`);
+      const valueInput = document.getElementById(`profile-edit-value-${id}`);
+      
+      const label = labelInput ? labelInput.value.trim() : '';
+      const value = valueInput ? valueInput.value.trim() : '';
+      
+      if (!label) {
+        showToast('请填写条目名称～');
+        return;
+      }
+      
+      const item = cachedProfiles.find(p => p.id === id);
+      const oldLabel = item ? item.label : '';
+      const person = item ? item.person : '';
+      const otherPerson = person === '北斗' ? '笑笑' : '北斗';
+      
+      // 同一方标签唯一性校验（排除自身）
+      if (person) {
+        const samePersonLabels = cachedProfiles
+          .filter(p => p.person === person && p.id !== id)
+          .map(p => p.label.trim().toLowerCase());
+        if (samePersonLabels.includes(label.toLowerCase())) {
+          showToast('该标签已存在');
+          return;
+        }
+      }
+      
+      try {
+        // 更新当前条目
+        const { error } = await supabase.from('profiles')
+          .update({ name: label, bio: value })
+          .eq('id', id);
+        if (error) throw error;
+        
+        // 若标签名变更，同步修改另一方同名标签（label 完全一致）
+        if (oldLabel && oldLabel.trim() !== label.trim()) {
+          const mirror = cachedProfiles.find(p =>
+            p.person === otherPerson &&
+            p.label.trim() === oldLabel.trim()
+          );
+          if (mirror && mirror.id) {
+            await supabase.from('profiles')
+              .update({ name: label })
+              .eq('id', mirror.id);
+          }
+        }
+        
+        showToast('档案条目已更新 📋');
+        loadProfiles();
+      } catch (e) {
+        console.error(e);
+        showToast('更新失败：' + (e.message || '未知错误'));
+      }
+    };
+    
+    // ===== Countdown =====
+    /**
+     * 从 Supabase 加载倒计时。
+     * 数据库为空时静默使用本地预设；只有真正的查询错误才提示。
+     */
+    async function loadCountdowns() {
+      const container = document.getElementById('countdown-list');
+      container.innerHTML = `
+        <div class="glass-card countdown-card">
+          <div class="countdown-label skeleton" style="height:14px;width:120px;margin:0 auto 12px"></div>
+          <div class="countdown-number skeleton" style="height:48px;width:80px;margin:0 auto 8px"></div>
+          <div class="countdown-unit skeleton" style="height:14px;width:40px;margin:0 auto"></div>
+        </div>`;
+      
+      let data = [];
+      if (supabase) {
+        try {
+          const { data: dbData, error } = await supabase
+            .from('countdowns')
+            .select('id,title,target_date,is_recurring,created_at')
+            .order('target_date', { ascending: true });
+          if (error) throw error;
+          data = dbData || [];
+        } catch (e) {
+          console.error(e);
+          showToast('倒计时加载失败：' + (e.message || '未知错误'));
+          data = [];
+        }
+      }
+      
+      // 数据库为空或未配置 Supabase 时，静默回退到本地预设，不弹任何提示
+      if (data.length === 0) {
+        data = presetCountdowns.map((c, i) => ({ ...c, id: `preset-${i}` }));
+      }
+      
+      countdownsCache = data;
+      renderCountdowns(data);
+    }
+    
+    function renderCountdowns(list) {
+      const container = document.getElementById('countdown-list');
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="emoji">⏱️</div>
+            <p>还没有倒计时，去添加一个吧～</p>
+          </div>`;
+        return;
+      }
+      
+      container.innerHTML = list.map(item => {
+        const result = computeCountdownDays(item.target_date, item.is_recurring);
+        const isMeeting = item.title === '距离下次见面';
+        let numberHtml, targetHtml;
+        
+        if (item.target_date === null || item.target_date === undefined || item.target_date === '') {
+          numberHtml = `<div class="countdown-number" style="font-size:28px">待设置</div>`;
+          targetHtml = `
+            <div class="countdown-set-inline">
+              <input type="date" class="input" id="countdown-inline-date-${item.id}">
+              <button class="btn btn-primary" style="min-height:36px;padding:6px 14px;font-size:13px" onclick="window.saveInlineCountdownDate('${item.id}')">保存</button>
+            </div>`;
+        } else if (result.expired && !item.is_recurring) {
+          numberHtml = `<div class="countdown-number" style="font-size:28px">已到期</div>`;
+          targetHtml = `<div class="countdown-target font-system">目标日期：${escapeHtml(item.target_date)}</div>`;
+        } else {
+          numberHtml = `<div class="countdown-number">${result.days}</div>`;
+          targetHtml = `
+            <div class="countdown-unit">天</div>
+            <div class="countdown-target font-system">${escapeHtml(item.is_recurring ? '每年 ' : '')}${formatDateCN(result.targetStr || item.target_date)}</div>`;
+        }
+        
+        const deleteBtn = isMeeting
+          ? ''
+          : `<button class="countdown-action-btn delete-btn" data-id="${escapeHtml(item.id)}" title="删除">🗑️</button>`;
+        
+        const editFormFields = isMeeting
+          ? `
+            <input type="date" class="input" id="countdown-edit-date-${item.id}" value="${(item.target_date || '').slice(0, 10)}">
+            <div class="edit-actions">
+              <button type="submit" class="btn btn-primary">保存 💾</button>
+              <button type="button" class="btn" onclick="window.closeCountdownEditForm('${item.id}')">取消 ❌</button>
+            </div>`
+          : `
+            <input type="text" class="input" id="countdown-edit-title-${item.id}" value="${escapeHtml(item.title)}" placeholder="倒计时名称" maxlength="100" required>
+            <input type="date" class="input" id="countdown-edit-date-${item.id}" value="${(item.target_date || '').slice(0, 10)}">
+            <label class="checkbox-row" style="justify-content:center;gap:8px;font-size:14px;color:rgba(45,45,90,0.7)">
+              <input type="checkbox" id="countdown-edit-recurring-${item.id}" ${item.is_recurring ? 'checked' : ''}>
+              <span>每年重复</span>
+            </label>
+            <div class="edit-actions">
+              <button type="submit" class="btn btn-primary">保存 💾</button>
+              <button type="button" class="btn" onclick="window.closeCountdownEditForm('${item.id}')">取消 ❌</button>
+            </div>`;
+        
+        return `
+          <div class="glass-card countdown-card" data-countdown-id="${escapeHtml(item.id)}">
+            <div class="countdown-actions">
+              <button class="countdown-action-btn edit-btn" data-id="${escapeHtml(item.id)}" title="编辑">✏️</button>
+              ${deleteBtn}
+            </div>
+            <div class="countdown-display" id="countdown-display-${item.id}">
+              <div class="countdown-label font-wenkai">${escapeHtml(item.title)}</div>
+              ${numberHtml}
+              ${targetHtml}
+            </div>
+            <div class="countdown-edit-form" id="countdown-edit-form-${item.id}">
+              <form class="edit-form" onsubmit="event.preventDefault(); window.saveCountdownEdit('${item.id}');">
+                ${editFormFields}
+              </form>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      container.querySelectorAll('.countdown-action-btn.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          window.openCountdownEditForm(id);
+        });
+      });
+      
+      container.querySelectorAll('.countdown-action-btn.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          openDeleteModal('真的要取消这份期待吗？⏰', () => deleteCountdown(id));
+        });
+      });
+    }
+    
+    function isLocalPresetId(id) {
+      return typeof id === 'string' && id.startsWith('preset-');
+    }
+    
+    /**
+     * 同步本地预设到云端。
+     * 按 title 去重：已入库的跳过，未入库的自动批量插入；
+     * 被修改的那一条会更新对应的云端记录。
+     */
+    async function syncPresetCountdowns(changedTitle, changedFields) {
+      if (!supabase) throw new Error('Supabase not configured');
+      
+      const { data: existing, error } = await supabase
+        .from('countdowns')
+        .select('id,title');
+      if (error) throw error;
+      
+      const existingByTitle = {};
+      (existing || []).forEach(row => {
+        existingByTitle[row.title] = row.id;
+      });
+      
+      const inserts = [];
+      const updatePromises = [];
+      
+      for (const preset of presetCountdowns) {
+        const isChanged = preset.title === changedTitle;
+        const payload = {
+          title: (isChanged && changedFields.title !== undefined) ? changedFields.title : preset.title,
+          target_date: (isChanged && changedFields.target_date !== undefined) ? changedFields.target_date : preset.target_date,
+          is_recurring: (isChanged && changedFields.is_recurring !== undefined) ? changedFields.is_recurring : preset.is_recurring
+        };
+        
+        const existingId = existingByTitle[preset.title];
+        if (existingId) {
+          if (isChanged) {
+            updatePromises.push(
+              supabase.from('countdowns').update(payload).eq('id', existingId)
+            );
+          }
+        } else {
+          inserts.push(payload);
+        }
+      }
+      
+      if (inserts.length > 0) {
+        const { error: insertError } = await supabase.from('countdowns').insert(inserts);
+        if (insertError) throw insertError;
+      }
+      
+      if (updatePromises.length > 0) {
+        const results = await Promise.all(updatePromises);
+        for (const r of results) {
+          if (r.error) throw r.error;
+        }
+      }
+    }
+    
+    /**
+     * 内联设置无目标日期的倒计时。
+     * 本地预设项保存时会自动把所有未入库的预设一起同步到云端。
+     */
+    window.saveInlineCountdownDate = async function(id) {
+      if (!requireAuth()) return;
+      const input = document.getElementById(`countdown-inline-date-${id}`);
+      if (!input || !input.value) {
+        showToast('请选择一个日期～');
+        return;
+      }
+      if (!supabase) {
+        showToast('Supabase 未配置，无法保存');
+        return;
+      }
+      try {
+        if (isLocalPresetId(id)) {
+          await syncPresetCountdowns('距离下次见面', {
+            target_date: input.value,
+            is_recurring: false
+          });
+        } else {
+          const { error } = await supabase.from('countdowns')
+            .update({ target_date: input.value })
+            .eq('id', id);
+          if (error) throw error;
+        }
+        showToast('日期已设置 ⏱️');
+        loadCountdowns();
+      } catch (e) {
+        console.error(e);
+        showToast('保存失败：' + (e.message || '未知错误'));
+      }
+    };
+    
+    async function addCountdown(formData) {
+      if (!requireAuth()) throw new Error('需登录后使用');
+      if (!supabase) {
+        showToast('Supabase 未配置，无法添加倒计时');
+        throw new Error('Supabase not configured');
+      }
+      const insertData = {
+        title: formData.title,
+        target_date: formData.target_date,
+        is_recurring: !!formData.is_recurring
+      };
+      const { error } = await supabase.from('countdowns').insert([insertData]);
+      if (error) throw error;
+    }
+    
+    async function deleteCountdown(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法删除倒计时');
+        return;
+      }
+      if (isLocalPresetId(id)) {
+        showToast('本地预设无法直接删除，请先保存到数据库后再操作');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('countdowns').delete().eq('id', id);
+        if (error) throw error;
+        showToast('倒计时已删除');
+        loadCountdowns();
+      } catch (e) {
+        console.error(e);
+        showToast('删除失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    /**
+     * 打开倒计时卡片的内联编辑表单
+     */
+    window.openCountdownEditForm = function(id) {
+      const card = document.querySelector(`.countdown-card[data-countdown-id="${id}"]`);
+      if (!card) return;
+      const display = document.getElementById(`countdown-display-${id}`);
+      const form = document.getElementById(`countdown-edit-form-${id}`);
+      if (display && form) {
+        display.style.display = 'none';
+        form.classList.add('active');
+      }
+    };
+    
+    /**
+     * 关闭倒计时卡片的内联编辑表单
+     */
+    window.closeCountdownEditForm = function(id) {
+      const card = document.querySelector(`.countdown-card[data-countdown-id="${id}"]`);
+      if (!card) return;
+      const display = document.getElementById(`countdown-display-${id}`);
+      const form = document.getElementById(`countdown-edit-form-${id}`);
+      if (display && form) {
+        form.classList.remove('active');
+        display.style.display = 'block';
+      }
+    };
+    
+    /**
+     * 保存倒计时编辑
+     */
+    window.saveCountdownEdit = async function(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法编辑倒计时');
+        return;
+      }
+      
+      const item = countdownsCache.find(c => String(c.id) === String(id));
+      const isMeeting = item && item.title === '距离下次见面';
+      
+      const titleInput = document.getElementById(`countdown-edit-title-${id}`);
+      const dateInput = document.getElementById(`countdown-edit-date-${id}`);
+      const recurringInput = document.getElementById(`countdown-edit-recurring-${id}`);
+      
+      const title = isMeeting ? '距离下次见面' : (titleInput ? titleInput.value.trim() : '');
+      const target_date = dateInput ? dateInput.value : null;
+      const is_recurring = isMeeting ? false : (recurringInput ? recurringInput.checked : false);
+      
+      if (!isMeeting && !title) {
+        showToast('请填写倒计时名称～');
+        return;
+      }
+      
+      try {
+        const payload = {
+          title,
+          target_date: target_date || null,
+          is_recurring
+        };
+        
+        if (isLocalPresetId(id)) {
+          // 编辑本地预设时，同步所有未入库的预设，避免其他预设消失
+          const originalTitle = item ? item.title : title;
+          await syncPresetCountdowns(originalTitle, payload);
+        } else {
+          const { error } = await supabase.from('countdowns').update(payload).eq('id', id);
+          if (error) throw error;
+        }
+        showToast('倒计时已更新 ⏱️');
+        loadCountdowns();
+      } catch (e) {
+        console.error(e);
+        showToast('更新失败：' + (e.message || '未知错误'));
+      }
+    };
+    
+    async function editCountdown(id, data) {
+      if (!requireAuth()) throw new Error('需登录后使用');
+      if (!supabase) {
+        showToast('Supabase 未配置，无法编辑倒计时');
+        throw new Error('Supabase not configured');
+      }
+      const { error } = await supabase.from('countdowns').update(data).eq('id', id);
+      if (error) throw error;
+    }
+    
+    // ===== Anniversaries =====
+    /**
+     * 从 Supabase 加载纪念日，表为空时自动初始化预设
+     */
+    async function loadAnniversaries() {
+      const container = document.getElementById('anni-list');
+      container.innerHTML = `
+        <div class="glass-card anni-item">
+          <div class="anni-info">
+            <div class="anni-name skeleton" style="height:16px;width:120px"></div>
+            <div class="anni-date skeleton" style="height:12px;width:100px"></div>
+          </div>
+          <div class="anni-days skeleton" style="height:24px;width:60px"></div>
+        </div>`;
+      
+      let data = [];
+      if (supabase) {
+        try {
+          const { data: dbData, error } = await supabase
+            .from('anniversaries')
+            .select('*')
+            .order('date', { ascending: true });
+          if (error) throw error;
+          data = (dbData || []).map(a => ({ ...a, title: a.event_name }));
+          
+          if (data.length === 0 && currentUser) {
+            const user = currentUser;
+            if (!user || !supabase) return;
+            const inserts = presetAnniversaries.map(a => ({
+              date: a.date,
+              event_name: a.title,
+              description: a.description
+            }));
+            const { error: insertError } = await supabase.from('anniversaries').insert(inserts);
+            if (insertError) throw insertError;
+            const { data: reloadData, error: reloadError } = await supabase
+              .from('anniversaries')
+              .select('*')
+              .order('date', { ascending: true });
+            if (reloadError) throw reloadError;
+            data = (reloadData || []).map(a => ({ ...a, title: a.event_name }));
+          }
+        } catch (e) {
+          console.error(e);
+          showToast('纪念日加载失败，使用本地预设');
+          data = presetAnniversaries.map((a, i) => ({ ...a, id: `preset-${i}` }));
+        }
+      } else {
+        data = presetAnniversaries.map((a, i) => ({ ...a, id: `preset-${i}` }));
+      }
+      
+      if (!currentUser && data.length === 0) {
+        data = presetAnniversaries.map((a, i) => ({ ...a, id: `preset-${i}` }));
+      }
+      
+      anniversariesCache = data;
+      renderAnniversaries(data);
+    }
+    
+    function renderAnniversaries(list) {
+      const container = document.getElementById('anni-list');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="emoji">🎂</div>
+            <p>还没有纪念日，去添加一个吧～</p>
+          </div>`;
+        return;
+      }
+      
+      container.innerHTML = list.map(item => {
+        const d = new Date(item.date);
+        d.setHours(0, 0, 0, 0);
+        let diff = Math.floor((today - d) / (1000 * 60 * 60 * 24));
+        if (diff < 0) diff = 0;
+        return `
+          <div class="glass-card anni-item" data-anniversary-id="${escapeHtml(item.id)}">
+            <div class="anni-actions">
+              <button class="anni-action-btn edit-btn" data-id="${escapeHtml(item.id)}" title="编辑">✏️</button>
+              <button class="anni-action-btn delete-btn" data-id="${escapeHtml(item.id)}" title="删除">🗑️</button>
+            </div>
+            <div class="anni-display" id="anni-display-${item.id}">
+              <div class="anni-info">
+                <div class="anni-name font-serif">${escapeHtml(item.title)}</div>
+                ${item.description ? `<div class="anni-desc font-wenkai">${escapeHtml(item.description)}</div>` : ''}
+                <div class="anni-date font-system">${escapeHtml(item.date)}</div>
+              </div>
+              <div class="anni-days">${diff} <span style="font-size:12px;font-weight:400;color:rgba(45,45,90,0.6)">天</span></div>
+            </div>
+            <div class="anni-edit-form" id="anni-edit-form-${item.id}">
+              <form class="edit-form" onsubmit="event.preventDefault(); window.saveAnniversaryEdit('${item.id}');">
+                <input type="text" class="input" id="anni-edit-title-${item.id}" value="${escapeHtml(item.title)}" placeholder="纪念日名称" maxlength="100" required>
+                <input type="date" class="input" id="anni-edit-date-${item.id}" value="${(item.date || '').slice(0, 10)}" required>
+                <textarea class="edit-textarea font-wenkai" id="anni-edit-desc-${item.id}" placeholder="这个日子的故事..." rows="2" maxlength="500">${escapeHtml(item.description || '')}</textarea>
+                <div class="edit-actions">
+                  <button type="submit" class="btn btn-primary">保存 💾</button>
+                  <button type="button" class="btn" onclick="window.closeAnniversaryEditForm('${item.id}')">取消 ❌</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      container.querySelectorAll('.anni-action-btn.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          window.openAnniversaryEditForm(id);
+        });
+      });
+      
+      container.querySelectorAll('.anni-action-btn.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          openDeleteModal('真的要抹去这个回忆吗？🎂', () => deleteAnniversary(id));
+        });
+      });
+    }
+    
+    async function addAnniversary(formData) {
+      if (!requireAuth()) throw new Error('需登录后使用');
+      if (!supabase) {
+        showToast('Supabase 未配置，无法添加纪念日');
+        throw new Error('Supabase not configured');
+      }
+      const insertData = {
+        date: formData.date,
+        event_name: formData.title,
+        description: formData.description || ''
+      };
+      const { error } = await supabase.from('anniversaries').insert([insertData]);
+      if (error) throw error;
+    }
+    
+    async function deleteAnniversary(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法删除纪念日');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('anniversaries').delete().eq('id', id);
+        if (error) throw error;
+        showToast('纪念日已删除');
+        loadAnniversaries();
+      } catch (e) {
+        console.error(e);
+        showToast('删除失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    /**
+     * 打开纪念日卡片的内联编辑表单
+     */
+    window.openAnniversaryEditForm = function(id) {
+      const display = document.getElementById(`anni-display-${id}`);
+      const form = document.getElementById(`anni-edit-form-${id}`);
+      if (display && form) {
+        display.style.display = 'none';
+        form.classList.add('active');
+      }
+    };
+    
+    /**
+     * 关闭纪念日卡片的内联编辑表单
+     */
+    window.closeAnniversaryEditForm = function(id) {
+      const display = document.getElementById(`anni-display-${id}`);
+      const form = document.getElementById(`anni-edit-form-${id}`);
+      if (display && form) {
+        form.classList.remove('active');
+        display.style.display = 'flex';
+      }
+    };
+    
+    /**
+     * 保存纪念日编辑
+     */
+    window.saveAnniversaryEdit = async function(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法编辑纪念日');
+        return;
+      }
+      
+      const titleInput = document.getElementById(`anni-edit-title-${id}`);
+      const dateInput = document.getElementById(`anni-edit-date-${id}`);
+      const descInput = document.getElementById(`anni-edit-desc-${id}`);
+      
+      const title = titleInput ? titleInput.value.trim() : '';
+      const date = dateInput ? dateInput.value : '';
+      const description = descInput ? descInput.value.trim() : '';
+      
+      if (!title || !date) {
+        showToast('请填写名称和日期～');
+        return;
+      }
+      
+      try {
+        const { error } = await supabase.from('anniversaries')
+          .update({ event_name: title, date, description })
+          .eq('id', id);
+        if (error) throw error;
+        showToast('纪念日已更新 🎂');
+        loadAnniversaries();
+      } catch (e) {
+        console.error(e);
+        showToast('更新失败：' + (e.message || '未知错误'));
+      }
+    };
+    
+    /**
+     * 检测今天是否是某个纪念日（仅比较月/日），每天只展示一次
+     */
+    function checkTodayAnniversary() {
+      const todayStr = getTodayString();
+      const todayMonthDay = getMonthDay(todayStr);
+      
+      // 合并 Supabase 缓存和本地预设一起检查
+      const all = anniversariesCache.length > 0 ? anniversariesCache : presetAnniversaries;
+      const matched = all.find(a => getMonthDay(a.date) === todayMonthDay);
+      if (!matched) return;
+      
+      const lastShown = safeGetItem('anniversaryTodayLastShown');
+      const lastId = safeGetItem('anniversaryTodayLastId');
+      if (lastShown === todayStr && lastId === String(matched.id || matched.title)) return;
+      
+      safeSetItem('anniversaryTodayLastShown', todayStr);
+      safeSetItem('anniversaryTodayLastId', String(matched.id || matched.title));
+      
+      const overlay = document.getElementById('anniversary-today-overlay');
+      document.getElementById('anniversary-today-title').textContent = `今天是 ${escapeHtml(matched.title)}！🎉`;
+      document.getElementById('anniversary-today-desc').textContent = matched.description || '和你一起的每一天，都是值得纪念的日子 💕';
+      overlay.classList.add('active');
+    }
+    
+    function closeAnniversaryToday() {
+      document.getElementById('anniversary-today-overlay').classList.remove('active');
+    }
+    
+    // ===== Memory (Random Draw) =====
+    /**
+     * 加载随机回忆的数据源并缓存
+     */
+    async function loadMemorySources() {
+      memorySources = [];
+      
+      if (!supabase) {
+        memorySources = [];
+        return;
+      }
+      
+      try {
+        const [msgRes, timelineRes, photoRes] = await Promise.all([
+          supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(100),
+          supabase.from('timeline').select('*').order('event_date', { ascending: false }).limit(100),
+          supabase.from('photos').select('*').order('created_at', { ascending: false }).limit(100)
+        ]);
+        
+        if (msgRes.data) {
+          msgRes.data.forEach(m => {
+            memorySources.push({ type: 'message', id: `msg-${m.id}`, data: m });
+          });
+        }
+        if (timelineRes.data) {
+          timelineRes.data.map(e => ({ ...e, date: e.event_date })).forEach(e => {
+            memorySources.push({ type: 'timeline', id: `timeline-${e.id}`, data: e });
+          });
+        }
+        if (photoRes.data) {
+          photoRes.data.forEach(p => {
+            memorySources.push({ type: 'photo', id: `photo-${p.id}`, data: p });
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    
+    /**
+     * 随机抽取一条回忆，避免重复直到全部抽完
+     */
+    function drawRandomMemory() {
+      const available = memorySources.filter(m => !drawnMemoryIds.has(m.id));
+      if (available.length === 0) {
+        if (memorySources.length === 0) return null;
+        drawnMemoryIds.clear();
+        return memorySources[Math.floor(Math.random() * memorySources.length)];
+      }
+      const pick = available[Math.floor(Math.random() * available.length)];
+      drawnMemoryIds.add(pick.id);
+      return pick;
+    }
+    
+    /**
+     * 打开回忆弹窗并抽取展示
+     */
+    function openMemoryModal() {
+      const sourceEl = document.getElementById('memory-source');
+      const imageEl = document.getElementById('memory-image');
+      const titleEl = document.getElementById('memory-title');
+      const textEl = document.getElementById('memory-text');
+      const metaEl = document.getElementById('memory-meta');
+      
+      const memory = drawRandomMemory();
+      
+      if (!memory) {
+        sourceEl.textContent = '还没有回忆';
+        imageEl.style.display = 'none';
+        titleEl.style.display = 'none';
+        textEl.textContent = '快去留言板、时光轴或照片墙添加一些甜蜜回忆吧～';
+        metaEl.textContent = '';
+      } else {
+        const d = memory.data;
+        if (memory.type === 'message') {
+          sourceEl.textContent = '来自留言板';
+          imageEl.style.display = 'none';
+          titleEl.style.display = 'none';
+          textEl.textContent = d.content || '';
+          metaEl.textContent = `— ${escapeHtml(d.author || '匿名')} · ${formatDateCNFull(d.created_at)}`;
+        } else if (memory.type === 'timeline') {
+          sourceEl.textContent = '来自时光轴';
+          imageEl.style.display = d.image_url ? 'block' : 'none';
+          if (d.image_url) {
+            imageEl.src = d.image_url;
+            imageEl.dataset.lightbox = d.image_url;
+          }
+          titleEl.style.display = 'block';
+          titleEl.textContent = d.title || '';
+          textEl.textContent = d.description || '';
+          metaEl.textContent = formatDateCNFull(d.date);
+        } else if (memory.type === 'photo') {
+          sourceEl.textContent = '来自照片墙';
+          imageEl.style.display = 'block';
+          imageEl.src = d.image_url;
+          imageEl.dataset.lightbox = d.image_url;
+          titleEl.style.display = d.title ? 'block' : 'none';
+          titleEl.textContent = d.title || '';
+          textEl.textContent = d.description || '';
+          metaEl.textContent = `${d.date ? formatDateCN(d.date) : '--'} · ${escapeHtml(d.author || '匿名')}`;
+        }
+      }
+      
+      document.getElementById('memory-modal').classList.add('active');
+    }
+    
+    function closeMemoryModal() {
+      document.getElementById('memory-modal').classList.remove('active');
+    }
+    
+    // ===== Helpers =====
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+    
+    // ===== Event Listeners =====
+    document.getElementById('enter-btn').addEventListener('click', () => {
+      showPage('password-page');
+    });
+    
+    const passwordInput = document.getElementById('password-input');
+    const passwordError = document.getElementById('password-error');
+    
+    async function submitPassword() {
+      const val = passwordInput.value.trim();
+      const credentials = {
+        '0107': { identity: '北斗', email: 'beidou@beixiaonanhuan.com', password: '0107' },
+        '0619': { identity: '笑笑', email: 'xiaoxiao@beixiaonanhuan.com', password: '0619' }
+      };
+      const cred = credentials[val];
+      if (!cred) {
+        passwordError.classList.add('show');
+        passwordInput.value = '';
+        passwordInput.focus();
+        return;
+      }
+      
+      if (supabase) {
+        try {
+          const { error } = await supabase.auth.signInWithPassword({
+            email: cred.email,
+            password: cred.password
+          });
+          if (error) throw error;
+          await refreshCurrentUser();
+        } catch (e) {
+          console.error(e);
+          showToast('登录失败：' + (e.message || '请检查网络或密码'));
+          return;
+        }
+      }
+      
+      safeSetItem('identity', cred.identity);
+      passwordInput.value = '';
+      passwordError.classList.remove('show');
+      initHome();
+      showPage('home-page');
+      await loadAnniversaries();
+      checkTodayAnniversary();
+    }
+    
+    document.getElementById('password-submit').addEventListener('click', () => submitPassword());
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') submitPassword();
+    });
+    passwordInput.addEventListener('input', () => {
+      passwordError.classList.remove('show');
+    });
+    
+    document.querySelectorAll('.quick-entry').forEach(el => {
+      el.addEventListener('click', () => {
+        const pageId = el.dataset.page;
+        if (pageId === 'messages-page') {
+          loadMessages();
+          toggleMessageInputBar(true);
+        } else {
+          toggleMessageInputBar(false);
+        }
+        if (pageId === 'timeline-page') loadTimeline();
+        if (pageId === 'photos-page') loadPhotos();
+        if (pageId === 'profiles-page') loadProfiles();
+        if (pageId === 'countdown-page') loadCountdowns();
+        if (pageId === 'anniversaries-page') loadAnniversaries();
+        showPage(pageId);
+      });
+    });
+    
+    document.querySelectorAll('.back-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        toggleMessageInputBar(false);
+        showPage(btn.dataset.back);
+      });
+    });
+    
+    document.getElementById('latest-message-card').addEventListener('click', () => {
+      loadMessages();
+      toggleMessageInputBar(true);
+      showPage('messages-page');
+    });
+    
+    document.getElementById('send-message-btn').addEventListener('click', sendMessage);
+    
+    const messageInput = document.getElementById('message-input');
+    messageInput.addEventListener('input', () => autoResizeTextarea(messageInput));
+    messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+    
+    document.getElementById('lightbox').addEventListener('click', closeLightbox);
+    
+    document.getElementById('cancel-delete-btn').addEventListener('click', closeDeleteModal);
+    document.getElementById('confirm-delete-btn').addEventListener('click', confirmDelete);
+    document.getElementById('delete-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'delete-modal') closeDeleteModal();
+    });
+    
+    // 甜蜜卡片按钮改为随机回忆
+    document.getElementById('draw-card-btn').addEventListener('click', openMemoryModal);
+    document.getElementById('close-memory-btn').addEventListener('click', closeMemoryModal);
+    document.getElementById('memory-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'memory-modal') closeMemoryModal();
+    });
+    document.getElementById('memory-image').addEventListener('click', () => {
+      const url = document.getElementById('memory-image').dataset.lightbox;
+      if (url) openLightbox(url);
+    });
+    
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      safeRemoveItem('identity');
+      currentUser = null;
+      if (supabase) {
+        try {
+          await supabase.auth.signOut();
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      showToast('已退出登录');
+      showPage('landing-page');
+    });
+    
+    // ===== New Page Listeners =====
+    function openProfileModal(person) {
+      const form = document.getElementById('profile-add-form');
+      form.reset();
+      form.person.value = person || '';
+      document.getElementById('profile-add-modal-title').textContent = '添加档案标签';
+      document.getElementById('profile-add-modal').classList.add('active');
+    }
+    
+    document.getElementById('add-timeline-event-btn').addEventListener('click', () => {
+      document.getElementById('timeline-add-form').reset();
+      document.getElementById('timeline-add-modal').classList.add('active');
+    });
+    document.getElementById('cancel-timeline-add').addEventListener('click', () => {
+      document.getElementById('timeline-add-modal').classList.remove('active');
+    });
+    document.getElementById('timeline-add-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'timeline-add-modal') document.getElementById('timeline-add-modal').classList.remove('active');
+    });
+    document.getElementById('timeline-add-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = Object.fromEntries(new FormData(form));
+      try {
+        await addTimelineEvent(formData);
+        form.reset();
+        document.getElementById('timeline-add-modal').classList.remove('active');
+        showToast('事件已添加 ⏳');
+        loadTimeline();
+        loadMemorySources();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || '添加失败：未知错误');
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.timeline-card.interactive')) {
+        closeAllTimelineActionBars();
+        closeAllTimelineEditForms();
+      }
+    });
+    
+    document.getElementById('add-photo-btn').addEventListener('click', () => {
+      document.getElementById('photo-add-form').reset();
+      document.getElementById('photo-add-modal').classList.add('active');
+    });
+    document.getElementById('cancel-photo-add').addEventListener('click', () => {
+      document.getElementById('photo-add-modal').classList.remove('active');
+    });
+    document.getElementById('photo-add-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'photo-add-modal') document.getElementById('photo-add-modal').classList.remove('active');
+    });
+    document.getElementById('photo-add-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = Object.fromEntries(new FormData(form));
+      try {
+        await addPhoto(formData);
+        form.reset();
+        document.getElementById('photo-add-modal').classList.remove('active');
+        showToast('照片已添加 📸');
+        loadPhotos();
+        loadMemorySources();
+      } catch (err) {
+        console.error(err);
+        showToast('添加失败：' + (err.message || '未知错误'));
+      }
+    });
+    
+    document.getElementById('add-profile-beidou-btn').addEventListener('click', () => openProfileModal('北斗'));
+    document.getElementById('add-profile-xiaoxiao-btn').addEventListener('click', () => openProfileModal('笑笑'));
+    document.getElementById('add-profile-mobile-btn').addEventListener('click', () => openProfileModal(currentMobileProfilePerson));
+    document.getElementById('cancel-profile-add').addEventListener('click', () => {
+      document.getElementById('profile-add-modal').classList.remove('active');
+    });
+    document.getElementById('profile-add-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'profile-add-modal') document.getElementById('profile-add-modal').classList.remove('active');
+    });
+    document.getElementById('profile-add-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const { person, label } = Object.fromEntries(new FormData(form));
+      if (!person) {
+        showToast('请选择档案归属人');
+        return;
+      }
+      const trimmedLabel = label.trim();
+      if (!trimmedLabel) {
+        showToast('请输入标签名称');
+        return;
+      }
+      const existingLabels = cachedProfiles
+        .filter(p => p.person === person)
+        .map(p => p.label.trim().toLowerCase());
+      if (existingLabels.includes(trimmedLabel.toLowerCase())) {
+        showToast('该标签已存在');
+        return;
+      }
+      try {
+        await addProfileItem(person, trimmedLabel, '');
+        form.reset();
+        document.getElementById('profile-add-modal').classList.remove('active');
+        showToast('档案标签已添加 📋');
+        loadProfiles();
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || '添加失败：未知错误');
+      }
+    });
+    
+    document.querySelectorAll('.profile-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const person = btn.dataset.person;
+        currentMobileProfilePerson = person;
+        document.getElementById('profile-mobile-name').textContent = person === '北斗' ? '🐖 桐桐猪' : '🐱 小语涵';
+        renderMobileProfile(person);
+        document.getElementById('profiles-mobile-tabs').classList.remove('active');
+        document.getElementById('profiles-mobile-detail').classList.add('active');
+      });
+    });
+    document.getElementById('profile-mobile-back').addEventListener('click', () => {
+      document.getElementById('profiles-mobile-detail').classList.remove('active');
+      document.getElementById('profiles-mobile-tabs').classList.add('active');
+      currentMobileProfilePerson = null;
+    });
+    
+    function handleProfileListClick(e) {
+      const editBtn = e.target.closest('.edit-profile-btn');
+      if (editBtn) {
+        window.openProfileEditForm(editBtn.dataset.id);
+        return;
+      }
+      const deleteBtn = e.target.closest('.profile-edit-delete-btn');
+      if (deleteBtn) {
+        openDeleteModal('确定要删除这条小档案吗？删除后对方也会同步消失哦 🐱', () => deleteProfileItem(deleteBtn.dataset.id));
+      }
+    }
+    document.getElementById('profile-list-beidou').addEventListener('click', handleProfileListClick);
+    document.getElementById('profile-list-xiaoxiao').addEventListener('click', handleProfileListClick);
+    document.getElementById('profile-list-mobile').addEventListener('click', handleProfileListClick);
+    
+    // 倒计时新增/删除
+    document.getElementById('add-countdown-btn').addEventListener('click', () => {
+      document.getElementById('countdown-add-form').reset();
+      document.getElementById('countdown-add-modal').classList.add('active');
+    });
+    document.getElementById('cancel-countdown-add').addEventListener('click', () => {
+      document.getElementById('countdown-add-modal').classList.remove('active');
+    });
+    document.getElementById('countdown-add-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'countdown-add-modal') document.getElementById('countdown-add-modal').classList.remove('active');
+    });
+    document.getElementById('countdown-add-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = Object.fromEntries(new FormData(form));
+      try {
+        await addCountdown(formData);
+        form.reset();
+        document.getElementById('countdown-add-modal').classList.remove('active');
+        showToast('倒计时已添加 ⏱️');
+        loadCountdowns();
+      } catch (err) {
+        console.error(err);
+        showToast('添加失败：' + (err.message || '未知错误'));
+      }
+    });
+    
+    // 纪念日新增/删除
+    document.getElementById('add-anniversary-btn').addEventListener('click', () => {
+      document.getElementById('anniversary-add-form').reset();
+      document.getElementById('anniversary-add-modal').classList.add('active');
+    });
+    document.getElementById('cancel-anniversary-add').addEventListener('click', () => {
+      document.getElementById('anniversary-add-modal').classList.remove('active');
+    });
+    document.getElementById('anniversary-add-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'anniversary-add-modal') document.getElementById('anniversary-add-modal').classList.remove('active');
+    });
+    document.getElementById('anniversary-add-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = Object.fromEntries(new FormData(form));
+      try {
+        await addAnniversary(formData);
+        form.reset();
+        document.getElementById('anniversary-add-modal').classList.remove('active');
+        showToast('纪念日已添加 🎂');
+        loadAnniversaries();
+      } catch (err) {
+        console.error(err);
+        showToast('添加失败：' + (err.message || '未知错误'));
+      }
+    });
+    document.getElementById('anniversary-today-close').addEventListener('click', closeAnniversaryToday);
+    document.getElementById('anniversary-today-overlay').addEventListener('click', (e) => {
+      if (e.target.id === 'anniversary-today-overlay') closeAnniversaryToday();
+    });
+    
+    // ===== Escape key to close overlays =====
+    function closeActiveOverlay() {
+      const overlayMap = {
+        'lightbox': closeLightbox,
+        'delete-modal': closeDeleteModal,
+        'memory-modal': closeMemoryModal,
+        'anniversary-today-overlay': closeAnniversaryToday
+      };
+      const modalIds = [
+        'timeline-add-modal', 'photo-add-modal', 'profile-add-modal',
+        'countdown-add-modal', 'anniversary-add-modal'
+      ];
+      
+      for (const [id, closeFn] of Object.entries(overlayMap)) {
+        const el = document.getElementById(id);
+        if (el && el.classList.contains('active')) {
+          closeFn();
+          return;
+        }
+      }
+      
+      for (const id of modalIds) {
+        const el = document.getElementById(id);
+        if (el && el.classList.contains('active')) {
+          el.classList.remove('active');
+          return;
+        }
+      }
+    }
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeActiveOverlay();
+    });
+    
+    // ===== Starfield Canvas =====
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    let animationId = null;
+    let isTouch = window.matchMedia('(pointer: coarse)').matches;
+    
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    
+    class Star {
+      constructor() {
+        this.reset();
+      }
+      
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.baseAlpha = Math.random() * 0.4 + 0.2;
+        this.alpha = this.baseAlpha;
+        this.breatheSpeed = Math.random() * 0.02 + 0.01;
+        this.breathePhase = Math.random() * Math.PI * 2;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
+      }
+      
+      update() {
+        this.breathePhase += this.breatheSpeed;
+        this.alpha = this.baseAlpha + Math.sin(this.breathePhase) * 0.15;
+        
+        // Mouse interaction
+        if (!isTouch && mouseX > -100 && mouseY > -100) {
+          const dx = this.x - mouseX;
+          const dy = this.y - mouseY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            const force = (120 - dist) / 120;
+            this.vx += (dx / dist) * force * 0.05;
+            this.vy += (dy / dist) * force * 0.05;
+          }
+        }
+        
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        // Friction
+        this.vx *= 0.99;
+        this.vy *= 0.99;
+        
+        // Wrap around
+        if (this.x < 0) this.x = canvas.width;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        if (this.y > canvas.height) this.y = 0;
+      }
+      
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, this.alpha)})`;
+        ctx.fill();
+      }
+    }
+    
+    function initStars() {
+      stars = [];
+      const count = isTouch ? 60 : 100;
+      for (let i = 0; i < count; i++) {
+        stars.push(new Star());
+      }
+    }
+    
+    function animateStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(star => {
+        star.update();
+        star.draw();
+      });
+      animationId = requestAnimationFrame(animateStars);
+    }
+    
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      initStars();
+    });
+    
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+    
+    window.addEventListener('touchstart', () => { isTouch = true; }, { passive: true });
+    
+    // 用户首次交互时尝试播放音乐
+    // 音乐仅通过右下角音乐按钮控制，不再监听全局点击
+    
+    // ===== Initialization =====
+    resizeCanvas();
+    initStars();
+    animateStars();
+    initMusic();
+    loadMemorySources(); // 预加载回忆数据源
+    checkAuth();
+  });
+  </script>
+</body>
+</html>
