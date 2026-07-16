@@ -2169,6 +2169,11 @@
       display: none;
     }
     
+    /* 档案编辑遮罩层（仅手机端显示） */
+    .profile-edit-overlay {
+      display: none;
+    }
+    
     @media (max-width: 768px) {
       .quick-entries {
         grid-template-columns: repeat(2, 1fr);
@@ -2253,6 +2258,38 @@
         font-size: 13px;
         z-index: 2;
         touch-action: manipulation;
+      }
+
+      .profile-edit-form.active {
+        position: fixed;
+        top: 50%;
+        left: 16px;
+        right: 16px;
+        transform: translateY(-50%);
+        width: auto;
+        max-height: 85vh;
+        margin: 0;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius);
+        box-shadow: 0 24px 70px rgba(45, 45, 90, 0.28);
+        z-index: 1000;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .profile-edit-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+      }
+
+      .profile-edit-overlay.active {
+        display: block;
       }
 
       .timeline-edit-form.active {
@@ -2582,6 +2619,9 @@
   
   <!-- Timeline Edit Overlay (mobile) -->
   <div class="timeline-edit-overlay" id="timeline-edit-overlay"></div>
+  
+  <!-- Profile Edit Overlay (mobile) -->
+  <div class="profile-edit-overlay" id="profile-edit-overlay"></div>
   
   <!-- Message Input Bar -->
   <div class="message-input-bar" id="message-input-bar">
@@ -4323,8 +4363,10 @@
       const display = document.getElementById(`profile-display-${id}`);
       const form = document.getElementById(`profile-edit-form-${id}`);
       if (display && form) {
+        closeAllProfileEditForms();
         display.style.display = 'none';
         form.classList.add('active');
+        document.getElementById('profile-edit-overlay').classList.add('active');
       }
     };
     
@@ -4338,7 +4380,18 @@
         form.classList.remove('active');
         display.style.display = 'block';
       }
+      document.getElementById('profile-edit-overlay').classList.remove('active');
     };
+    
+    function closeAllProfileEditForms() {
+      document.querySelectorAll('.profile-edit-form.active').forEach(form => {
+        form.classList.remove('active');
+        const item = form.closest('.profile-item');
+        const display = item && item.querySelector('.profile-display');
+        if (display) display.style.display = 'block';
+      });
+      document.getElementById('profile-edit-overlay').classList.remove('active');
+    }
     
     /**
      * 保存档案条目编辑
@@ -5392,6 +5445,9 @@
     // 手机端时光轴编辑遮罩层：点击遮罩关闭编辑表单
     document.getElementById('timeline-edit-overlay').addEventListener('click', closeAllTimelineEditForms);
     
+    // 手机端档案编辑遮罩层：点击遮罩关闭编辑表单
+    document.getElementById('profile-edit-overlay').addEventListener('click', closeAllProfileEditForms);
+    
     // 倒计时新增/删除
     document.getElementById('add-countdown-btn').addEventListener('click', () => {
       document.getElementById('countdown-add-form').reset();
@@ -5457,7 +5513,8 @@
         'delete-modal': closeDeleteModal,
         'memory-modal': closeMemoryModal,
         'anniversary-today-overlay': closeAnniversaryToday,
-        'timeline-edit-overlay': closeAllTimelineEditForms
+        'timeline-edit-overlay': closeAllTimelineEditForms,
+        'profile-edit-overlay': closeAllProfileEditForms
       };
       const modalIds = [
         'timeline-add-modal', 'photo-add-modal', 'profile-add-modal',
