@@ -1837,7 +1837,7 @@
     .anni-actions {
       display: flex;
       justify-content: center;
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
 
     .anni-list {
@@ -1863,19 +1863,19 @@
     }
 
     .anni-name {
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 600;
     }
 
     .anni-desc {
-      font-size: 13px;
+      font-size: 14px;
       color: rgba(45, 45, 90, 0.65);
       line-height: 1.5;
       word-break: break-word;
     }
 
     .anni-date {
-      font-size: 12px;
+      font-size: 13px;
       color: rgba(45, 45, 90, 0.6);
     }
 
@@ -1892,12 +1892,13 @@
       flex-wrap: wrap;
     }
 
-    .anni-actions {
+    .anni-item .anni-actions {
       position: absolute;
-      top: 10px;
+      top: 6px;
       right: 10px;
       display: flex;
       gap: 6px;
+      z-index: 2;
     }
 
     .anni-action-btn {
@@ -1934,6 +1935,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      padding-top: 32px;
     }
 
     .anni-edit-form {
@@ -2544,10 +2546,6 @@
         <div style="width:60px"></div>
       </div>
       
-      <div class="anni-actions">
-        <button class="btn btn-primary" id="add-anniversary-btn">➕ 添加纪念日</button>
-      </div>
-      
       <div class="anni-list" id="anni-list">
         <div class="glass-card anni-item">
           <div class="anni-info">
@@ -2556,6 +2554,10 @@
           </div>
           <div class="anni-days skeleton" style="height:24px;width:60px"></div>
         </div>
+      </div>
+      
+      <div class="anni-actions">
+        <button class="btn btn-primary" id="add-anniversary-btn">➕ 添加纪念日</button>
       </div>
     </section>
   </div>
@@ -5153,7 +5155,7 @@
     document.querySelectorAll('.back-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         toggleMessageInputBar(false);
-        showPage(btn.dataset.back);
+        if (btn.dataset.back) showPage(btn.dataset.back);
       });
     });
     
