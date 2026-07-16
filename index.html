@@ -2164,6 +2164,11 @@
       }
     }
     
+    /* 时光轴编辑遮罩层（仅手机端显示） */
+    .timeline-edit-overlay {
+      display: none;
+    }
+    
     @media (max-width: 768px) {
       .quick-entries {
         grid-template-columns: repeat(2, 1fr);
@@ -2241,11 +2246,13 @@
       }
 
       .profile-item .profile-edit-btn {
-        opacity: 0.6;
-        width: 20px;
-        height: 20px;
-        min-height: 20px;
-        font-size: 10px;
+        opacity: 0.85;
+        width: 28px;
+        height: 28px;
+        min-height: 28px;
+        font-size: 13px;
+        z-index: 2;
+        touch-action: manipulation;
       }
 
       .timeline-edit-form.active {
@@ -2272,6 +2279,17 @@
 
       .timeline-edit-form.active::-webkit-scrollbar {
         width: 6px;
+      }
+
+      .timeline-edit-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+      }
+
+      .timeline-edit-overlay.active {
+        display: block;
       }
 
       .memory-content {
@@ -2561,6 +2579,9 @@
       </div>
     </section>
   </div>
+  
+  <!-- Timeline Edit Overlay (mobile) -->
+  <div class="timeline-edit-overlay" id="timeline-edit-overlay"></div>
   
   <!-- Message Input Bar -->
   <div class="message-input-bar" id="message-input-bar">
@@ -3751,6 +3772,7 @@
         const view = card && card.querySelector('[data-role="view"]');
         if (view) view.style.display = '';
       });
+      document.getElementById('timeline-edit-overlay').classList.remove('active');
     }
 
     function toggleTimelineActionBar(eventId) {
@@ -3776,6 +3798,7 @@
       if (card) card.classList.add('editing');
       if (view) view.style.display = 'none';
       if (form) form.classList.add('active');
+      document.getElementById('timeline-edit-overlay').classList.add('active');
     }
 
     function closeTimelineEditForm(eventId) {
@@ -3788,6 +3811,7 @@
       if (form) form.classList.remove('active');
       if (card) card.classList.remove('editing');
       if (view) view.style.display = '';
+      document.getElementById('timeline-edit-overlay').classList.remove('active');
     }
 
     async function saveTimelineEdit(eventId, form) {
@@ -4160,11 +4184,24 @@
       beidouList.innerHTML = beidouItems.map(p => renderProfileItem(p)).join('') || emptyProfileHtml('北斗');
       xiaoxiaoList.innerHTML = xiaoxiaoItems.map(p => renderProfileItem(p)).join('') || emptyProfileHtml('笑笑');
       
+      attachProfileEditListeners(beidouList);
+      attachProfileEditListeners(xiaoxiaoList);
+      
       if (currentMobileProfilePerson) {
         renderMobileProfile(currentMobileProfilePerson);
       } else {
         mobileList.innerHTML = '';
       }
+    }
+    
+    function attachProfileEditListeners(container) {
+      if (!container) return;
+      container.querySelectorAll('.edit-profile-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.openProfileEditForm(btn.dataset.id);
+        });
+      });
     }
     
     function renderMobileProfile(person) {
@@ -4173,6 +4210,7 @@
         .filter(p => p.person === person)
         .sort((a, b) => a.label.localeCompare(b.label, 'zh-CN'));
       list.innerHTML = items.map(p => renderProfileItem(p)).join('') || emptyProfileHtml(person);
+      attachProfileEditListeners(list);
     }
     
     function renderProfileItem(item) {
@@ -5351,6 +5389,9 @@
     document.getElementById('profile-list-xiaoxiao').addEventListener('click', handleProfileListClick);
     document.getElementById('profile-list-mobile').addEventListener('click', handleProfileListClick);
     
+    // 手机端时光轴编辑遮罩层：点击遮罩关闭编辑表单
+    document.getElementById('timeline-edit-overlay').addEventListener('click', closeAllTimelineEditForms);
+    
     // 倒计时新增/删除
     document.getElementById('add-countdown-btn').addEventListener('click', () => {
       document.getElementById('countdown-add-form').reset();
@@ -5415,7 +5456,8 @@
         'lightbox': closeLightbox,
         'delete-modal': closeDeleteModal,
         'memory-modal': closeMemoryModal,
-        'anniversary-today-overlay': closeAnniversaryToday
+        'anniversary-today-overlay': closeAnniversaryToday,
+        'timeline-edit-overlay': closeAllTimelineEditForms
       };
       const modalIds = [
         'timeline-add-modal', 'photo-add-modal', 'profile-add-modal',
