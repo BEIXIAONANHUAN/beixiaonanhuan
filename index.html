@@ -44,20 +44,7 @@
     body {
       font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
       color: var(--primary-text);
-      background: linear-gradient(135deg, #a8c0ff 0%, #fbc2eb 100%);
-      background-attachment: fixed;
       line-height: 1.6;
-    }
-    
-    /* Canvas background for starfield */
-    #starfield {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
     }
     
     /* Page container */
@@ -350,6 +337,8 @@
       padding: 24px;
     }
     
+    /* 落地页/密码页原样式（仅手机端生效；电脑端为信封开场与信纸暗号，见第二阶段） */
+    @media (max-width: 768px) {
     .landing-title {
       font-size: clamp(48px, 12vw, 96px);
       font-weight: 700;
@@ -388,14 +377,6 @@
     }
     
     /* ========== Password Page ========== */
-    #password-page.active {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-    
     .password-box {
       width: 100%;
       max-width: 360px;
@@ -434,6 +415,20 @@
       opacity: 1;
     }
     
+    #password-submit {
+      width: 100%;
+    }
+    }
+    
+    /* 密码页居中布局（双端通用） */
+    #password-page.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    
     /* ========== Home Page ========== */
     #home-page {
       max-width: 720px;
@@ -448,6 +443,8 @@
       text-shadow: 0 2px 16px rgba(255, 255, 255, 0.3);
     }
     
+    /* 天数卡原样式（仅手机端生效；电脑端为日历撕页，见第二阶段） */
+    @media (max-width: 768px) {
     .days-card {
       padding: 28px 24px;
       text-align: center;
@@ -474,6 +471,7 @@
       font-size: 13px;
       color: rgba(45, 45, 90, 0.65);
       margin-top: 12px;
+    }
     }
     
     /* Latest message preview */
@@ -520,6 +518,8 @@
     }
     
     /* Quick entries grid */
+    /* 六宫格原样式（仅手机端生效；电脑端为软木板钉卡，见第二阶段） */
+    @media (max-width: 768px) {
     .quick-entries {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -557,6 +557,7 @@
     .quick-entry .text {
       font-size: 14px;
       font-weight: 500;
+    }
     }
     
     /* Action buttons on home */
@@ -672,20 +673,23 @@
       gap: 14px;
     }
     
+    /* 留言卡原样式（仅手机端生效；电脑端为便利贴墙，见第三阶段） */
+    @media (max-width: 768px) {
     .message-item {
       padding: 18px;
       position: relative;
       animation: fadeInUp 0.4s ease-out;
     }
     
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
     .message-item.pinned {
       border-color: rgba(255, 154, 158, 0.5);
       background: rgba(255, 255, 255, 0.22);
+    }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     .message-reply-to {
@@ -1194,9 +1198,28 @@
       border-color: rgba(255, 255, 255, 0.22);
     }
 
+    /* 时光轴卡片原样式（仅手机端生效；电脑端为木质站牌+信纸，见第四阶段） */
+    @media (max-width: 768px) {
     .timeline-card {
       padding: 20px;
       animation: fadeInUp 0.45s ease-out both;
+    }
+    
+    .timeline-card.interactive {
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    
+    .timeline-card.interactive:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+      background: rgba(255, 255, 255, 0.25);
+    }
+    
+    .timeline-card.interactive.editing {
+      cursor: default;
+      transform: none;
+    }
     }
 
     .timeline-date {
@@ -1252,22 +1275,6 @@
       background: rgba(255, 255, 255, 0.25);
       color: rgba(45, 45, 90, 0.75);
       margin-top: 6px;
-    }
-
-    .timeline-card.interactive {
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    }
-
-    .timeline-card.interactive:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-hover);
-      background: rgba(255, 255, 255, 0.25);
-    }
-
-    .timeline-card.interactive.editing {
-      cursor: default;
-      transform: none;
     }
 
     .timeline-action-bar {
@@ -1410,68 +1417,38 @@
       padding-bottom: 8px;
     }
 
-    @media (min-width: 769px) {
-      .timeline::before {
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .timeline-item {
-        width: calc(50% - 48px);
-        padding-left: 0;
-      }
-
-      .timeline-item:nth-child(odd) {
-        margin-right: auto;
-        margin-left: 0;
-      }
-
-      .timeline-item:nth-child(even) {
-        margin-left: auto;
-        margin-right: 0;
-      }
-
-      .timeline-item:nth-child(odd) .timeline-dot {
-        left: calc(100% + 31px);
-        right: auto;
-      }
-
-      .timeline-item:nth-child(even) .timeline-dot {
-        right: calc(100% + 31px);
-        left: auto;
-      }
-    }
+    /* 桌面端竖向时光轴布局（居中轴线/左右交错/圆点定位）已删除——第四阶段改为横向人生路 */
 
     /* Photo wall */
-    .photo-wall {
-      column-count: 2;
-      column-gap: 16px;
-      padding-bottom: 8px;
-    }
-
-    @media (min-width: 769px) {
+    /* 照片墙原瀑布流（仅手机端生效；电脑端为书桌散布，见第五阶段） */
+    @media (max-width: 768px) {
       .photo-wall {
-        column-count: 3;
+        column-count: 2;
+        column-gap: 16px;
+        padding-bottom: 8px;
       }
     }
 
-    .photo-item {
-      position: relative;
-      break-inside: avoid;
-      margin-bottom: 16px;
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: rgba(255, 255, 255, 0.2);
-      box-shadow: var(--shadow);
-      opacity: 0;
-      transform: translateY(10px);
-      animation: fadeInUp 0.5s ease forwards;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+    /* photo-item 原玻璃卡片样式（仅手机端生效；电脑端为拍立得散布，见第五阶段） */
+    @media (max-width: 768px) {
+      .photo-item {
+        position: relative;
+        break-inside: avoid;
+        margin-bottom: 16px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeInUp 0.5s ease forwards;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
 
-    .photo-item:hover {
-      transform: scale(1.02);
-      box-shadow: var(--shadow-hover);
+      .photo-item:hover {
+        transform: scale(1.02);
+        box-shadow: var(--shadow-hover);
+      }
     }
 
     .photo-actions {
@@ -1517,65 +1494,52 @@
       margin-bottom: 8px;
     }
 
-    .photo-item.skeleton {
-      min-height: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    /* 拍立得内部排版原样式（仅手机端生效；电脑端见第五阶段） */
+    @media (max-width: 768px) {
+      .photo-item.skeleton {
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-    .photo-item img {
-      width: 100%;
-      display: block;
-      border-radius: var(--radius) var(--radius) 0 0;
-      cursor: pointer;
-    }
+      .photo-item img {
+        width: 100%;
+        display: block;
+        border-radius: var(--radius) var(--radius) 0 0;
+        cursor: pointer;
+      }
 
-    .photo-info {
-      padding: 14px;
-    }
+      .photo-info {
+        padding: 14px;
+      }
 
-    .photo-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
+      .photo-title {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
 
-    .photo-desc {
-      font-size: 14px;
-      line-height: 1.6;
-      color: rgba(45, 45, 90, 0.8);
-      margin-bottom: 10px;
-    }
+      .photo-desc {
+        font-size: 14px;
+        line-height: 1.6;
+        color: rgba(45, 45, 90, 0.8);
+        margin-bottom: 10px;
+      }
 
-    .photo-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      color: rgba(45, 45, 90, 0.6);
+      .photo-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: rgba(45, 45, 90, 0.6);
+      }
     }
 
     /* Profiles */
-    .profiles-desktop {
-      display: flex;
-      gap: 24px;
-      align-items: flex-start;
-    }
-
-    .profile-column {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .profile-divider {
-      width: 1px;
-      align-self: stretch;
-      background: rgba(255, 255, 255, 0.35);
-      margin: 12px 0;
-      flex-shrink: 0;
-    }
-
+    /* .profiles-desktop 双列布局、.profile-column、.profile-divider 旧样式已删除——
+       第六阶段电脑端改为「摊开的手账」（见文末第六阶段 desktop 块）；手机端 profiles-desktop 整体隐藏，不受影响 */
+    
     .profile-section-header {
       display: flex;
       align-items: center;
@@ -2147,20 +2111,2290 @@
       section {
         padding: 32px 32px 80px;
       }
-      
-      .quick-entries {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
+    }
+    
+    /* ========== Desktop Foundation (电脑端改版 第一阶段) ========== */
+    @media (min-width: 769px) {
+      /* 奶油纸张基底 */
+      body {
+        background: #f7f1e5 url('assets/bg-paper.jpg') center / cover no-repeat fixed;
       }
       
-      .home-actions {
-        flex-direction: row;
+      /* 柔化罩层，保证文字可读性 */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: rgba(255, 252, 245, 0.35);
+        pointer-events: none;
+      }
+      
+      /* 翻书页转场所需的 3D 透视 */
+      .app {
+        perspective: 1600px;
+      }
+      
+      /* 点击爱心粒子 */
+      .click-heart {
+        position: fixed;
+        z-index: 9999;
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+      
+      .click-heart svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 2px 4px rgba(255, 154, 158, 0.4));
+      }
+    }
+    
+    /* ===== 第二阶段基础：信封装饰与桌面端文字在手机端隐藏 ===== */
+    .envelope { display: contents; }
+    .envelope-letter,
+    .envelope-pocket,
+    .envelope-flap,
+    .envelope-tape,
+    .envelope-stamp { display: none; }
+    .pw-title-desktop { display: none; }
+    
+    /* ========== Desktop Pages (电脑端改版 第二阶段：落地页/密码页/首页) ========== */
+    @media (min-width: 769px) {
+      /* ---------- 落地页：信封开场 ---------- */
+      #landing-page,
+      #password-page {
+        background: #e9ddc8 url('assets/bg-desk.jpg') center / cover no-repeat;
+      }
+      
+      /* 信封本体（背板） */
+      .envelope {
+        display: block;
+        position: relative;
+        width: min(620px, 82vw);
+        aspect-ratio: 31 / 19;
+        background: linear-gradient(160deg, #f9f2e2, #f1e6cd);
+        border-radius: 8px;
+        box-shadow: 0 30px 60px rgba(62, 44, 30, 0.38);
+        perspective: 1400px;
+      }
+      
+      /* 信封内的信纸（拆信时向上抽出） */
+      .envelope-letter {
+        display: block;
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        top: 10px;
+        bottom: 12px;
+        z-index: 2;
+        background:
+          repeating-linear-gradient(to bottom, transparent 0 29px, rgba(140, 120, 95, 0.18) 29px 30px),
+          linear-gradient(#fffdf5, #fbf5e6);
+        border-radius: 3px;
+        box-shadow: 0 6px 18px rgba(62, 44, 30, 0.2);
+        transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.35, 1) 0.45s;
+      }
+      
+      .envelope-letter::after {
+        content: '❤';
+        position: absolute;
+        left: 50%;
+        top: 36%;
+        transform: translate(-50%, -50%);
+        font-size: 32px;
+        color: rgba(192, 57, 43, 0.5);
+      }
+      
+      /* 信封前兜 */
+      .envelope-pocket {
+        display: block;
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        background: linear-gradient(#f8f1df, #efe4c9);
+        clip-path: polygon(0 0, 50% 44%, 100% 0, 100% 100%, 0 100%);
+        border-radius: 8px;
+        filter: drop-shadow(0 -3px 3px rgba(62, 44, 30, 0.1));
+      }
+      
+      /* 信封翻盖 */
+      .envelope-flap {
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 46%;
+        z-index: 4;
+        background: linear-gradient(#f2e8d0, #e6d8b6);
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        transform-origin: top center;
+        transition: transform 0.55s ease, z-index 0s linear 0.27s;
+        filter: drop-shadow(0 4px 4px rgba(62, 44, 30, 0.16));
+      }
+      
+      /* 封口和纸胶带（半透明淡粉格纹） */
+      .envelope-tape {
+        display: block;
+        position: absolute;
+        top: 40.5%;
+        left: 50%;
+        width: 98px;
+        height: 28px;
+        z-index: 5;
+        transform: translateX(-50%) rotate(-4deg);
+        background:
+          repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.3) 0 7px, transparent 7px 14px),
+          repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.22) 0 7px, transparent 7px 14px),
+          rgba(244, 177, 188, 0.55);
+        box-shadow: 0 2px 5px rgba(62, 44, 30, 0.16);
+        transition: opacity 0.3s ease;
+      }
+      
+      /* 小邮票贴纸 */
+      .envelope-stamp {
+        display: block;
+        position: absolute;
+        top: 20px;
+        right: 24px;
+        width: 62px;
+        height: 78px;
+        z-index: 5;
+        background: #fff;
+        border: 3px dashed #d8c6a2;
+        transform: rotate(4deg);
+        box-shadow: 0 3px 8px rgba(62, 44, 30, 0.18);
+      }
+      
+      .envelope-stamp::after {
+        content: '🌸';
+        position: absolute;
+        inset: 5px;
+        display: flex;
+        align-items: center;
         justify-content: center;
+        font-size: 28px;
+        background: #fdeef0;
       }
       
-      .draw-card-btn, .logout-btn {
+      /* 信封正面手写体标题 */
+      .landing-title {
+        position: absolute;
+        top: 66%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 4;
+        margin: 0;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        font-size: clamp(38px, 4.5vw, 56px);
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: #4a3b30;
+        text-shadow: none;
+        white-space: nowrap;
+        animation: none;
+      }
+      
+      /* 信封下方小字副标题 */
+      .landing-subtitle {
+        position: absolute;
+        top: calc(100% + 22px);
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        font-size: 15px;
+        letter-spacing: 0.2em;
+        color: #5d4b3a;
+        text-shadow: 0 1px 10px rgba(255, 252, 245, 0.8);
+        white-space: nowrap;
+      }
+      
+      /* 封口处的「拆信」按钮（纸质小签，两行文案原样保留） */
+      .enter-btn {
+        position: absolute;
+        top: 44%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-2deg);
+        z-index: 6;
+        min-width: 0;
+        max-width: none;
+        width: 208px;
+        min-height: 0;
+        padding: 10px 16px;
+        flex-direction: column;
+        gap: 2px;
+        line-height: 1.45;
+        background: #fffaf0;
+        color: #5a4632;
+        border: 1px dashed #c9b18c;
+        border-radius: 8px;
+        box-shadow: 0 8px 16px rgba(62, 44, 30, 0.28);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      
+      .enter-btn:hover {
+        background: #fffdf7;
+        transform: translate(-50%, -50%) rotate(-2deg) translateY(-3px);
+        box-shadow: 0 12px 22px rgba(62, 44, 30, 0.32);
+      }
+      
+      .enter-btn .line1 {
+        font-size: 12px;
+        font-weight: 400;
+      }
+      
+      .enter-btn .line2 {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+      }
+      
+      /* 拆信动画：翻盖打开 → 胶带消失 → 信纸向上抽出（JS 延时后进入密码页） */
+      .envelope.opening .envelope-flap {
+        transform: rotateX(180deg);
+        z-index: 1;
+      }
+      
+      .envelope.opening .envelope-tape { opacity: 0; }
+      
+      .envelope.opening .envelope-letter { transform: translateY(-66%); }
+      
+      .envelope.opening .enter-btn { pointer-events: none; }
+      
+      /* ---------- 密码页：信纸上的暗号 ---------- */
+      .password-box {
+        position: relative;
+        width: min(560px, 86vw);
+        max-width: none;
+        padding: 62px 56px 120px;
+        background:
+          repeating-linear-gradient(to bottom, transparent 0 37px, rgba(120, 100, 80, 0.16) 37px 38px),
+          #f7f1e5 url('assets/bg-paper.jpg') center / cover;
+        border: none;
+        border-radius: 4px;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: 0 26px 60px rgba(62, 44, 30, 0.35);
+        transform: rotate(-0.6deg);
+      }
+      
+      .password-title {
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        font-size: 30px;
+        color: #3f3a5e;
+        margin-bottom: 10px;
+      }
+      
+      .pw-title-mobile { display: none; }
+      .pw-title-desktop { display: inline; }
+      
+      .password-hint {
+        font-size: 13px;
+        color: rgba(74, 59, 48, 0.6);
+        margin-bottom: 38px;
+      }
+      
+      /* 手写横线输入样式：无底框、下划线、大字号宽字距 */
+      .password-input {
+        min-height: 0;
+        padding: 4px 6px 10px;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid rgba(63, 58, 94, 0.45);
+        border-radius: 0;
+        box-shadow: none;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        font-size: 36px;
+        letter-spacing: 0.55em;
+        text-indent: 0.28em;
+        color: #3f3a5e;
+        margin-bottom: 24px;
+      }
+      
+      .password-input:focus {
+        background: transparent;
+        border-color: rgba(63, 58, 94, 0.8);
+        box-shadow: none;
+      }
+      
+      .password-input::placeholder { color: rgba(63, 58, 94, 0.3); }
+      
+      .password-error {
+        height: 20px;
+        font-size: 14px;
+        color: #c0392b;
+        margin-bottom: 16px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      
+      .password-error.show { opacity: 1; }
+      
+      /* 输错时信纸左右轻晃 */
+      .password-box.shake { animation: pw-shake 0.45s ease; }
+      
+      @keyframes pw-shake {
+        0%, 100% { transform: rotate(-0.6deg) translateX(0); }
+        20% { transform: rotate(-0.6deg) translateX(-12px); }
+        40% { transform: rotate(-0.6deg) translateX(10px); }
+        60% { transform: rotate(-0.6deg) translateX(-7px); }
+        80% { transform: rotate(-0.6deg) translateX(5px); }
+      }
+      
+      /* 印章式「进入」按钮（朱砂红圆形白字） */
+      #password-submit {
+        position: absolute;
+        right: 34px;
+        bottom: 30px;
+        width: 96px;
+        height: 96px;
+        min-height: 0;
+        padding: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle at 36% 30%, #d65a4f, #c0392b 58%, #96281b);
+        color: #fff;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        font-size: 24px;
+        letter-spacing: 0.1em;
+        border: 2px solid rgba(255, 255, 255, 0.75);
+        box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.85), 0 10px 22px rgba(62, 44, 30, 0.35);
+        transform: rotate(-8deg);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      
+      #password-submit:hover {
+        background: radial-gradient(circle at 36% 30%, #e0685d, #c84233 58%, #a02c1e);
+        transform: rotate(-8deg) scale(1.06);
+      }
+      
+      #password-submit:active { transform: rotate(-8deg) scale(0.94); }
+      
+      /* ---------- 首页：宽屏左右分区（左 40% / 右 60%，上限 1400px 居中） ---------- */
+      #home-page {
+        max-width: 1400px;
+      }
+      
+      #home-page.active {
+        display: grid;
+        grid-template-columns: 2fr 3fr;
+        column-gap: 40px;
+        row-gap: 28px;
+        align-items: start;
+      }
+      
+      .home-welcome { grid-column: 1 / -1; }
+      
+      /* 左侧：日历撕页天数卡 */
+      .days-card {
+        grid-column: 1;
+        grid-row: 2;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 0;
+        padding: 66px 28px 32px;
+        text-align: center;
+        background: linear-gradient(#fffdf7, #fbf3e2);
+        border: none;
+        border-radius: 10px;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: 0 18px 42px rgba(62, 44, 30, 0.22);
+      }
+      
+      /* 顶部红色装订条（带装订孔） */
+      .days-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 38px;
+        background:
+          radial-gradient(circle 5px at 32px 19px, #fbf3e2 4.5px, rgba(0, 0, 0, 0.18) 5px, transparent 5.8px),
+          linear-gradient(#c0392b, #a02c20);
+        background-size: 64px 38px, 100% 100%;
+        border-bottom: 2px dashed rgba(255, 255, 255, 0.35);
+      }
+      
+      /* 页面微卷角 */
+      .days-card::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 54px;
+        height: 54px;
+        background: linear-gradient(315deg, transparent 49.5%, #e2d5b8 50%, #f4ecd8 80%, #fffdf7 100%);
+        box-shadow: -4px -4px 10px rgba(62, 44, 30, 0.12);
+        border-radius: 0 0 10px 0;
+      }
+      
+      .days-card .label {
+        font-size: 16px;
+        color: rgba(90, 74, 58, 0.78);
+        margin-bottom: 8px;
+      }
+      
+      .days-card .days-number {
+        font-size: clamp(64px, 6.5vw, 96px);
+        font-weight: 700;
+        line-height: 1.1;
+        background: linear-gradient(135deg, var(--soft-pink), var(--soft-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .days-card .sub-text {
+        font-size: 13px;
+        color: rgba(90, 74, 58, 0.6);
+        margin-top: 14px;
+      }
+      
+      /* 左侧：功能按钮融入桌面场景（牛皮纸小签） */
+      .home-actions {
+        grid-column: 1;
+        grid-row: 3;
+        flex-direction: column;
+        gap: 14px;
+        align-self: start;
+        width: 100%;
+      }
+      
+      .draw-card-btn {
+        background: #f7ecd4;
+        color: #6b4f2a;
+        border: 1px dashed #b9a077;
+        border-radius: 10px;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: 0 6px 14px rgba(62, 44, 30, 0.16);
+        transform: rotate(-0.8deg);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      
+      .draw-card-btn::before { display: none; }
+      
+      .draw-card-btn:hover {
+        background: #fbf3e0;
+        transform: rotate(-0.8deg) translateY(-3px);
+        box-shadow: 0 12px 22px rgba(62, 44, 30, 0.2);
+      }
+      
+      .logout-btn {
+        background: transparent;
+        border: 1px solid rgba(107, 79, 42, 0.4);
+        color: #7a6248;
+        border-radius: 10px;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: none;
+        transform: rotate(0.6deg);
+      }
+      
+      .logout-btn:hover { background: rgba(255, 250, 240, 0.6); }
+      
+      /* 右侧：软木板（圆角区域）上钉着的六张入口卡 */
+      .quick-entries {
+        grid-column: 2;
+        grid-row: 2 / 4;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 26px 22px;
+        align-self: start;
+        margin-bottom: 0;
+        padding: 38px 34px;
+        background: #a97c63 url('assets/bg-cork.jpg') center / cover;
+        border: 12px solid #7d5a44;
+        border-radius: 16px;
+        box-shadow: inset 0 0 46px rgba(50, 30, 15, 0.35), 0 22px 48px rgba(62, 44, 30, 0.28);
+      }
+      
+      .quick-entry {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 28px 12px 22px;
+        text-align: center;
+        cursor: pointer;
+        background: #fffdf6;
+        border: none;
+        border-radius: 6px;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: 0 8px 16px rgba(50, 30, 15, 0.28);
+        transform: rotate(var(--tilt, 0deg));
+        transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.24s ease;
+      }
+      
+      /* 每张卡片随机轻微倾斜（-3deg ~ 3deg） */
+      .quick-entry:nth-child(1) { --tilt: -2.4deg; }
+      .quick-entry:nth-child(2) { --tilt: 1.8deg; }
+      .quick-entry:nth-child(3) { --tilt: -1.4deg; }
+      .quick-entry:nth-child(4) { --tilt: 2.6deg; }
+      .quick-entry:nth-child(5) { --tilt: -2.9deg; }
+      .quick-entry:nth-child(6) { --tilt: 1.2deg; }
+      
+      /* 顶部图钉（内联 SVG，六张颜色各异） */
+      .quick-entry::before {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        width: 24px;
+        height: 24px;
+        transform: translateX(-50%);
+        background: var(--pin) center / contain no-repeat;
+        filter: drop-shadow(0 2px 2px rgba(50, 30, 15, 0.4));
+      }
+      
+      .quick-entry:nth-child(1)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%23e74c3c'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
+      .quick-entry:nth-child(2)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%23f39c12'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
+      .quick-entry:nth-child(3)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%2316a085'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
+      .quick-entry:nth-child(4)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%232980b9'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
+      .quick-entry:nth-child(5)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%238e44ad'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
+      .quick-entry:nth-child(6)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%2327ae60'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
+      
+      /* 悬停翘起、图钉微晃；点击下沉回弹 */
+      .quick-entry:hover {
+        transform: rotate(calc(var(--tilt) * 0.35)) translateY(-6px) scale(1.05);
+        box-shadow: 0 18px 30px rgba(50, 30, 15, 0.34);
+      }
+      
+      .quick-entry:hover::before { animation: pin-wobble 0.55s ease; }
+      
+      .quick-entry:active { transform: rotate(var(--tilt)) scale(0.93); }
+      
+      @keyframes pin-wobble {
+        0%, 100% { transform: translateX(-50%) rotate(0deg); }
+        25% { transform: translateX(-50%) rotate(-10deg); }
+        70% { transform: translateX(-50%) rotate(7deg); }
+      }
+      
+      .quick-entry .icon {
+        font-size: 34px;
+        line-height: 1;
+      }
+      
+      .quick-entry .text {
+        font-size: 14px;
+        font-weight: 500;
+        color: #4a3b30;
+      }
+      
+      /* 右下：斜放在桌面上的淡黄色便签（和纸胶带贴角） */
+      .latest-message-card {
+        grid-column: 2;
+        grid-row: 4;
+        position: relative;
+        width: min(540px, 94%);
+        justify-self: center;
+        margin-bottom: 0;
+        padding: 32px 26px 20px;
+        background: linear-gradient(#fff6bf, #fdeea6);
+        border: none;
+        border-radius: 3px;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: 0 14px 30px rgba(62, 44, 30, 0.24);
+        transform: rotate(-2.2deg);
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+      }
+      
+      .latest-message-card::before {
+        content: '';
+        position: absolute;
+        top: -13px;
+        left: 36px;
+        width: 92px;
+        height: 26px;
+        background:
+          repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.3) 0 6px, transparent 6px 12px),
+          rgba(244, 177, 188, 0.6);
+        transform: rotate(-5deg);
+        box-shadow: 0 2px 4px rgba(62, 44, 30, 0.15);
+      }
+      
+      .latest-message-card:hover {
+        transform: rotate(-2.2deg) translateY(-4px);
+        box-shadow: 0 20px 38px rgba(62, 44, 30, 0.28);
+      }
+      
+      .latest-message-title { color: #6b5320; }
+      .latest-message-date { color: rgba(107, 83, 32, 0.6); }
+      .latest-message-body { color: #5a4a26; }
+      .latest-message-author { color: rgba(107, 83, 32, 0.7); }
+    }
+    
+    /* ===== 第三阶段基础：麻绳与邮戳装饰在手机端隐藏 ===== */
+    .pin-rope { display: none; }
+    .message-postmark { display: none; }
+    
+    /* ========== Desktop Messages (电脑端改版 第三阶段：留言板) ========== */
+    @media (min-width: 769px) {
+      /* ---------- 整面软木板背景 ---------- */
+      #messages-page {
+        max-width: none;
+        background: #8a6a52 url('assets/bg-cork.jpg') center / cover;
+        box-shadow: inset 0 0 120px rgba(40, 25, 15, 0.35);
+      }
+      
+      #messages-page .page-header,
+      #messages-page .messages-container {
+        max-width: 1500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      /* 页首标题：钉在软木板上的木牌（含两枚钉帽） */
+      #messages-page .page-title {
+        position: relative;
+        padding: 12px 34px;
+        background: linear-gradient(165deg, #9c7a54, #7d5f3f);
+        color: #fdf3e0;
+        border-radius: 8px;
+        box-shadow: 0 8px 18px rgba(40, 25, 15, 0.4), inset 0 1px 0 rgba(255, 240, 214, 0.25);
+        transform: rotate(-1.5deg);
+        font-size: 22px;
+        letter-spacing: 0.08em;
+        text-shadow: 0 1px 2px rgba(40, 25, 15, 0.5);
+      }
+      
+      #messages-page .page-title::before,
+      #messages-page .page-title::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 10px;
+        height: 10px;
+        margin-top: -5px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #e8e2d6, #8f867a 70%);
+        box-shadow: 0 1px 2px rgba(40, 25, 15, 0.5);
+      }
+      
+      #messages-page .page-title::before { left: 12px; }
+      #messages-page .page-title::after { right: 12px; }
+      
+      /* 「📌 置顶留言」小木牌 */
+      #messages-page .messages-section-title {
+        display: inline-flex;
+        padding: 8px 22px;
+        background: linear-gradient(165deg, #a08059, #84663f);
+        color: #fdf3e0;
+        border-radius: 6px;
+        box-shadow: 0 6px 14px rgba(40, 25, 15, 0.35);
+        transform: rotate(1deg);
+        font-size: 15px;
+        text-shadow: 0 1px 2px rgba(40, 25, 15, 0.5);
+      }
+      
+      /* 置顶满 5 条提示：软木板上的小纸条 */
+      .pinned-limit-hint {
+        background: #fff8df;
+        color: #7a5a28;
+        border-radius: 3px;
+        box-shadow: 0 6px 14px rgba(40, 25, 15, 0.3);
+        transform: rotate(-0.8deg);
+      }
+      
+      /* 水平麻绳（SVG 自然下垂弧度） */
+      .pin-rope {
+        display: block;
+        height: 42px;
+        margin: 6px 0 -16px;
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'><path d='M0 10 Q 720 66 1440 10' fill='none' stroke='%237a5b3a' stroke-width='7' stroke-linecap='round'/><path d='M0 10 Q 720 66 1440 10' fill='none' stroke='%23a5825c' stroke-width='3' stroke-linecap='round' stroke-dasharray='10 8'/></svg>") center / 100% 100% no-repeat;
+        filter: drop-shadow(0 3px 3px rgba(40, 25, 15, 0.3));
+      }
+      
+      /* 置顶区：便签用木夹挂在麻绳上 */
+      #pinned-message-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 30px;
+        padding-top: 10px;
+      }
+      
+      #pinned-message-list .message-item {
+        width: 300px;
+        transform-origin: 50% -14px;
+        animation: fadeInUp 0.4s ease-out, note-swing 6s ease-in-out 0.5s infinite;
+      }
+      
+      #pinned-message-list .message-item:nth-child(2n) {
+        animation-delay: 0s, 1.2s;
+        animation-duration: 0.4s, 7s;
+      }
+      
+      #pinned-message-list .message-item:nth-child(3n) {
+        animation-delay: 0s, 2.1s;
+        animation-duration: 0.4s, 5.4s;
+      }
+      
+      /* 慢速轻晃（幅度 ≤ 2deg） */
+      @keyframes note-swing {
+        0%, 100% { transform: rotate(-1.6deg); }
+        50% { transform: rotate(1.6deg); }
+      }
+      
+      /* 爱心木夹（SVG，置顶便签专用，替代和纸胶带） */
+      #pinned-message-list .message-item::before {
+        content: '';
+        position: absolute;
+        top: -16px;
+        left: 50%;
+        width: 34px;
+        height: 32px;
+        transform: translateX(-50%);
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 30'><path d='M23.6 2c-3.4 0-6.3 2.7-7.6 5.6C14.7 2.7 11.8 2 8.4 2 3.8 2 0 5.8 0 10.4c0 9.4 9.5 11.9 16 21.2 6.1-9.3 16-12.1 16-21.2C32 5.8 28.2 2 23.6 2z' fill='%23b5854f' stroke='%238a5f30' stroke-width='1.6'/><circle cx='16' cy='12' r='3' fill='%238a5f30'/></svg>") center / contain no-repeat;
+        filter: drop-shadow(0 2px 2px rgba(40, 25, 15, 0.35));
+        z-index: 2;
+      }
+      
+      /* 「💬 全部留言」手写粉笔字 */
+      .messages-divider {
+        justify-content: center;
+        margin: 40px 0 26px;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        font-size: 26px;
+        letter-spacing: 0.14em;
+        color: rgba(255, 250, 238, 0.92);
+        text-shadow: 0 0 6px rgba(255, 250, 238, 0.35), 0 2px 3px rgba(40, 25, 15, 0.4);
+        transform: rotate(-1deg);
+      }
+      
+      .messages-divider::before,
+      .messages-divider::after {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(255, 250, 238, 0.5), transparent);
+        border-radius: 2px;
+      }
+      
+      /* 普通区：多列错落便签墙（列宽 300~340px） */
+      #message-list {
+        display: block;
+        column-width: 320px;
+        column-gap: 26px;
+      }
+      
+      #message-list .message-item {
+        break-inside: avoid;
+        margin-bottom: 26px;
+        transform: rotate(var(--tilt, 0deg));
+      }
+      
+      #message-list .empty-state { column-span: all; }
+      
+      /* 随机微倾斜（-2.5deg ~ 2.5deg） */
+      #message-list .message-item:nth-child(5n+1) { --tilt: -2.2deg; }
+      #message-list .message-item:nth-child(5n+2) { --tilt: 1.6deg; }
+      #message-list .message-item:nth-child(5n+3) { --tilt: -1.2deg; }
+      #message-list .message-item:nth-child(5n+4) { --tilt: 2.4deg; }
+      #message-list .message-item:nth-child(5n) { --tilt: -0.6deg; }
+      
+      /* 便签本体：笑笑淡粉 / 北斗淡蓝 / 默认奶油，深墨灰文字 */
+      .message-item {
+        position: relative;
+        padding: 30px 20px 18px;
+        background: linear-gradient(#fff9e8, #fdf2d5);
+        border: none;
+        border-radius: 3px;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: 0 10px 22px rgba(40, 25, 15, 0.3);
+        animation: fadeInUp 0.4s ease-out;
+      }
+      
+      .message-item.from-xiaoxiao { background: linear-gradient(#ffeef4, #ffe4ec); }
+      .message-item.from-beidou { background: linear-gradient(#eaf3ff, #e0edff); }
+      
+      /* 便签顶部和纸胶带（SVG 半透明格纹） */
+      .message-item::before {
+        content: '';
+        position: absolute;
+        top: -11px;
+        left: 50%;
+        width: 86px;
+        height: 24px;
+        transform: translateX(-50%) rotate(-3deg);
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><rect width='12' height='12' fill='rgba(244,177,188,0.5)'/><path d='M0 0L12 12M12 0L0 12' stroke='rgba(255,255,255,0.4)' stroke-width='2.5'/></svg>") center / 12px 12px;
+        box-shadow: 0 2px 4px rgba(40, 25, 15, 0.18);
+        z-index: 2;
+      }
+      
+      .message-item-body { color: #2d2d3a; }
+      
+      /* 留言图片：白框小照片，胶带斜贴在上半部 */
+      .message-image {
+        position: relative;
+        max-width: 78%;
+        max-height: none;
+        margin: 14px auto 4px;
+        padding: 7px 7px 22px;
+        overflow: visible;
+        background: #fff;
+        border-radius: 2px;
+        box-shadow: 0 6px 14px rgba(40, 25, 15, 0.28);
+        transform: rotate(-2deg);
+      }
+      
+      .message-image::after {
+        content: '';
+        position: absolute;
+        top: -10px;
+        right: 18px;
+        width: 56px;
+        height: 20px;
+        transform: rotate(8deg);
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='rgba(244,177,188,0.5)'/><path d='M0 0L10 10M10 0L0 10' stroke='rgba(255,255,255,0.4)' stroke-width='2'/></svg>") center / 10px 10px;
+        box-shadow: 0 2px 3px rgba(40, 25, 15, 0.2);
+      }
+      
+      .message-image img { border-radius: 0; }
+      
+      /* 署名右下角手写体；日期拆出做小邮戳 */
+      .message-signature {
+        color: rgba(45, 45, 58, 0.75);
+        margin-top: 12px;
+      }
+      
+      .message-signature .sig-date { display: none; }
+      
+      .message-postmark {
+        display: block;
+        text-align: right;
+        margin-top: 10px;
+      }
+      
+      /* 邮戳：圆环 + 日期 */
+      .message-postmark span {
+        display: inline-block;
+        padding: 7px 9px;
+        border: 1.6px solid rgba(150, 60, 45, 0.55);
+        outline: 1px dashed rgba(150, 60, 45, 0.35);
+        outline-offset: 2px;
+        border-radius: 50%;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        font-size: 10px;
+        letter-spacing: 0.05em;
+        color: rgba(150, 60, 45, 0.75);
+        transform: rotate(-8deg);
+        white-space: nowrap;
+      }
+      
+      /* 功能按钮：平时隐藏，悬停便签时以小贴纸浮现于右上角 */
+      .message-actions {
+        position: absolute;
+        top: -14px;
+        right: 12px;
+        margin-top: 0;
+        opacity: 0;
+        transform: scale(0.7) rotate(3deg);
+        transform-origin: right top;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        z-index: 3;
+      }
+      
+      .message-item:hover .message-actions,
+      .message-item:focus-within .message-actions {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+      
+      .message-action-btn {
+        min-height: 30px;
+        padding: 5px 10px;
+        font-size: 12px;
+        background: #fffdf4;
+        color: #4a3b30;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(40, 25, 15, 0.3);
+      }
+      
+      .message-action-btn:hover {
+        background: #fff;
+        transform: scale(1.06);
+      }
+      
+      .message-action-btn.pin-btn {
+        background: #ffe0b8;
+        color: #7a4a12;
+        text-shadow: none;
+      }
+      
+      .message-action-btn.pin-btn.pinned {
+        background: #f0e2c8;
+        color: #7a4a12;
+        border-color: transparent;
+      }
+      
+      .message-action-btn.delete-btn:hover { background: #ffd9d3; }
+      
+      /* 回复：贴在原便签下沿的窄小纸条，层叠排布 */
+      .message-replies {
+        margin-top: 14px;
+        gap: 6px;
+        align-items: flex-end;
+      }
+      
+      .message-reply-bubble {
+        width: 92%;
+        background: #fffdf2;
+        border-radius: 2px;
+        box-shadow: 0 4px 10px rgba(40, 25, 15, 0.22);
+        transform: rotate(0.8deg);
+      }
+      
+      .message-reply-bubble:nth-child(2n) { transform: rotate(-0.9deg); }
+      
+      .message-reply-line {
+        width: 4px;
+        background: rgba(216, 182, 140, 0.8);
+      }
+      
+      .message-reply-content {
+        padding: 8px 12px;
+        font-size: 13px;
+        color: #3a3a48;
+      }
+      
+      /* 回复输入条：纸条风格 */
+      .message-reply-input-wrap {
+        background: #fffdf2;
+        border: 1px dashed #cbb37f;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(40, 25, 15, 0.2);
+      }
+      
+      .reply-textarea { color: #2d2d3a; }
+      .reply-textarea::placeholder { color: rgba(45, 45, 58, 0.45); }
+      
+      /* 底部输入条微调融入（功能不动） */
+      .message-input-bar {
+        background: rgba(46, 32, 22, 0.55);
+        border-top: 1px solid rgba(255, 240, 214, 0.2);
+      }
+      
+      .message-input-fields {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+      
+      .message-input-fields textarea {
+        background: #fffaf0;
+        color: #2d2d3a;
+        border: 1px solid rgba(203, 179, 127, 0.7);
+      }
+      
+      .message-input-fields textarea::placeholder { color: rgba(45, 45, 58, 0.45); }
+      
+      .message-input-fields textarea:focus {
+        background: #fffdf6;
+        border-color: #b5854f;
+        box-shadow: 0 0 0 3px rgba(181, 133, 79, 0.2);
+      }
+      
+      .message-image-url-input {
+        background: rgba(255, 250, 240, 0.85);
+        color: #2d2d3a;
+        border-color: rgba(203, 179, 127, 0.7);
+      }
+      
+      .message-image-url-input::placeholder { color: rgba(45, 45, 58, 0.45); }
+    }
+    
+    /* ===== 第四阶段基础：「暂时分开」专属雨景在手机端隐藏 ===== */
+    .rain-scene { display: none; }
+    
+    /* ========== Desktop Timeline (电脑端改版 第四阶段：横向人生路) ========== */
+    @media (min-width: 769px) {
+      #timeline-page {
+        position: relative;
+        max-width: none;
+        height: 100vh;
+        overflow: hidden;
+        /* 修复项1：田野固定全屏背景，盖住奶白纸张基底，不随任何滚动/横移移动 */
+        background: #a8c8e8 url('assets/bg-field.jpg') center / cover no-repeat fixed;
+      }
+      
+      #timeline-page .page-header {
+        max-width: 1500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      /* 标题与返回按钮浮在天空区域上（轻微底色+投影保证可读） */
+      #timeline-page .page-header .page-title {
+        color: #fff8ea;
+        text-shadow: 0 2px 10px rgba(70, 55, 30, 0.65);
+      }
+      
+      #timeline-page .page-header .back-btn {
+        background: rgba(70, 55, 30, 0.38);
+        border-color: rgba(255, 248, 234, 0.35);
+        color: #fff8ea;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+      }
+      
+      #timeline-page .page-header .back-btn:hover {
+        background: rgba(70, 55, 30, 0.55);
+      }
+      
+      .timeline-wrapper {
+        height: calc(100vh - 170px);
+        padding: 0;
+        overflow: hidden;
+        position: relative;
+        user-select: none;
+        cursor: grab;
+      }
+      
+      .timeline-wrapper:active { cursor: grabbing; }
+      
+      /* 横向世界：SVG 土路 + SVG 花草（随横移整体平移；田野背景已移到 #timeline-page 固定全屏） */
+      .timeline {
+        display: flex;
+        align-items: flex-end;
+        width: max-content;
+        height: 100%;
+        padding: 0 12vw 0 10vw;
+        background:
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 84'><g stroke='%235e8a4c' stroke-width='3' fill='none' stroke-linecap='round'><path d='M30 84 q-4 -22 -10 -30 M30 84 q2 -20 10 -34 M30 84 q0 -16 0 -26'/><path d='M180 84 q-4 -20 -10 -28 M180 84 q3 -18 9 -30'/><path d='M340 84 q-3 -18 -8 -26 M340 84 q3 -20 10 -32 M340 84 q0 -14 0 -22'/><path d='M470 84 q-4 -20 -9 -28 M470 84 q2 -16 8 -28'/><path d='M118 84 L118 60 M268 84 L268 54 M420 84 L420 62' stroke-width='2.4'/></g><g stroke='none'><circle cx='112' cy='50' r='5' fill='%23f6c1d8'/><circle cx='124' cy='50' r='5' fill='%23f6c1d8'/><circle cx='118' cy='42' r='5' fill='%23f6c1d8'/><circle cx='118' cy='58' r='5' fill='%23f6c1d8'/><circle cx='118' cy='50' r='2.6' fill='%23e8a24a'/><circle cx='262' cy='44' r='5' fill='%23ffffff'/><circle cx='274' cy='44' r='5' fill='%23ffffff'/><circle cx='268' cy='36' r='5' fill='%23ffffff'/><circle cx='268' cy='52' r='5' fill='%23ffffff'/><circle cx='268' cy='44' r='2.6' fill='%23e8a24a'/><circle cx='414' cy='52' r='5' fill='%23f6c1d8'/><circle cx='426' cy='52' r='5' fill='%23f6c1d8'/><circle cx='420' cy='44' r='5' fill='%23f6c1d8'/><circle cx='420' cy='60' r='5' fill='%23f6c1d8'/><circle cx='420' cy='52' r='2.6' fill='%23e8a24a'/></g></svg>") 0 calc(100% - 104px) / 520px 84px repeat-x,
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 230' preserveAspectRatio='none'><path d='M0 96 C 360 66 720 116 1080 90 C 1260 78 1380 84 1440 92 L1440 196 C 1080 216 720 186 360 206 C 200 214 60 208 0 200 Z' fill='%238a6f4d'/><path d='M0 106 C 360 78 720 126 1080 100 C 1260 90 1380 94 1440 102 L1440 186 C 1080 204 720 176 360 196 C 200 204 60 198 0 190 Z' fill='%23c4a873'/><path d='M0 146 C 360 126 720 156 1080 140 C 1260 132 1380 136 1440 142' fill='none' stroke='%23a8875a' stroke-width='5' stroke-dasharray='26 30'/></svg>") 0 100% / 100% 230px no-repeat;
+        will-change: transform;
+      }
+      
+      /* 桌面端竖向渐变线已删除 */
+      .timeline::before { display: none; }
+      
+      /* 事件节点：木质小站牌，立在路边上下错落（柱脚扎进土路上沿） */
+      .timeline-item {
+        position: relative;
+        z-index: 2;
+        flex: 0 0 auto;
+        width: 600px;
+        margin: 0 0 118px 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .timeline-item:nth-child(odd) { margin-bottom: 100px; }
+      .timeline-item:nth-child(even) { margin-bottom: 118px; }
+      
+      .timeline-dot { display: none; }
+      
+      /* 站牌立柱（柱脚扎进土路上沿） */
+      .timeline-item::after {
+        content: '';
+        position: relative;
+        z-index: 1;
+        width: 14px;
+        height: 70px;
+        background: linear-gradient(90deg, #8a6b45, #6e5233);
+        border-radius: 0 0 4px 4px;
+        box-shadow: 2px 2px 4px rgba(60, 40, 20, 0.3);
+      }
+      
+      .timeline-item:nth-child(odd)::after { height: 70px; }
+      .timeline-item:nth-child(even)::after { height: 110px; }
+      
+      /* 柱脚草丛：2~3 丛小草小花作为扎根锚点（层级在立柱前、路沿前） */
+      .timeline-item::before {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        width: 100px;
+        height: 32px;
+        transform: translateX(-50%);
+        background:
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 30'><g stroke='%235e8a4c' stroke-width='2.2' fill='none' stroke-linecap='round'><path d='M12 30 q-3 -14 -8 -19 M12 30 q1 -12 7 -18 M12 30 q0 -10 0 -15'/><path d='M28 30 q-2 -12 -7 -16 M28 30 q2 -10 6 -14'/></g><g stroke='none'><circle cx='33' cy='10' r='3.2' fill='%23f6c1d8'/><circle cx='38.5' cy='10' r='3.2' fill='%23f6c1d8'/><circle cx='35.8' cy='5.5' r='3.2' fill='%23f6c1d8'/><circle cx='35.8' cy='14' r='3.2' fill='%23f6c1d8'/><circle cx='35.8' cy='10' r='1.5' fill='%23e8a24a'/></g></svg>") 0 100% / 44px 30px no-repeat,
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 26'><g stroke='%235e8a4c' stroke-width='2.2' fill='none' stroke-linecap='round'><path d='M10 26 q-2 -12 -7 -16 M10 26 q1 -10 6 -15 M10 26 q0 -8 0 -12'/><path d='M24 26 q-3 -10 -7 -13 M24 26 q2 -9 6 -12'/></g><g stroke='none'><circle cx='28' cy='8' r='2.8' fill='%23ffffff'/><circle cx='32.6' cy='8' r='2.8' fill='%23ffffff'/><circle cx='30.3' cy='4.4' r='2.8' fill='%23ffffff'/><circle cx='30.3' cy='11.4' r='2.8' fill='%23ffffff'/><circle cx='30.3' cy='8' r='1.3' fill='%23e8a24a'/></g></svg>") 100% 100% / 40px 26px no-repeat,
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 30'><g stroke='%235e8a4c' stroke-width='2.2' fill='none' stroke-linecap='round'><path d='M12 30 q-3 -14 -8 -19 M12 30 q1 -12 7 -18 M12 30 q0 -10 0 -15'/><path d='M28 30 q-2 -12 -7 -16 M28 30 q2 -10 6 -14'/></g><g stroke='none'><circle cx='33' cy='10' r='3.2' fill='%23f6c1d8'/><circle cx='38.5' cy='10' r='3.2' fill='%23f6c1d8'/><circle cx='35.8' cy='5.5' r='3.2' fill='%23f6c1d8'/><circle cx='35.8' cy='14' r='3.2' fill='%23f6c1d8'/><circle cx='35.8' cy='10' r='1.5' fill='%23e8a24a'/></g></svg>") 46% 100% / 38px 26px no-repeat;
+        z-index: 2;
+        pointer-events: none;
+      }
+      
+      /* 站牌木板：直显日期/标题/描述/署名四项信息 */
+      .timeline-card {
+        position: relative;
+        width: 330px;
+        padding: 16px 20px 14px;
+        background: linear-gradient(165deg, #9a7a52, #7c5f3c);
+        border: 2px solid #6a4f30;
+        border-radius: 8px;
+        box-shadow: 0 8px 16px rgba(60, 40, 20, 0.35), inset 0 1px 0 rgba(255, 240, 214, 0.2);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        cursor: pointer;
+        transform: rotate(var(--sign-tilt, 0deg));
+        transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+      }
+      
+      .timeline-item:nth-child(3n+1) .timeline-card { --sign-tilt: -1.2deg; }
+      .timeline-item:nth-child(3n+2) .timeline-card { --sign-tilt: 1deg; }
+      
+      .timeline-card.interactive:hover {
+        transform: rotate(var(--sign-tilt, 0deg)) translateY(-3px);
+        box-shadow: 0 12px 22px rgba(60, 40, 20, 0.42), inset 0 1px 0 rgba(255, 240, 214, 0.2);
+        background: linear-gradient(165deg, #a5855c, #86684a);
+      }
+      
+      /* 字体层级：标题20 > 描述14 > 日期13 > 署名12 */
+      .timeline-card .timeline-date {
+        display: inline-block;
+        color: #f3e2b8;
+        font-size: 13px;
+        margin-bottom: 6px;
+        padding: 2px 9px;
+        border: 1px dashed rgba(243, 226, 184, 0.5);
+        border-radius: 10px;
+        transform: rotate(-1deg);
+        text-shadow: 0 1px 2px rgba(60, 40, 20, 0.45);
+      }
+      
+      .timeline-card .timeline-title {
+        color: #fdf3e0;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.35;
+        margin-bottom: 2px;
+        text-shadow: 0 1px 2px rgba(60, 40, 20, 0.45);
+      }
+      
+      .timeline-card .timeline-desc {
+        margin: 8px 0;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #e9ddc2;
+        text-shadow: 0 1px 2px rgba(60, 40, 20, 0.35);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      
+      .timeline-card .timeline-signature {
+        margin-top: 2px;
+        font-size: 12px;
+        padding: 3px 10px;
+        background: rgba(60, 40, 20, 0.32);
+        color: #f3e2b8;
+      }
+      
+      /* 吊饰：异地=小月亮 / 见面=小房子（轻摆） */
+      .timeline-item.tag-apart .timeline-card::before,
+      .timeline-item.tag-meet .timeline-card::before {
+        content: '';
+        position: absolute;
+        top: -18px;
+        right: 14px;
+        width: 30px;
+        height: 34px;
+        transform-origin: 50% 0;
+        animation: pendant-sway 4.5s ease-in-out infinite;
+        filter: drop-shadow(0 2px 2px rgba(60, 40, 20, 0.35));
+      }
+      
+      .timeline-item.tag-apart .timeline-card::before {
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 34'><line x1='15' y1='0' x2='15' y2='6' stroke='%23d8c8a4' stroke-width='1.6'/><path d='M15 8 A11 11 0 1 0 15 30 A11 11 0 1 0 15 8 Z M18.6 11 A8.2 8.2 0 1 1 18.6 27.4 A8.2 8.2 0 1 1 18.6 11 Z' fill='%23f4e3a1' fill-rule='evenodd'/></svg>") center / contain no-repeat;
+      }
+      
+      .timeline-item.tag-meet .timeline-card::before {
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 34'><line x1='15' y1='0' x2='15' y2='5' stroke='%23d8c8a4' stroke-width='1.6'/><path d='M15 5 L28 16 L2 16 Z' fill='%23c96f4a'/><rect x='6' y='16' width='18' height='15' fill='%23f0e0c8'/><rect x='12' y='21' width='6' height='10' fill='%238a5f30'/></svg>") center / contain no-repeat;
+      }
+      
+      @keyframes pendant-sway {
+        0%, 100% { transform: rotate(-4deg); }
+        50% { transform: rotate(4deg); }
+      }
+      
+      /* faded：褪色旧木头（暂时分开节点） */
+      .timeline-item.faded { opacity: 0.72; filter: grayscale(0.55); }
+      
+      .timeline-item.faded .timeline-card {
+        background: linear-gradient(165deg, #a39a8b, #8a8175);
+        border-color: #6f685e;
+        /* 四角略微缺损（不规则圆角，不裁剪子元素） */
+        border-radius: 10px 4px 12px 3px / 4px 12px 3px 10px;
+      }
+      
+      /* faded 木牌叠加手绘裂纹（从边缘向中间延伸、末端分叉） */
+      .timeline-item.faded .timeline-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 330 160'><g stroke='%232e241c' stroke-width='1.7' fill='none' stroke-linecap='round' opacity='0.5'><path d='M2 22 Q28 28 46 42 Q53 48 51 58 M46 42 Q58 48 64 60'/><path d='M328 102 Q300 98 284 84 Q277 78 280 68 M284 84 Q271 80 263 66'/><path d='M104 158 Q110 134 126 122 Q133 116 131 106 M126 122 Q139 116 143 104'/><path d='M232 2 Q228 20 216 30 M216 30 Q206 36 204 46'/></g></svg>") center / 100% 100% no-repeat;
+        border-radius: inherit;
+        pointer-events: none;
+      }
+      
+      /* 「暂时分开」专属雨景：云与雨都在轨道层内，跟随木牌一起横移（JS 生成） */
+      .rain-scene {
+        display: block;
+        position: absolute;
+        left: 50%;
+        top: -251px; /* 云高 211px + 云底距木牌顶 40px */
+        bottom: -8px;
+        width: 495px; /* 约为木牌宽度的 1.5 倍 */
+        transform: translateX(-50%);
+        pointer-events: none;
+        z-index: 4;
+      }
+      
+      .rain-cloud {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 396px; /* 木牌宽度的 1.2 倍 */
+        height: 211px;
+        margin-left: -198px;
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 64'><path d='M18 52 Q6 52 8 42 Q10 34 20 35 Q22 24 34 24 Q40 13 53 17 Q62 7 75 13 Q88 9 94 21 Q106 19 110 30 Q118 33 115 43 Q113 52 102 52 Z' fill='%23a2a6c8' stroke='%2372759e' stroke-width='2.6' stroke-linejoin='round'/><path d='M14 52 L106 52' stroke='%2372759e' stroke-width='2.6' stroke-linecap='round'/><ellipse cx='46' cy='30' rx='12' ry='7' fill='%23c2c6e2' opacity='0.75'/><ellipse cx='76' cy='24' rx='10' ry='6' fill='%23c2c6e2' opacity='0.6'/></svg>") center / contain no-repeat;
+        filter: drop-shadow(0 4px 6px rgba(60, 60, 90, 0.35));
+        animation: rain-cloud-bob 5.5s ease-in-out infinite;
+      }
+      
+      @keyframes rain-cloud-bob {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+      }
+      
+      .rain-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      
+      /* 带图片事件：站牌旁斜靠一张小拍立得 */
+      .timeline-card .timeline-image {
+        position: absolute;
+        left: calc(100% - 30px);
+        bottom: -12px;
+        width: 128px;
+        margin: 0;
+        padding: 6px 6px 20px;
+        background: #fff;
+        border-radius: 2px;
+        box-shadow: 0 6px 14px rgba(60, 40, 20, 0.35);
+        transform: rotate(7deg);
+        overflow: visible;
+        max-height: none;
+        z-index: 3;
+      }
+      
+      .timeline-card .timeline-image img {
+        max-height: 96px;
+        border-radius: 0;
+      }
+      
+      /* 编辑状态：木牌变稿纸（五字段编辑表单，逻辑不变；「长信纸」交互已删除） */
+      .timeline-card.interactive.editing {
+        background:
+          repeating-linear-gradient(to bottom, transparent 0 27px, rgba(140, 120, 95, 0.14) 27px 28px),
+          linear-gradient(#fff9ea, #fdf3da);
+        border-color: #d8c8a4;
+        cursor: default;
+      }
+      
+      /* 点击木牌 → 下方弹出两个木质小挂牌「编辑 ✏️」「删除 🗑️」（复用原 action-bar 显隐逻辑） */
+      .timeline-card .timeline-action-bar {
+        position: absolute;
+        top: calc(100% + 12px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+        flex-wrap: nowrap;
+        gap: 10px;
+        z-index: 8;
+        margin-top: 0;
+        transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+      }
+      
+      .timeline-card .timeline-action-bar.active {
+        margin-top: 0;
+        transform: translateX(-50%) translateY(2px);
+      }
+      
+      .timeline-action-btn {
+        min-height: 34px;
+        padding: 7px 14px;
+        font-size: 12.5px;
+        background: linear-gradient(165deg, #a5855c, #86684a);
+        color: #fdf3e0;
+        border: 1.5px solid #6a4f30;
+        border-radius: 6px;
+        box-shadow: 0 5px 10px rgba(60, 40, 20, 0.4), inset 0 1px 0 rgba(255, 240, 214, 0.2);
+        text-shadow: 0 1px 2px rgba(60, 40, 20, 0.45);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        transform: rotate(-1.5deg);
+      }
+      
+      .timeline-action-btn.delete { transform: rotate(1.5deg); }
+      
+      .timeline-action-btn:hover {
+        background: linear-gradient(165deg, #b2916a, #947355);
+        transform: scale(1.06);
+        box-shadow: 0 7px 14px rgba(60, 40, 20, 0.45), inset 0 1px 0 rgba(255, 240, 214, 0.2);
+      }
+      
+      .timeline-action-btn.delete:hover {
+        background: linear-gradient(165deg, #b06050, #96483c);
+      }
+      
+      /* 编辑：木牌原地变稿纸（五字段全部可编辑，逻辑不变） */
+      .timeline-edit-form.active {
+        padding: 10px;
+        background:
+          repeating-linear-gradient(to bottom, transparent 0 26px, rgba(90, 130, 180, 0.16) 26px 27px),
+          repeating-linear-gradient(to right, transparent 0 26px, rgba(90, 130, 180, 0.16) 26px 27px),
+          #fffdf2;
+        border-radius: 8px;
+        box-shadow: inset 0 0 0 1px rgba(90, 130, 180, 0.2);
+      }
+      
+      .timeline-edit-form .input,
+      .timeline-edit-form .edit-textarea {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(90, 130, 180, 0.35);
+        color: #2d2d3a;
+      }
+      
+      .timeline-tag-option span {
+        background: rgba(255, 255, 255, 0.85);
+        border-color: rgba(90, 130, 180, 0.35);
+        color: #3a3a48;
+      }
+      
+      .timeline-tag-option input:checked + span {
+        background: #ffe4ec;
+        border-color: #e8a0b4;
+        color: #8a4a5e;
+      }
+      
+      /* 「今天」站牌已删除——土路右端结束在最后一个真实事件处（仅留少量余白） */
+      
+      /* 空状态卡在木牌上的可读性 */
+      .timeline-card.empty-state,
+      .timeline-card.empty-state p { color: #f3e2b8; }
+      
+      /* 「➕ 添加事件」：路边指示牌（箭头指向路的尽头） */
+      #timeline-page .page-actions {
+        position: absolute;
+        right: 44px;
+        bottom: 44px;
+        margin: 0;
+        padding: 0;
+        z-index: 10;
+      }
+      
+      #add-timeline-event-btn {
+        background: linear-gradient(165deg, #9a7a52, #7c5f3c);
+        color: #fdf3e0;
+        border: 2px solid #6a4f30;
+        border-radius: 4px;
+        box-shadow: 0 8px 16px rgba(60, 40, 20, 0.35);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        padding: 12px 30px 12px 20px;
+        clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+        transform: rotate(-1.5deg);
+        text-shadow: 0 1px 2px rgba(60, 40, 20, 0.45);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      
+      #add-timeline-event-btn:hover {
+        background: linear-gradient(165deg, #a5855c, #86684a);
+        transform: rotate(-1.5deg) translateY(-3px);
+        box-shadow: 0 12px 22px rgba(60, 40, 20, 0.42);
+      }
+      
+      /* 站牌进入视野时轻微弹起（JS IntersectionObserver 加类） */
+      .timeline-item.sign-pop {
+        animation: sign-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      
+      @keyframes sign-pop {
+        0% { transform: translateY(16px) scale(0.92); }
+        100% { transform: translateY(0) scale(1); }
+      }
+    }
+
+    /* ==================== 电脑端照片墙：书桌散布（第五阶段） ==================== */
+    @media (min-width: 769px) {
+      #photos-page {
+        max-width: none;
+      }
+
+      #photos-page .page-header {
+        padding: 0 32px;
+      }
+
+      /* ---- 散布容器：多行 flex-wrap，铺满屏宽 ---- */
+      .photo-wall {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 44px 48px;
+        padding: 48px;
+      }
+
+      /* ---- 拍立得卡片 ---- */
+      .photo-wall .photo-item {
+        position: relative;
+        width: 250px;
+        padding: 12px 12px 0;
+        background: #fff;
+        border: none;
+        border-radius: 2px;
+        box-shadow: 0 10px 24px rgba(45, 35, 25, 0.25);
+        opacity: 0; /* 等待飘落入场 */
+        transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--tilt, 0deg));
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      /* 顶部一角贴和纸胶带（SVG 半透明格纹） */
+      .photo-wall .photo-item::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: 22px;
+        width: 64px;
+        height: 20px;
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><rect width='12' height='12' fill='rgba(244,177,188,0.5)'/><path d='M0 0L12 12M12 0L0 12' stroke='rgba(255,255,255,0.4)' stroke-width='2.5'/></svg>") center / 12px 12px;
+        opacity: 0.9;
+        transform: rotate(-8deg);
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      /* 随机微倾斜 + 轻微位移（8 张一组循环） */
+      .photo-wall .photo-item:nth-child(8n+1) { --tilt: -5.8deg; --dx: 6px;   --dy: 10px; }
+      .photo-wall .photo-item:nth-child(8n+2) { --tilt: 3.2deg;  --dx: -8px;  --dy: -6px; }
+      .photo-wall .photo-item:nth-child(8n+3) { --tilt: -1.6deg; --dx: 10px;  --dy: 4px; }
+      .photo-wall .photo-item:nth-child(8n+4) { --tilt: 5.4deg;  --dx: -4px;  --dy: 12px; }
+      .photo-wall .photo-item:nth-child(8n+5) { --tilt: -4.2deg; --dx: -10px; --dy: -8px; }
+      .photo-wall .photo-item:nth-child(8n+6) { --tilt: 2.4deg;  --dx: 8px;   --dy: 6px; }
+      .photo-wall .photo-item:nth-child(8n+7) { --tilt: -3.4deg; --dx: 2px;   --dy: -10px; }
+      .photo-wall .photo-item:nth-child(8n+8) { --tilt: 4.6deg;  --dx: -6px;  --dy: 2px; }
+
+      /* 偶尔两张轻微交叠（压角） */
+      .photo-wall .photo-item:nth-child(4n+3) {
+        margin-left: -24px;
+        z-index: 2;
+      }
+
+      /* 照片本体 */
+      .photo-wall .photo-item img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        display: block;
+        border-radius: 0;
+        cursor: pointer;
+        background: #f0e8d8;
+      }
+
+      /* 下边框更宽的白边内排版 */
+      .photo-wall .photo-info {
+        padding: 12px 6px 16px;
+      }
+
+      .photo-wall .photo-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #3a2e22;
+        margin-bottom: 5px;
+      }
+
+      .photo-wall .photo-desc {
+        font-size: 12.5px;
+        line-height: 1.65;
+        color: #3a3a48;
+        margin-bottom: 8px;
+      }
+
+      .photo-wall .photo-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #8a7a60;
+        border-top: 1px dashed rgba(139, 94, 60, 0.18);
+        padding-top: 7px;
+      }
+
+      /* 悬停：摆正 + 放大 + 提层 + 投影加深 */
+      .photo-wall .photo-item:hover {
+        transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(0deg) scale(1.06);
+        z-index: 6;
+        box-shadow: 0 22px 44px rgba(45, 35, 25, 0.38);
+      }
+
+      /* 编辑/删除贴纸按钮：悬停浮现于右上角 */
+      .photo-wall .photo-actions {
+        top: 6px;
+        right: 6px;
+        z-index: 5;
+        opacity: 0;
+        transform: scale(0.8) rotate(-6deg);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        pointer-events: none;
+      }
+
+      .photo-wall .photo-item:hover .photo-actions,
+      .photo-wall .photo-item:focus-within .photo-actions {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+        pointer-events: auto;
+      }
+
+      .photo-wall .photo-action-btn {
+        background: #fffdf6;
+        border-radius: 8px;
+        box-shadow: 0 3px 8px rgba(45, 35, 25, 0.28);
+      }
+
+      .photo-wall .photo-action-btn:hover {
+        background: #fff;
+        transform: scale(1.12) rotate(6deg);
+      }
+
+      /* 内联编辑表单：与相纸协调 */
+      .photo-wall .photo-edit-form {
+        padding: 10px 4px 14px;
+      }
+
+      .photo-wall .photo-edit-form .input,
+      .photo-wall .photo-edit-form .edit-textarea {
+        background: #fff;
+        border: 1px solid #d8cfc0;
+        border-radius: 8px;
+        color: #2d2d3a;
+      }
+
+      /* 骨架屏（桌面端） */
+      .photo-wall .photo-item.skeleton {
+        min-height: 320px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+        animation: photo-skeleton-pulse 1.4s ease-in-out infinite;
+      }
+
+      .photo-wall .photo-item.skeleton::before {
+        display: none;
+      }
+
+      @keyframes photo-skeleton-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.55; }
+      }
+
+      /* 飘落入场：从上方 40px 带旋转落下回弹，只触发一次 */
+      .photo-wall .photo-item.photo-drop {
+        animation: photo-drop 0.7s cubic-bezier(0.25, 0.8, 0.35, 1.2) both;
+      }
+
+      .photo-wall .photo-item.photo-dropped {
+        opacity: 1;
+      }
+
+      @keyframes photo-drop {
+        0% {
+          opacity: 0;
+          transform: translate(var(--dx, 0px), calc(var(--dy, 0px) - 40px)) rotate(calc(var(--tilt, 0deg) - 7deg));
+        }
+        60% {
+          opacity: 1;
+          transform: translate(var(--dx, 0px), calc(var(--dy, 0px) + 6px)) rotate(calc(var(--tilt, 0deg) + 1.5deg));
+        }
+        100% {
+          opacity: 1;
+          transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--tilt, 0deg));
+        }
+      }
+    }
+    
+    /* ==================== 电脑端收官（第六阶段：手账档案 / 台历倒计时 / 月历纪念日 / 弹窗换装） ==================== */
+    @media (min-width: 769px) {
+      /* ---------- 任务1：彼此档案 = 一本摊开的手账 ---------- */
+      #profiles-page { max-width: none; }
+      
+      /* 手账本体：摊开居中，max-width 1300px */
+      .profiles-desktop {
+        position: relative;
+        display: flex;
+        align-items: stretch;
+        max-width: 1300px;
+        margin: 28px auto 0;
+        perspective: 1800px;
+      }
+      
+      /* 进入页面时轻微摊开动画 */
+      #profiles-page.active .profiles-desktop {
+        animation: journal-open 0.7s cubic-bezier(0.22, 0.9, 0.32, 1);
+      }
+      @keyframes journal-open {
+        0% { opacity: 0.25; transform: scaleX(0.86) translateY(12px); }
+        100% { opacity: 1; transform: scaleX(1) translateY(0); }
+      }
+      
+      /* 中间书脊：微隆起 + 阴影 */
+      .profiles-desktop::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 4px;
+        bottom: 4px;
+        width: 40px;
+        transform: translateX(-50%);
+        background: linear-gradient(90deg,
+          rgba(120, 92, 58, 0) 0%,
+          rgba(120, 92, 58, 0.3) 28%,
+          rgba(96, 72, 44, 0.55) 50%,
+          rgba(120, 92, 58, 0.3) 72%,
+          rgba(120, 92, 58, 0) 100%);
+        border-radius: 50%;
+        box-shadow: 0 0 20px rgba(80, 60, 36, 0.4);
+        z-index: 3;
+        pointer-events: none;
+      }
+      
+      /* 左右两页：奶油横线纸（bg-paper.jpg 淡罩 + 32px 横线） */
+      .profiles-desktop .profile-column {
         flex: 1;
-        max-width: 240px;
+        min-width: 0;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 36px 46px 26px;
+        min-height: 66vh;
+        background:
+          repeating-linear-gradient(to bottom, transparent 0, transparent 31px, rgba(140, 112, 74, 0.16) 32px),
+          linear-gradient(rgba(252, 246, 231, 0.9), rgba(252, 246, 231, 0.9)),
+          url('assets/bg-paper.jpg') center / cover no-repeat;
+        box-shadow: 0 18px 44px rgba(80, 60, 36, 0.28), inset 0 0 60px rgba(190, 160, 110, 0.12);
+      }
+      .profiles-desktop .profile-column:first-child {
+        border-radius: 12px 3px 3px 12px;
+        border-right: 1px solid rgba(140, 112, 74, 0.28);
+      }
+      .profiles-desktop .profile-column:last-child {
+        border-radius: 3px 12px 12px 3px;
+        border-left: 1px solid rgba(140, 112, 74, 0.28);
+      }
+      
+      /* 页角微卷（左页卷左下、右页卷右下） */
+      .profiles-desktop .profile-column::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        width: 48px;
+        height: 48px;
+        pointer-events: none;
+      }
+      .profiles-desktop .profile-column:first-child::before {
+        left: 0;
+        border-radius: 0 0 0 12px;
+        background: linear-gradient(45deg, transparent 47%, rgba(140, 112, 74, 0.22) 50%, #e6d9bc 55%, #f4ecd8 100%);
+      }
+      .profiles-desktop .profile-column:last-child::before {
+        right: 0;
+        border-radius: 0 0 12px 0;
+        background: linear-gradient(315deg, transparent 47%, rgba(140, 112, 74, 0.22) 50%, #e6d9bc 55%, #f4ecd8 100%);
+      }
+      
+      /* 页角小动物探头：左页小猪、右页小猫 */
+      .profiles-desktop .profile-column::after {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        width: 58px;
+        height: 58px;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .profiles-desktop .profile-column:first-child::after {
+        left: 8px;
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'><path d='M13 21 L9 8 L23 14 Z' fill='%23f2a0b4'/><path d='M43 21 L47 8 L33 14 Z' fill='%23f2a0b4'/><circle cx='28' cy='31' r='18' fill='%23f7b8c6'/><ellipse cx='28' cy='36' rx='8' ry='6' fill='%23f290a8'/><circle cx='25' cy='36' r='1.6' fill='%23a34a5e'/><circle cx='31' cy='36' r='1.6' fill='%23a34a5e'/><circle cx='21' cy='28' r='2.1' fill='%235a3a42'/><circle cx='35' cy='28' r='2.1' fill='%235a3a42'/><path d='M23 45 Q28 48.5 33 45' stroke='%23d9758c' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>") center / contain no-repeat;
+      }
+      .profiles-desktop .profile-column:last-child::after {
+        right: 8px;
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'><path d='M13 21 L10 7 L24 14 Z' fill='%23e8cfa8'/><path d='M43 21 L46 7 L32 14 Z' fill='%23e8cfa8'/><path d='M14.5 19 L12.5 11 L21 15 Z' fill='%23d9a0a8'/><path d='M41.5 19 L43.5 11 L35 15 Z' fill='%23d9a0a8'/><circle cx='28' cy='31' r='17' fill='%23f3e0c0'/><circle cx='22' cy='28' r='2.1' fill='%234a3826'/><circle cx='34' cy='28' r='2.1' fill='%234a3826'/><path d='M26 33 L30 33 L28 35.5 Z' fill='%23d98a94'/><path d='M28 35.5 Q25 39 22 37 M28 35.5 Q31 39 34 37' stroke='%238a6a48' stroke-width='1.3' fill='none' stroke-linecap='round'/><path d='M6 30 L15 31 M7 35 L15 33.5 M50 30 L41 31 M49 35 L41 33.5' stroke='%23b99a70' stroke-width='1.2' stroke-linecap='round'/></svg>") center / contain no-repeat;
+      }
+      
+      /* 页首垂书签带（左页猪皮粉「桐桐猪の档案」/ 右页奶咖「小语涵の档案」） */
+      .profiles-desktop .profile-section-header {
+        justify-content: flex-start;
+        margin: -36px 0 18px;
+      }
+      .profiles-desktop .profile-name {
+        position: relative;
+        display: inline-block;
+        padding: 9px 24px 10px;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(90, 50, 40, 0.35);
+        box-shadow: 0 5px 12px rgba(80, 60, 36, 0.3);
+      }
+      /* 书签带下缘 V 形缺口 */
+      .profiles-desktop .profile-name::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -9px;
+        width: 100%;
+        height: 10px;
+        background: inherit;
+        clip-path: polygon(0 0, 50% 100%, 100% 0);
+      }
+      .profiles-desktop .profile-column:first-child .profile-name { background: #e891a8; }
+      .profiles-desktop .profile-column:last-child .profile-name { background: #c49a6c; }
+      
+      .profiles-desktop .profile-list {
+        flex: 1;
+        gap: 0;
+      }
+      
+      /* 每条档案 = 一行手写条目（去掉玻璃卡） */
+      .profiles-desktop .profile-item {
+        background: none;
+        border: none;
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border-radius: 0;
+        padding: 0 2px;
+        gap: 0;
+        animation: none;
+        cursor: pointer;
+        min-height: 32px;
+        line-height: 32px; /* 对齐纸面横线 */
+      }
+      .profiles-desktop .profile-item:hover { background: rgba(180, 140, 90, 0.08); }
+      .profiles-desktop .profile-item.empty-state { line-height: 1.8; padding: 24px; cursor: default; }
+      
+      /* 标签 = 印章式小字（淡红章框）；内容 = LXGW WenKai 手写 */
+      .profiles-desktop .profile-item .profile-label {
+        display: inline-block;
+        vertical-align: baseline;
+        margin-right: 12px;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.7;
+        color: rgba(196, 84, 84, 0.85);
+        border: 1.2px solid rgba(196, 84, 84, 0.55);
+        border-radius: 3px;
+        padding: 0 7px;
+        transform: rotate(-2deg);
+        background: rgba(196, 84, 84, 0.06);
+      }
+      .profiles-desktop .profile-item .profile-value {
+        display: inline;
+        font-size: 16px;
+        color: #4a3b2c;
+      }
+      .profiles-desktop .profile-item .profile-edit-btn {
+        top: 4px;
+        right: 4px;
+        opacity: 0;
+        background: #fffdf4;
+        border: 1px solid rgba(160, 130, 86, 0.5);
+        box-shadow: 0 3px 8px rgba(80, 60, 36, 0.22);
+      }
+      .profiles-desktop .profile-item:hover .profile-edit-btn { opacity: 0.9; }
+      
+      /* 编辑：原地变可填写横线格（机制沿用 class 展开，样式换稿纸） */
+      .profiles-desktop .profile-edit-form.active {
+        max-height: 220px;
+        margin-top: 2px;
+      }
+      .profiles-desktop .profile-edit-form .input {
+        background: transparent;
+        border: none;
+        border-bottom: 1.5px dashed rgba(140, 112, 74, 0.55);
+        border-radius: 0;
+        box-shadow: none;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        color: #4a3b2c;
+        padding: 4px 2px;
+      }
+      .profiles-desktop .profile-edit-form .input:focus {
+        outline: none;
+        border-bottom-color: rgba(140, 112, 74, 0.9);
+        background: rgba(255, 255, 255, 0.4);
+      }
+      
+      /* 「➕ 添加条目」= 页底小贴纸 */
+      .profiles-desktop .profile-add-sticker {
+        align-self: center;
+        margin-top: 18px;
+        min-height: 38px;
+        padding: 8px 20px;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        font-size: 14px;
+        color: #6a4f30;
+        background: #fffdf4;
+        border: 1px dashed rgba(140, 112, 74, 0.6);
+        border-radius: 8px;
+        box-shadow: 0 5px 12px rgba(80, 60, 36, 0.25);
+        transform: rotate(-2deg);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .profiles-desktop .profile-column:last-child .profile-add-sticker { transform: rotate(2deg); }
+      .profiles-desktop .profile-add-sticker:hover {
+        transform: rotate(0deg) translateY(-2px);
+        box-shadow: 0 8px 16px rgba(80, 60, 36, 0.32);
+      }
+      
+      /* ---------- 任务2：倒计时 = 一排小台历 ---------- */
+      #countdown-page { max-width: none; }
+      
+      .countdown-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: stretch;
+        gap: 36px;
+        max-width: 1400px;
+        margin: 34px auto 0;
+      }
+      .countdown-list .empty-state { width: 100%; }
+      
+      /* 迷你台历卡：纸质卡面 + 顶部银色装订环 + 微卷页角 */
+      .countdown-card {
+        background: linear-gradient(165deg, #fdf8ea, #f6ecd4);
+        border: 1px solid rgba(160, 130, 86, 0.4);
+        border-radius: 6px;
+        box-shadow: 0 10px 26px rgba(80, 60, 36, 0.22);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        width: 240px;
+        padding: 48px 18px 22px;
+        text-align: center;
+        position: relative;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+      .countdown-card:hover {
+        transform: translateY(-7px) rotate(-1.2deg);
+        box-shadow: 0 18px 38px rgba(80, 60, 36, 0.3);
+      }
+      .countdown-card::before {
+        content: '';
+        position: absolute;
+        top: -13px;
+        left: 0;
+        width: 100%;
+        height: 30px;
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 30'><g fill='none'><circle cx='60' cy='16' r='8' stroke='%23a8adb6' stroke-width='3.4'/><circle cx='60' cy='16' r='8' stroke='%23e8ebf0' stroke-width='1.2'/><circle cx='120' cy='16' r='8' stroke='%23a8adb6' stroke-width='3.4'/><circle cx='120' cy='16' r='8' stroke='%23e8ebf0' stroke-width='1.2'/><circle cx='180' cy='16' r='8' stroke='%23a8adb6' stroke-width='3.4'/><circle cx='180' cy='16' r='8' stroke='%23e8ebf0' stroke-width='1.2'/></g></svg>") center / 240px 30px no-repeat;
+        pointer-events: none;
+      }
+      .countdown-card::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 34px;
+        height: 34px;
+        background: linear-gradient(315deg, transparent 47%, rgba(150, 120, 80, 0.28) 50%, #eee2c4 55%, #fbf4e2 100%);
+        border-radius: 0 0 6px 0;
+        pointer-events: none;
+      }
+      
+      .countdown-card .countdown-label {
+        padding-right: 0;
+        font-size: 16px;
+        color: #6a543a;
+        margin-bottom: 8px;
+      }
+      /* 大号剩余天数：渐变数字 */
+      .countdown-card .countdown-number {
+        font-size: 62px;
+        background: linear-gradient(135deg, #e87a96, #a683d8);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+      }
+      .countdown-card .countdown-unit { color: rgba(106, 84, 58, 0.75); }
+      .countdown-card .countdown-target { color: rgba(106, 84, 58, 0.65); margin-top: 8px; }
+      .countdown-card .countdown-set-inline input {
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px dashed rgba(160, 130, 86, 0.5);
+        border-radius: 4px;
+      }
+      
+      /* 「每年重复」小循环印章 */
+      .countdown-recur-stamp {
+        position: absolute;
+        top: 10px;
+        left: 8px;
+        width: 60px;
+        height: 60px;
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='none' stroke='%23c05454' stroke-width='2.6'/><circle cx='32' cy='32' r='22' fill='none' stroke='%23c05454' stroke-width='1.1'/><path d='M32 12 A20 20 0 0 1 52 32' fill='none' stroke='%23c05454' stroke-width='2' stroke-linecap='round'/><path d='M52 26 L52 33 L45.5 30 Z' fill='%23c05454'/><path d='M32 52 A20 20 0 0 1 12 32' fill='none' stroke='%23c05454' stroke-width='2' stroke-linecap='round'/><path d='M12 38 L12 31 L18.5 34 Z' fill='%23c05454'/><text x='32' y='30' font-size='10.5' fill='%23c05454' text-anchor='middle' font-family='serif'>每年</text><text x='32' y='43' font-size='10.5' fill='%23c05454' text-anchor='middle' font-family='serif'>重复</text></svg>") center / contain no-repeat;
+        transform: rotate(-14deg);
+        opacity: 0.85;
+        pointer-events: none;
+      }
+      
+      /* 编辑/删除贴纸按钮悬停浮现 */
+      .countdown-card .countdown-actions {
+        opacity: 0;
+        transform: translateY(-4px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        z-index: 2;
+      }
+      .countdown-card:hover .countdown-actions { opacity: 1; transform: none; }
+      .countdown-card .countdown-action-btn {
+        opacity: 1;
+        background: #fffdf4;
+        border: 1px solid rgba(160, 130, 86, 0.5);
+        box-shadow: 0 3px 8px rgba(80, 60, 36, 0.25);
+      }
+      
+      /* 编辑原地变稿纸填写格（机制沿用） */
+      .countdown-card .countdown-edit-form.active { max-height: 360px; margin-top: 12px; }
+      .countdown-card .countdown-edit-form .input {
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px dashed rgba(160, 130, 86, 0.5);
+        border-radius: 4px;
+        box-shadow: none;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        color: #4a3b2c;
+      }
+      
+      /* 数字更新时轻微翻页（仅此一处动效） */
+      .countdown-card .countdown-number.num-flip {
+        animation: cal-num-flip 0.4s ease;
+        transform-origin: center top;
+      }
+      @keyframes cal-num-flip {
+        0% { transform: rotateX(88deg); opacity: 0.15; }
+        100% { transform: rotateX(0deg); opacity: 1; }
+      }
+      
+      /* ---------- 任务3：纪念日 = 北笑南欢月历 ---------- */
+      #anniversaries-page { max-width: none; }
+      
+      .anni-cal-title {
+        display: block; /* 覆盖 [hidden] 的 UA 样式；手机端无此规则故仍隐藏 */
+        text-align: center;
+        font-size: 30px;
+        font-weight: 700;
+        color: #6a4f30;
+        letter-spacing: 6px;
+        margin: 12px 0 6px;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+      }
+      
+      .anni-list.cal-mode {
+        display: block;
+        position: relative;
+        max-width: 1300px;
+        margin: 26px auto 0;
+        perspective: 1600px;
+      }
+      
+      /* 每页 3 列 × 3 行 = 9 格，宽屏每格约 400px */
+      .anni-cal-page {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        transform-origin: top center;
+      }
+      .anni-cal-page.flip-up {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 4;
+        animation: anni-flip-up 0.45s ease-in forwards;
+      }
+      .anni-cal-page.flip-in { animation: anni-flip-in 0.45s ease-out; }
+      @keyframes anni-flip-up {
+        0% { transform: rotateX(0deg); opacity: 1; }
+        100% { transform: rotateX(-86deg); opacity: 0.1; }
+      }
+      @keyframes anni-flip-in {
+        0% { opacity: 0.35; transform: rotateX(7deg); }
+        100% { opacity: 1; transform: rotateX(0deg); }
+      }
+      
+      /* 月历格子（常驻完整信息，去掉玻璃卡） */
+      .cal-mode .anni-item {
+        display: block;
+        position: relative;
+        background: linear-gradient(170deg, #fdf8ea, #f7edd8);
+        border: 1px solid rgba(160, 130, 86, 0.4);
+        border-radius: 6px;
+        box-shadow: 0 8px 20px rgba(80, 60, 36, 0.18);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        padding: 20px 22px 42px;
+        min-height: 208px;
+        cursor: pointer;
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+      }
+      .cal-mode .anni-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 30px rgba(80, 60, 36, 0.26);
+      }
+      .cal-mode .anni-display { display: block; padding-top: 0; }
+      .cal-mode .anni-info { display: flex; flex-direction: column; gap: 6px; }
+      .cal-mode .anni-name { order: 1; font-size: 19px; font-weight: 700; color: #5a4326; }
+      .cal-mode .anni-date { order: 2; font-size: 13px; color: rgba(106, 84, 58, 0.6); }
+      .cal-mode .anni-desc {
+        order: 3;
+        margin-top: 4px;
+        font-size: 14px;
+        color: rgba(74, 59, 44, 0.88);
+        line-height: 1.7;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .cal-mode .anni-days {
+        position: absolute;
+        right: 16px;
+        bottom: 12px;
+        font-size: 13px;
+        font-weight: 400;
+        color: rgba(150, 100, 70, 0.85);
+        text-align: right;
+      }
+      
+      /* 悬停格子浮现 ✏️🗑️ 贴纸按钮 */
+      .cal-mode .anni-item .anni-actions {
+        opacity: 0;
+        transform: translateY(-4px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+      }
+      .cal-mode .anni-item:hover .anni-actions { opacity: 1; transform: none; }
+      .cal-mode .anni-action-btn {
+        opacity: 1;
+        background: #fffdf4;
+        border: 1px solid rgba(160, 130, 86, 0.5);
+        box-shadow: 0 3px 8px rgba(80, 60, 36, 0.25);
+      }
+      .cal-mode .anni-edit-form.active { max-height: 320px; }
+      .cal-mode .anni-edit-form .input,
+      .cal-mode .anni-edit-form .edit-textarea {
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px dashed rgba(160, 130, 86, 0.5);
+        border-radius: 4px;
+        box-shadow: none;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        color: #4a3b2c;
+      }
+      
+      /* 翻页角标与「第 X 页」小印章 */
+      .anni-cal-nav {
+        position: absolute;
+        z-index: 5;
+        display: inline-block; /* 覆盖 [hidden] UA 样式 */
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        font-size: 15px;
+        color: #6a4f30;
+        background: #fffdf4;
+        border: 1px solid rgba(160, 130, 86, 0.55);
+        border-radius: 8px;
+        padding: 7px 16px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(80, 60, 36, 0.22);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .anni-cal-nav:hover { transform: translateY(-2px); box-shadow: 0 7px 14px rgba(80, 60, 36, 0.3); }
+      .anni-cal-nav.prev { top: -40px; left: 0; }
+      .anni-cal-nav.next { bottom: -46px; right: 0; }
+      .anni-cal-stamp {
+        position: absolute;
+        top: -34px;
+        right: 8px;
+        z-index: 5;
+        display: block; /* 覆盖 [hidden] UA 样式 */
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        font-size: 13px;
+        color: rgba(196, 84, 84, 0.85);
+        border: 1.5px solid rgba(196, 84, 84, 0.55);
+        border-radius: 4px;
+        padding: 3px 10px;
+        transform: rotate(-3deg);
+        background: rgba(196, 84, 84, 0.05);
+      }
+      
+      /* ---------- 任务4：弹窗统一换装 ---------- */
+      /* 五个添加表单弹窗：稿纸样式（横线纸底 + 手写体标签） */
+      .modal-content {
+        background:
+          repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(140, 112, 74, 0.13) 28px),
+          linear-gradient(168deg, #fdf8ec, #f8efdb);
+        border: 1px solid rgba(160, 130, 86, 0.45);
+        border-radius: 8px;
+        box-shadow: 0 24px 60px rgba(60, 44, 24, 0.35);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        color: #4a3b2c;
+      }
+      .modal-content h3 {
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        letter-spacing: 2px;
+      }
+      .modal-content label { font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif; }
+      .modal-content .input,
+      .modal-content .edit-textarea {
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(160, 130, 86, 0.4);
+        border-radius: 4px;
+        box-shadow: none;
+        color: #4a3b2c;
+      }
+      
+      /* 「抽一张甜蜜卡片」：信纸从信封中向上抽出 */
+      .memory-overlay { background: rgba(50, 36, 24, 0.52); }
+      .memory-overlay::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 7vh;
+        width: 340px;
+        height: 220px;
+        transform: translateX(-50%);
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 220'><rect x='4' y='10' width='332' height='204' rx='10' fill='%23e3b394'/><rect x='4' y='10' width='332' height='204' rx='10' fill='none' stroke='%23c08a68' stroke-width='3'/><path d='M4 20 L170 130 L336 20' fill='none' stroke='%23c08a68' stroke-width='3'/><path d='M4 214 L120 118 M336 214 L220 118' stroke='%23c08a68' stroke-width='3' fill='none'/></svg>") center / contain no-repeat;
+        filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.35));
+        pointer-events: none;
+      }
+      .memory-content {
+        background:
+          repeating-linear-gradient(to bottom, transparent 0, transparent 29px, rgba(140, 112, 74, 0.14) 30px),
+          linear-gradient(170deg, #fdf8ec, #f7eeda);
+        border: 1px solid rgba(160, 130, 86, 0.45);
+        border-radius: 4px;
+        box-shadow: 0 26px 70px rgba(30, 20, 10, 0.5);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        max-width: 500px;
+        z-index: 1;
+      }
+      .memory-overlay.active .memory-content {
+        transform: none;
+        animation: letter-pull 0.6s cubic-bezier(0.22, 0.9, 0.3, 1);
+      }
+      @keyframes letter-pull {
+        0% { transform: translateY(46vh) scale(0.72) rotate(2deg); opacity: 0; }
+        55% { opacity: 1; }
+        100% { transform: translateY(0) scale(1) rotate(0deg); }
+      }
+      .memory-close-btn {
+        background: rgba(190, 80, 80, 0.1);
+        border: 1px solid rgba(190, 80, 80, 0.35);
+        color: #b04a4a;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      .memory-source-tag {
+        background: rgba(196, 84, 84, 0.08);
+        border: 1px solid rgba(196, 84, 84, 0.3);
+        color: rgba(150, 70, 50, 0.85);
+        border-radius: 4px;
+      }
+      
+      /* 删除确认框：揉皱又摊开的小纸条 */
+      .delete-modal-overlay .delete-modal-content {
+        background:
+          linear-gradient(115deg, rgba(120, 90, 60, 0.1) 0%, transparent 46%),
+          linear-gradient(65deg, transparent 42%, rgba(120, 90, 60, 0.12) 46%, transparent 52%),
+          radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.55), transparent 62%),
+          linear-gradient(160deg, #f7efdc, #eee2c6);
+        border: 1px solid rgba(150, 120, 80, 0.5);
+        border-radius: 14px 4px 16px 6px / 6px 16px 5px 14px;
+        box-shadow: 0 16px 44px rgba(60, 44, 24, 0.35), inset 0 0 30px rgba(150, 120, 80, 0.12);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        transform: scale(0.9) rotate(-1.6deg);
+      }
+      .delete-modal-overlay.active .delete-modal-content { transform: scale(1) rotate(-1.6deg); }
+      .delete-modal-overlay .delete-modal-content p { color: #5a4326; }
+      
+      /* 图片灯箱：深色绒布 + 白边拍立得框 */
+      .lightbox-overlay {
+        background:
+          linear-gradient(rgba(26, 18, 32, 0.68), rgba(26, 18, 32, 0.68)),
+          url('assets/bg-velvet.jpg') center / cover no-repeat;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      .lightbox-overlay img {
+        background: #fff;
+        padding: 16px 16px 64px;
+        border-radius: 3px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+        max-width: min(72vw, 900px);
+        max-height: 78vh;
+      }
+    }
+    
+    /* ==================== 电脑端专属背景部署（仅背景层；布局/逻辑/既有效果一律不动） ==================== */
+    @media (min-width: 769px) {
+      /* 1. 首页 → 房间的墙：整页铺满固定；软木板与日历卡像挂在墙上（盖住原奶白纸底）。
+            版心仍限 1400px 居中：页面改为全宽后用等效侧 padding 收拢，网格布局不变 */
+      #home-page {
+        max-width: none;
+        padding-left: max(32px, calc((100vw - 1400px) / 2));
+        padding-right: max(32px, calc((100vw - 1400px) / 2));
+        background:
+          linear-gradient(rgba(255, 252, 245, 0.2), rgba(255, 252, 245, 0.2)),
+          #ece4d4 url('assets/bg-home.jpg') center / cover no-repeat fixed;
+      }
+      
+      /* 2. 照片墙 → 木质书桌：整页铺满固定，拍立得直接散布桌面，标题浮在上方 */
+      #photos-page {
+        background:
+          linear-gradient(rgba(255, 252, 245, 0.18), rgba(255, 252, 245, 0.18)),
+          #b28a62 url('assets/bg-photos.jpg') center / cover no-repeat fixed;
+      }
+      
+      /* 3. 彼此档案 → 书房桌角：整页铺满固定，摊开的手账置于桌面中央空白区 */
+      #profiles-page {
+        background:
+          linear-gradient(rgba(255, 252, 245, 0.22), rgba(255, 252, 245, 0.22)),
+          #c4b096 url('assets/bg-profiles.jpg') center / cover no-repeat fixed;
+      }
+      
+      /* 4. 倒计时 → 窗台晨光：整页铺满固定，台历排适当下移"站"在窗台上 */
+      #countdown-page {
+        background:
+          linear-gradient(rgba(255, 252, 245, 0.2), rgba(255, 252, 245, 0.2)),
+          #e4d4b4 url('assets/bg-countdown.jpg') center / cover no-repeat fixed;
+      }
+      #countdown-page .countdown-list { margin-top: 10vh; }
+      
+      /* 5. 纪念日 → 碎花墙纸：整页铺满固定，北笑南欢月历像挂在碎花墙上（罩稍厚压碎花对比） */
+      #anniversaries-page {
+        background:
+          linear-gradient(rgba(255, 252, 245, 0.28), rgba(255, 252, 245, 0.28)),
+          #ecdcd2 url('assets/bg-anni.jpg') center / cover no-repeat fixed;
       }
     }
     
@@ -2346,27 +4580,34 @@
   </style>
 </head>
 <body>
-  <canvas id="starfield"></canvas>
-  
   <div class="app">
     <!-- 1. Landing Page -->
     <section id="landing-page" class="active">
-      <h1 class="landing-title font-serif breathing">北笑南欢</h1>
-      <p class="landing-subtitle font-serif">世界で一番大切な人は君だ</p>
-      <button class="btn btn-primary btn-lg enter-btn" id="enter-btn">
-        <span class="line1">用小嘴胶粘的声音跟我说</span>
-        <span class="line2">niangniangniang</span>
-      </button>
+      <!-- 电脑端：CSS 绘制奶油白信封（翻盖/邮票/和纸胶带）；手机端信封容器透明化，布局不变 -->
+      <div class="envelope">
+        <div class="envelope-letter" aria-hidden="true"></div>
+        <div class="envelope-pocket" aria-hidden="true"></div>
+        <div class="envelope-flap" aria-hidden="true"></div>
+        <div class="envelope-tape" aria-hidden="true"></div>
+        <div class="envelope-stamp" aria-hidden="true"></div>
+        <h1 class="landing-title font-serif breathing">北笑南欢</h1>
+        <p class="landing-subtitle font-serif">世界で一番大切な人は君だ</p>
+        <button class="btn btn-primary btn-lg enter-btn" id="enter-btn">
+          <span class="line1">用小嘴胶粘的声音跟我说</span>
+          <span class="line2">niangniangniang</span>
+        </button>
+      </div>
     </section>
     
     <!-- 2. Password Page -->
     <section id="password-page">
       <div class="glass-card password-box">
-        <h2 class="password-title font-serif">输入密码</h2>
+        <!-- 电脑端显示手写体暗号标题，手机端保持原标题 -->
+        <h2 class="password-title font-serif"><span class="pw-title-mobile">输入密码</span><span class="pw-title-desktop">只有我们知道的暗号</span></h2>
         <p class="password-hint">请输入我们的密码</p>
         <input type="password" class="input password-input" id="password-input" placeholder="••••" maxlength="4" inputmode="numeric" autocomplete="off">
         <div class="password-error" id="password-error">这不是我们的密码哦～</div>
-        <button class="btn btn-primary" id="password-submit" style="width:100%">进入</button>
+        <button class="btn btn-primary" id="password-submit">进入</button>
       </div>
     </section>
     
@@ -2439,6 +4680,8 @@
         <div class="pinned-limit-hint" id="pinned-limit-hint" style="display:none">
           置顶小窝已经被 5 只小猫咪占满啦，先取消一条才能迎接新的留言哦 🐱
         </div>
+        <!-- 电脑端：置顶区上方的麻绳（手机端隐藏） -->
+        <div class="pin-rope" aria-hidden="true"></div>
         <div class="message-list" id="pinned-message-list">
           <div class="glass-card message-item pinned">
             <div class="skeleton" style="height:16px;width:100%;margin-bottom:8px"></div>
@@ -2516,12 +4759,11 @@
         <div style="width:60px"></div>
       </div>
       
-      <!-- Desktop side-by-side -->
+      <!-- Desktop 摊开手账（第六阶段：左页桐桐猪 / 右页小语涵） -->
       <div class="profiles-desktop" id="profiles-desktop">
         <div class="profile-column">
           <div class="profile-section-header">
-            <div class="profile-name font-serif">🐖 桐桐猪</div>
-            <button class="btn" id="add-profile-beidou-btn">➕ 添加条目</button>
+            <div class="profile-name">桐桐猪の档案</div>
           </div>
           <div class="profile-list" id="profile-list-beidou">
             <div class="glass-card profile-item">
@@ -2533,12 +4775,11 @@
               <div class="profile-value skeleton" style="height:14px;width:75%"></div>
             </div>
           </div>
+          <button class="btn profile-add-sticker" id="add-profile-beidou-btn">➕ 添加条目</button>
         </div>
-        <div class="profile-divider"></div>
         <div class="profile-column">
           <div class="profile-section-header">
-            <div class="profile-name font-serif">🐱 小语涵</div>
-            <button class="btn" id="add-profile-xiaoxiao-btn">➕ 添加条目</button>
+            <div class="profile-name">小语涵の档案</div>
           </div>
           <div class="profile-list" id="profile-list-xiaoxiao">
             <div class="glass-card profile-item">
@@ -2550,6 +4791,7 @@
               <div class="profile-value skeleton" style="height:14px;width:75%"></div>
             </div>
           </div>
+          <button class="btn profile-add-sticker" id="add-profile-xiaoxiao-btn">➕ 添加条目</button>
         </div>
       </div>
       
@@ -2600,6 +4842,9 @@
         <h2 class="page-title font-serif">🎂 纪念日</h2>
         <div style="width:60px"></div>
       </div>
+      
+      <!-- 月历标题（hidden：手机端不显示；电脑端第六阶段 CSS 覆盖为手写体页首标题） -->
+      <div class="anni-cal-title font-wenkai" hidden>北笑南欢月历</div>
       
       <div class="anni-list" id="anni-list">
         <div class="glass-card anni-item">
@@ -2815,7 +5060,6 @@
     const identity = safeGetItem('identity');
     let isMuted = safeGetItem('musicMuted') === 'true';
     let isPlaying = false;
-    let mouseX = -1000, mouseY = -1000;
     let messagesCache = [];
 
     let deleteConfirmCallback = null;
@@ -2838,18 +5082,119 @@
     const musicBtn = document.getElementById('music-btn');
     
     // ===== Page Routing =====
+    const desktopMedia = window.matchMedia('(min-width: 769px)');
+    let currentPageId = 'landing-page'; // landing-page 在 HTML 中默认带 active
+    
     function showPage(pageId) {
+      const isDesktop = desktopMedia.matches;
+      const isSwitch = currentPageId && currentPageId !== pageId;
       pages.forEach(id => {
         const el = document.getElementById(id);
         if (id === pageId) {
           el.classList.add('active');
+          // 电脑端：翻书页转场；手机端保持原有淡入不动
+          if (isDesktop && isSwitch) playPageFlip(el, pageId);
         } else {
           el.classList.remove('active');
         }
       });
+      currentPageId = pageId;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     window.showPage = showPage;
+    
+    /**
+     * 电脑端翻书页转场：新页面像一页手账纸翻入
+     * 普通切换：左侧为轴，rotateY 从 -60deg 到 0（从右侧翻入）
+     * 返回首页：方向相反，右侧为轴，rotateY 从 60deg 到 0（从左侧翻入）
+     */
+    function playPageFlip(el, pageId) {
+      const isBackHome = pageId === 'home-page';
+      if (el._flipAnim) el._flipAnim.cancel();
+      el.style.transition = 'none'; // 避免与原有淡入过渡叠加
+      el.style.transformOrigin = isBackHome ? 'right center' : 'left center';
+      const anim = el.animate([
+        {
+          transform: isBackHome ? 'rotateY(60deg)' : 'rotateY(-60deg)',
+          opacity: 0,
+          boxShadow: isBackHome ? '-48px 0 80px rgba(45, 45, 90, 0.35)' : '48px 0 80px rgba(45, 45, 90, 0.35)'
+        },
+        {
+          transform: 'rotateY(0deg)',
+          opacity: 1,
+          boxShadow: '0 0 0 rgba(45, 45, 90, 0)'
+        }
+      ], {
+        duration: 600,
+        easing: 'ease-out'
+      });
+      el._flipAnim = anim;
+      anim.onfinish = () => {
+        if (el._flipAnim !== anim) return;
+        el._flipAnim = null;
+        el.style.transition = '';
+        el.style.transformOrigin = '';
+      };
+    }
+    
+    // ===== 点击爱心粒子（仅电脑端） =====
+    const HEART_SVG = '<svg viewBox="0 0 32 29.6" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M23.6 0c-3.4 0-6.3 2.7-7.6 5.6C14.7 2.7 11.8 0 8.4 0 3.8 0 0 3.8 0 8.4c0 9.4 9.5 11.9 16 21.2 6.1-9.3 16-12.1 16-21.2C32 3.8 28.2 0 23.6 0z"/></svg>';
+    const HEART_COLORS = ['#ff9a9e', '#ffc1e3'];
+    const HEART_MAX = 40;
+    const activeHearts = [];
+    
+    function spawnHearts(x, y, isInteractive) {
+      const count = isInteractive
+        ? 2 + Math.floor(Math.random() * 2)  // 交互元素上：2~3 颗
+        : 5 + Math.floor(Math.random() * 2); // 空白背景上：5~6 颗
+      for (let i = 0; i < count; i++) {
+        // 粒子上限保护：超出移除最旧的
+        while (activeHearts.length >= HEART_MAX) {
+          const oldest = activeHearts.shift();
+          oldest.anim.cancel();
+          oldest.el.remove();
+        }
+        const size = isInteractive
+          ? 8 + Math.random() * 8    // 8~16px，交互元素上更小
+          : 14 + Math.random() * 14; // 14~28px
+        const el = document.createElement('span');
+        el.className = 'click-heart';
+        el.style.left = (x - size / 2) + 'px';
+        el.style.top = (y - size / 2) + 'px';
+        el.style.width = size + 'px';
+        el.style.height = size + 'px';
+        el.style.color = HEART_COLORS[Math.floor(Math.random() * HEART_COLORS.length)];
+        el.innerHTML = HEART_SVG;
+        document.body.appendChild(el);
+        
+        const driftX = (Math.random() - 0.5) * (isInteractive ? 50 : 110);
+        const riseY = (isInteractive ? 40 : 60) + Math.random() * 70;
+        const rotate = (Math.random() - 0.5) * 50;
+        const anim = el.animate([
+          { transform: 'translate(0, 0) rotate(0deg) scale(0.5)', opacity: 1 },
+          { transform: `translate(${driftX * 0.5}px, ${-riseY * 0.55}px) rotate(${rotate * 0.6}deg) scale(1)`, opacity: 1, offset: 0.4 },
+          { transform: `translate(${driftX}px, ${-riseY}px) rotate(${rotate}deg) scale(0.85)`, opacity: 0 }
+        ], {
+          duration: 900 + Math.random() * 300, // 约 1 秒生命周期
+          easing: 'ease-out'
+        });
+        const record = { el, anim };
+        anim.onfinish = () => {
+          el.remove();
+          const idx = activeHearts.indexOf(record);
+          if (idx > -1) activeHearts.splice(idx, 1);
+        };
+        activeHearts.push(record);
+      }
+    }
+    
+    document.addEventListener('click', (e) => {
+      if (!desktopMedia.matches) return; // 手机端不启用
+      const isInteractive = !!e.target.closest(
+        'button, a, input, textarea, select, label, .btn, .photo-item, .message-item, .quick-entry, .latest-message-card, [onclick]'
+      );
+      spawnHearts(e.clientX, e.clientY, isInteractive);
+    });
     
     async function refreshCurrentUser() {
       currentUser = null;
@@ -2929,12 +5274,30 @@
     }
     
     // ===== Date Utilities =====
-    function daysBetween(start, end) {
-      const s = new Date(start);
-      const e = end ? new Date(end) : new Date();
-      s.setHours(0, 0, 0, 0);
-      e.setHours(0, 0, 0, 0);
-      return Math.floor((e - s) / (1000 * 60 * 60 * 24));
+    // 内部小工具：把 YYYY-MM-DD 字符串或 Date 归零到当地午夜
+    function toLocalMidnight(dateInput) {
+      if (dateInput instanceof Date) {
+        const d = new Date(dateInput.getTime());
+        d.setHours(0, 0, 0, 0);
+        return d;
+      }
+      return parseLocalDate(String(dateInput).slice(0, 10));
+    }
+
+    /**
+     * 往过去数（第几天 / 已过几天）：两个日期归零到当地午夜后相减，结果 +1（含今天）
+     * 全站统一口径，禁止再分叉
+     */
+    function daysSinceInclusive(dateStr) {
+      return Math.round((toLocalMidnight(new Date()) - toLocalMidnight(dateStr)) / (1000 * 60 * 60 * 24)) + 1;
+    }
+
+    /**
+     * 往未来数（倒计时还有几天）：两个日期归零到当地午夜后相减取整。
+     * 禁止当前时刻参与计算，禁止 +1，禁止对毫秒差做 ceil
+     */
+    function daysUntil(dateStr) {
+      return Math.round((toLocalMidnight(dateStr) - toLocalMidnight(new Date())) / (1000 * 60 * 60 * 24));
     }
     
     /**
@@ -3031,7 +5394,7 @@
         }
       }
       
-      const diff = Math.floor((target - today) / (1000 * 60 * 60 * 24));
+      const diff = daysUntil(formatDateToYMD(target));
       return {
         days: diff,
         targetStr: formatDateToYMD(target),
@@ -3051,8 +5414,8 @@
         welcomeEl.textContent = '欢迎回家 💕';
       }
       
-      const reunited = daysBetween('2025-07-06');
-      const first = daysBetween('2023-01-18');
+      const reunited = daysSinceInclusive('2025-07-06');
+      const first = daysSinceInclusive('2023-01-18');
       document.getElementById('days-reunited').textContent = reunited;
       document.getElementById('days-first').textContent = `从我们第一次在一起已 ${first} 天（2023.1.18）`;
       
@@ -3199,7 +5562,10 @@
         displayContent = extracted.text;
       }
       
-      const signature = `——${escapeHtml(msg.author || '匿名')}，发送于${formatDateCNFull(msg.created_at)}`;
+      const signature = `——${escapeHtml(msg.author || '匿名')}<span class="sig-date">，发送于${formatDateCNFull(msg.created_at)}</span>`;
+      // 电脑端：身份决定便签颜色、日期拆出做邮戳（手机端署名原样完整显示，无视觉变化）
+      const authorClass = msg.author === '笑笑' ? 'from-xiaoxiao' : (msg.author === '北斗' ? 'from-beidou' : '');
+      const postmark = formatDateCNFull(msg.created_at);
       
       let imageHtml = '';
       if (imageUrl) {
@@ -3220,10 +5586,11 @@
       const repliesHtml = replies.map(reply => renderReplyBubble(reply, messageMap)).join('');
       
       return `
-        <div class="glass-card message-item ${isPinned ? 'pinned' : ''}" data-message-id="${safeId}">
+        <div class="glass-card message-item ${isPinned ? 'pinned' : ''} ${authorClass}" data-message-id="${safeId}">
           <div class="message-item-body font-wenkai">${escapeHtml(displayContent)}</div>
           ${imageHtml}
           <div class="message-signature font-wenkai">${signature}</div>
+          <div class="message-postmark"><span>${escapeHtml(postmark)}</span></div>
           <div class="message-actions">
             ${replyButton}
             ${authorButtons}
@@ -3673,6 +6040,7 @@
             <div class="emoji">⏳</div>
             <p>还没有时光记录，去添加第一个美好瞬间吧～</p>
           </div></li>`;
+        enhanceTimelineScenery(container);
         return;
       }
       
@@ -3717,7 +6085,7 @@
             </form>
           </div>`;
         return `
-          <li class="timeline-item ${fadedClass}" data-event-id="${escapeHtml(eventId)}" data-preset="${isPreset ? '1' : '0'}">
+          <li class="timeline-item ${fadedClass} ${event.tag === '见面' ? 'tag-meet' : 'tag-apart'}" data-event-id="${escapeHtml(eventId)}" data-preset="${isPreset ? '1' : '0'}">
             <div class="timeline-dot"></div>
             <div class="timeline-card glass-card interactive">
               <div class="timeline-view" data-role="view">
@@ -3782,7 +6150,296 @@
           closeTimelineEditForm(item.dataset.eventId);
         });
       });
+      
+      enhanceTimelineScenery(container);
     }
+    
+    // ===== 电脑端「横向人生路」布景（手机端全部 display:none，无影响） =====
+    function enhanceTimelineScenery(container) {
+      if (!container) return;
+      if (!desktopMedia.matches) return;
+      
+      setupTimelineSignObserver(container);
+      setupTimelineRain(container);
+      if (window.timelinePanMeasure) window.timelinePanMeasure();
+    }
+    
+    // ===== 「暂时分开」专属乌云细雨（仅电脑端；云和雨在轨道层内跟随木牌横移） =====
+    let timelineRainCleanup = null;
+    if (desktopMedia.addEventListener) {
+      desktopMedia.addEventListener('change', (e) => {
+        // 窗口缩回手机宽度时销毁雨景，避免隐形运行
+        if (!e.matches && timelineRainCleanup) { timelineRainCleanup(); timelineRainCleanup = null; }
+      });
+    }
+    
+    function setupTimelineRain(container) {
+      if (timelineRainCleanup) { timelineRainCleanup(); timelineRainCleanup = null; }
+      if (!desktopMedia.matches) return;
+      const item = container.querySelector('.timeline-item.faded');
+      if (!item) return;
+      
+      const scene = document.createElement('div');
+      scene.className = 'rain-scene';
+      scene.setAttribute('aria-hidden', 'true');
+      scene.innerHTML = '<div class="rain-cloud"></div><canvas class="rain-canvas"></canvas>';
+      item.appendChild(scene);
+      
+      const canvas = scene.querySelector('.rain-canvas');
+      const ctx = canvas.getContext('2d');
+      const W = 495;                       // 与 CSS .rain-scene 宽度一致（约木牌 1.5 倍）
+      const CLOUD_BOTTOM = 211;            // 云底（雨滴生成高度）= 云高
+      const SIGN_TOP = 251;                // 木牌顶边（云底距其 40px）
+      const SIGN_L = (W - 330) / 2;        // 木牌横向范围（330=木牌宽）
+      const SIGN_R = SIGN_L + 330;
+      const MAX_DROPS = 60;
+      
+      // 几何延迟测量：渲染可能发生在页面 display:none 时（offsetHeight=0），
+      // 必须等页面可见后重测，否则画布高度错误、雨下不出来
+      let H = 0, GROUND = 0;
+      function measureRain() {
+        H = item.offsetHeight + 259;       // 顶部云区 251px + 底部路面余量 8px
+        GROUND = H - 8;
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        canvas.width = Math.round(W * dpr);
+        canvas.height = Math.round(H * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      measureRain();
+      
+      const drops = [];
+      const splashes = [];
+      let raf = null, running = false, inView = false;
+      
+      function spawnDrop() {
+        if (drops.length >= MAX_DROPS) return;
+        const x = 14 + Math.random() * (W - 28);
+        drops.push({
+          x,
+          y: CLOUD_BOTTOM + Math.random() * 6,
+          v: 4.6 + Math.random() * 2.0,      // 绵绵下落
+          len: 10 + Math.random() * 6,       // 细而短的雨丝
+          drift: -0.35 - Math.random() * 0.2,// 轻微斜落
+          // 约 40% 正对木牌的雨丝落在木牌顶边溅起；其余从牌面前方穿过落到地面
+          hitSign: (x > SIGN_L && x < SIGN_R) && Math.random() < 0.4
+        });
+      }
+      
+      function frame() {
+        if (!running) { raf = null; return; }
+        ctx.clearRect(0, 0, W, H);
+        // 密度偏稀但肉眼可见：稳定在 34~48 颗，绝不超过 MAX_DROPS
+        if (drops.length < 48 && Math.random() < 0.55) spawnDrop();
+        if (drops.length < 34) spawnDrop();
+        
+        ctx.lineWidth = 1.4;
+        ctx.strokeStyle = 'rgba(225, 238, 252, 0.85)'; // 淡蓝白（faded 滤镜压暗后仍清晰可见）
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        for (let i = drops.length - 1; i >= 0; i--) {
+          const d = drops[i];
+          d.y += d.v;
+          d.x += d.drift;
+          const floorY = d.hitSign ? SIGN_TOP : GROUND;
+          if (d.y >= floorY) {
+            if (splashes.length < 26) splashes.push({ x: d.x, y: floorY, r: 1, life: 0 });
+            drops.splice(i, 1);
+            continue;
+          }
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(d.x - d.drift * 1.6, d.y - d.len);
+        }
+        ctx.stroke();
+        
+        // 溅起：落点向上的小扩散弧线，2~3 帧扩散后即消
+        for (let i = splashes.length - 1; i >= 0; i--) {
+          const s = splashes[i];
+          s.life++;
+          s.r += 0.55;
+          const alpha = 0.7 * (1 - s.life / 10);
+          if (alpha <= 0.02) { splashes.splice(i, 1); continue; }
+          ctx.strokeStyle = 'rgba(225, 238, 252,' + alpha.toFixed(3) + ')';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, Math.PI * 1.05, Math.PI * 1.95);
+          ctx.stroke();
+        }
+        raf = requestAnimationFrame(frame);
+      }
+      
+      function start() {
+        if (document.hidden) return;
+        // 每次从暂停恢复都重测几何：渲染可能发生在页面 display:none 时，
+        // 那时量出的画布高度是错的；即使 raf 已在跑也必须纠正，否则雨一直下在错误高度
+        measureRain();
+        if (!raf) {
+          running = true;
+          raf = requestAnimationFrame(frame);
+        }
+      }
+      function stop() { running = false; if (raf) { cancelAnimationFrame(raf); raf = null; } }
+      
+      // 时光轴页面不可见（切页 display:none / 木牌滚出视野）时暂停动画
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          inView = en.isIntersecting;
+          (inView && !document.hidden) ? start() : stop();
+        });
+      }, { threshold: 0.02 });
+      io.observe(scene);
+      
+      const onVisibility = () => {
+        if (document.hidden) stop();
+        else if (inView) start();
+      };
+      document.addEventListener('visibilitychange', onVisibility);
+      
+      // 窗口尺寸变化时重测画布几何
+      const onResize = () => { if (desktopMedia.matches) measureRain(); };
+      window.addEventListener('resize', onResize);
+      
+      start(); // 不依赖 IO 首回调，确保动画循环必定启动（页面隐藏时 IO 会立即叫停）
+      
+      timelineRainCleanup = () => {
+        stop();
+        io.disconnect();
+        document.removeEventListener('visibilitychange', onVisibility);
+        window.removeEventListener('resize', onResize);
+        scene.remove();
+      };
+    }
+    
+    // 站牌进入视野时轻微弹起
+    let timelineSignObserver = null;
+    function setupTimelineSignObserver(container) {
+      if (!('IntersectionObserver' in window)) return;
+      if (timelineSignObserver) timelineSignObserver.disconnect();
+      const wrapper = container.closest('.timeline-wrapper');
+      timelineSignObserver = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          if (en.isIntersecting) {
+            en.target.classList.add('sign-pop');
+            timelineSignObserver.unobserve(en.target);
+          }
+        });
+      }, { root: wrapper, threshold: 0.25 });
+      container.querySelectorAll('.timeline-item').forEach(item => {
+        if (!item.classList.contains('sign-pop')) timelineSignObserver.observe(item);
+      });
+    }
+    
+    // 横移交互：滚轮向下=向右前进，支持按住拖动，带惯性缓动
+    (function initTimelineRoadPan() {
+      const page = document.getElementById('timeline-page');
+      if (!page) return;
+      const wrapper = page.querySelector('.timeline-wrapper');
+      const world = document.getElementById('timeline-list');
+      if (!wrapper || !world) return;
+      
+      let target = 0, current = 0, maxOffset = 0, rafId = null;
+      let pressing = false, dragging = false, startX = 0, startOffset = 0, lastX = 0, lastT = 0, velocity = 0, moved = 0;
+      
+      const clampOffset = v => Math.min(0, Math.max(-maxOffset, v));
+      function apply() { world.style.transform = 'translate3d(' + current + 'px, 0, 0)'; }
+      function tick() {
+        current += (target - current) * 0.12;
+        if (Math.abs(target - current) < 0.5) current = target;
+        apply();
+        rafId = (current !== target) ? requestAnimationFrame(tick) : null;
+      }
+      function kick() { if (!rafId) rafId = requestAnimationFrame(tick); }
+      function measure() {
+        if (!desktopMedia.matches) {
+          maxOffset = 0; target = 0; current = 0;
+          world.style.transform = '';
+          return;
+        }
+        maxOffset = Math.max(0, world.scrollWidth - wrapper.clientWidth);
+        target = clampOffset(target);
+        current = clampOffset(current);
+        apply();
+      }
+      window.timelinePanMeasure = measure;
+      
+      wrapper.addEventListener('wheel', (e) => {
+        if (!desktopMedia.matches) return;
+        // 编辑表单内部滚动优先，不触发横移
+        if (e.target.closest('.timeline-edit-form.active')) return;
+        e.preventDefault();
+        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        target = clampOffset(target - delta * 1.2);
+        kick();
+      }, { passive: false });
+      
+      // 点击与拖动判别：按下后移动 ≤6px 视为点击——不捕获指针、不 preventDefault、不平移，
+      // 让 click 正常派发到木牌/照片；超过阈值才进入拖动并捕获指针
+      wrapper.addEventListener('pointerdown', (e) => {
+        if (!desktopMedia.matches || e.button !== 0) return;
+        pressing = true;
+        dragging = false;
+        moved = 0;
+        startX = lastX = e.clientX;
+        startOffset = target;
+        lastT = performance.now();
+        velocity = 0;
+      });
+      
+      wrapper.addEventListener('pointermove', (e) => {
+        if (!pressing) return;
+        if (e.buttons === 0) { pressing = false; return; } // 按键已在别处松开，丢弃本次按压
+        const dx = e.clientX - startX;
+        moved = Math.max(moved, Math.abs(dx));
+        if (!dragging) {
+          if (moved <= 6) return; // 阈值内仍视为点击，不做任何拦截
+          dragging = true;
+          try { wrapper.setPointerCapture(e.pointerId); } catch (err) {}
+        }
+        target = clampOffset(startOffset + dx);
+        const now = performance.now();
+        const dt = now - lastT;
+        if (dt > 0) velocity = (e.clientX - lastX) / dt * 16;
+        lastX = e.clientX;
+        lastT = now;
+        current = target; // 拖动时直接跟随
+        apply();
+      });
+      
+      function endDrag() {
+        if (!pressing) return;
+        pressing = false;
+        if (!dragging) return; // 纯点击：不介入，click 事件正常派发
+        dragging = false;
+        target = clampOffset(target + velocity * 140); // 松手惯性
+        kick();
+      }
+      
+      wrapper.addEventListener('pointerup', endDrag);
+      wrapper.addEventListener('pointercancel', endDrag);
+      
+      // 阻止拍立得图片触发浏览器原生拖拽，避免打断指针拖动
+      wrapper.addEventListener('dragstart', (e) => {
+        if (desktopMedia.matches) e.preventDefault();
+      });
+      
+      // 拖动超过阈值时拦截 click，避免误触发站牌展开
+      wrapper.addEventListener('click', (e) => {
+        if (moved > 6) {
+          e.stopPropagation();
+          e.preventDefault();
+          moved = 0;
+        }
+      }, true);
+      
+      // 电脑端：点击木牌以外的区域，收起操作挂牌（再次点击木牌收起由 toggle 自身完成）
+      document.addEventListener('click', (e) => {
+        if (!desktopMedia.matches) return;
+        if (!page.classList.contains('active')) return;
+        if (e.target.closest('.timeline-card')) return;
+        closeAllTimelineActionBars();
+      });
+      
+      window.addEventListener('resize', measure);
+    })();
     
     async function addTimelineEvent(formData) {
       if (!requireAuth()) throw new Error('需登录后使用');
@@ -3801,7 +6458,9 @@
     }
 
     function closeAllTimelineActionBars() {
-      document.querySelectorAll('.timeline-action-bar.active').forEach(bar => bar.classList.remove('active'));
+      document.querySelectorAll('.timeline-action-bar.active').forEach(bar => {
+        bar.classList.remove('active');
+      });
     }
 
     function closeAllTimelineEditForms() {
@@ -3823,7 +6482,9 @@
       const isActive = bar.classList.contains('active');
       closeAllTimelineActionBars();
       closeAllTimelineEditForms();
-      if (!isActive) bar.classList.add('active');
+      if (!isActive) {
+        bar.classList.add('active');
+      }
     }
 
     function openTimelineEditForm(eventId) {
@@ -3959,7 +6620,17 @@
           .select('*')
           .order('created_at', { ascending: false });
         if (error) throw error;
-        renderPhotos(data || []);
+        // 第五阶段：排序改为按照片 date 字段正序（越早越靠前）；
+        // date 为空的排最后，并按 created_at 倒序兜底；只改排序，不改数据结构
+        const sortedPhotos = (data || []).slice().sort((a, b) => {
+          const dateA = (a.date || '').slice(0, 10);
+          const dateB = (b.date || '').slice(0, 10);
+          if (dateA && dateB && dateA !== dateB) return dateA < dateB ? -1 : 1;
+          if (dateA && !dateB) return -1;
+          if (!dateA && dateB) return 1;
+          return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        });
+        renderPhotos(sortedPhotos);
       } catch (e) {
         console.error(e);
         grid.innerHTML = `
@@ -4035,7 +6706,43 @@
           openDeleteModal('真的要删掉这张照片吗？📷', () => deletePhoto(btn.dataset.id));
         });
       });
+      
+      setupPhotoDropObserver(grid);
     }
+    
+    // 第五阶段：拍立得飘落入场（进入视野时从上方落下回弹，每张只触发一次）
+    function setupPhotoDropObserver(grid) {
+      if (!grid) return;
+      const items = grid.querySelectorAll('.photo-item:not(.skeleton)');
+      if (!items.length) return;
+      if (!desktopMedia.matches) return; // 手机端沿用原 fadeInUp 入场
+      if (!('IntersectionObserver' in window)) {
+        items.forEach(item => item.classList.add('photo-dropped'));
+        return;
+      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const item = entry.target;
+          observer.unobserve(item);
+          item.addEventListener('animationend', () => {
+            item.classList.remove('photo-drop');
+            item.classList.add('photo-dropped');
+          }, { once: true });
+          item.classList.add('photo-drop');
+        });
+      }, { threshold: 0.15 });
+      items.forEach(item => {
+        if (!item.classList.contains('photo-dropped')) observer.observe(item);
+      });
+    }
+    
+    // 窗口从手机宽度拉宽到桌面时，补跑一次入场观察，避免便签保持隐形
+    window.addEventListener('resize', () => {
+      if (desktopMedia.matches) {
+        setupPhotoDropObserver(document.getElementById('photo-grid'));
+      }
+    });
     
     async function addPhoto(formData) {
       if (!requireAuth()) throw new Error('需登录后使用');
@@ -4240,6 +6947,16 @@
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           window.openProfileEditForm(btn.dataset.id);
+        });
+      });
+      // 第六阶段：电脑端点击条目该行即进入编辑（手机端不启用，保持原有点击 ✏️ 的方式）
+      container.querySelectorAll('.profile-item[data-profile-id]').forEach(item => {
+        if (item.dataset.journalClickBound) return;
+        item.dataset.journalClickBound = '1';
+        item.addEventListener('click', (e) => {
+          if (!desktopMedia.matches) return;
+          if (e.target.closest('.profile-edit-btn') || e.target.closest('.profile-edit-form')) return;
+          if (item.dataset.profileId) window.openProfileEditForm(item.dataset.profileId);
         });
       });
     }
@@ -4554,7 +7271,8 @@
             </div>`;
         
         return `
-          <div class="glass-card countdown-card" data-countdown-id="${escapeHtml(item.id)}">
+          <div class="glass-card countdown-card ${item.is_recurring ? 'is-recurring' : ''}" data-countdown-id="${escapeHtml(item.id)}">
+            ${item.is_recurring ? '<div class="countdown-recur-stamp" aria-hidden="true" title="每年重复"></div>' : ''}
             <div class="countdown-actions">
               <button class="countdown-action-btn edit-btn" data-id="${escapeHtml(item.id)}" title="编辑">✏️</button>
               ${deleteBtn}
@@ -4586,6 +7304,8 @@
           openDeleteModal('真的要取消这份期待吗？⏰', () => deleteCountdown(id));
         });
       });
+      
+      enhanceCountdownCards(container); // 第六阶段：数字变化时加翻页动效（仅电脑端有样式）
     }
     
     function isLocalPresetId(id) {
@@ -4865,8 +7585,6 @@
     
     function renderAnniversaries(list) {
       const container = document.getElementById('anni-list');
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
       
       if (list.length === 0) {
         container.innerHTML = `
@@ -4878,9 +7596,7 @@
       }
       
       container.innerHTML = list.map(item => {
-        const d = new Date(item.date);
-        d.setHours(0, 0, 0, 0);
-        let diff = Math.floor((today - d) / (1000 * 60 * 60 * 24));
+        let diff = daysSinceInclusive(item.date);
         if (diff < 0) diff = 0;
         return `
           <div class="glass-card anni-item" data-anniversary-id="${escapeHtml(item.id)}">
@@ -4924,6 +7640,8 @@
           openDeleteModal('真的要抹去这个回忆吗？🎂', () => deleteAnniversary(id));
         });
       });
+      
+      setupAnniCalendar(container); // 第六阶段：电脑端组装月历分页（手机端自动跳过）
     }
     
     async function addAnniversary(formData) {
@@ -5045,6 +7763,157 @@
     
     function closeAnniversaryToday() {
       document.getElementById('anniversary-today-overlay').classList.remove('active');
+    }
+    
+    // ===== 电脑端收官（第六阶段）：台历翻页数字 / 月历分页（全部为增量功能，不改任何既有逻辑） =====
+    
+    // --- 倒计时：数字更新时加 .num-flip 类触发 0.4s 翻页（类在手机端无对应样式，无影响） ---
+    const prevCountdownNums = {};
+    function enhanceCountdownCards(container) {
+      if (!container || !desktopMedia.matches) return;
+      container.querySelectorAll('.countdown-card[data-countdown-id]').forEach(card => {
+        const id = card.dataset.countdownId;
+        const numEl = card.querySelector('.countdown-number');
+        if (!numEl) return;
+        const cur = numEl.textContent;
+        if (prevCountdownNums[id] !== undefined && prevCountdownNums[id] !== cur) {
+          numEl.classList.add('num-flip');
+          numEl.addEventListener('animationend', () => numEl.classList.remove('num-flip'), { once: true });
+        }
+        prevCountdownNums[id] = cur;
+      });
+    }
+    
+    // --- 纪念日月历：每页 3×3=9 格、上下翻页（仅电脑端组装；切回手机宽度自动拆除恢复原列表） ---
+    let anniCalState = null;
+    
+    function teardownAnniCalendar(container) {
+      if (!container) return;
+      if (anniCalState) {
+        anniCalState.pages.forEach(pg => {
+          // 页包裹可能已随 innerHTML 重绘被移除；仅当仍在容器内时才回迁格子，
+          // 否则 insertBefore 的参照节点不在容器中会抛 NotFoundError
+          if (pg.parentNode === container) {
+            while (pg.firstChild) container.insertBefore(pg.firstChild, pg);
+          }
+          pg.remove();
+        });
+        if (anniCalState.navPrev) anniCalState.navPrev.remove();
+        if (anniCalState.navNext) anniCalState.navNext.remove();
+        if (anniCalState.stamp) anniCalState.stamp.remove();
+        anniCalState = null;
+      }
+      container.classList.remove('cal-mode');
+    }
+    
+    function setupAnniCalendar(container) {
+      if (!container) return;
+      const keepPage = anniCalState ? anniCalState.page : 0;
+      teardownAnniCalendar(container);
+      if (!desktopMedia.matches) return;
+      const items = Array.from(container.querySelectorAll('.anni-item'));
+      if (items.length === 0) return;
+      
+      container.classList.add('cal-mode');
+      const pages = [];
+      for (let i = 0; i < items.length; i += 9) {
+        const pg = document.createElement('div');
+        pg.className = 'anni-cal-page';
+        items.slice(i, i + 9).forEach(it => pg.appendChild(it));
+        container.appendChild(pg);
+        pages.push(pg);
+      }
+      
+      // 点击格子展开编辑稿纸（✏️🗑️ 按钮与编辑表单内的点击除外）
+      items.forEach(it => {
+        if (it.dataset.calClickBound) return;
+        it.dataset.calClickBound = '1';
+        it.addEventListener('click', (e) => {
+          if (e.target.closest('.anni-actions') || e.target.closest('.anni-edit-form')) return;
+          const id = it.dataset.anniversaryId;
+          if (id) window.openAnniversaryEditForm(id);
+        });
+      });
+      
+      anniCalState = { page: 0, pages, flipping: false, navPrev: null, navNext: null, stamp: null };
+      
+      // 超过 9 个才需要翻页角标与页码印章
+      if (pages.length > 1) {
+        const prev = document.createElement('button');
+        prev.type = 'button';
+        prev.className = 'anni-cal-nav prev';
+        prev.setAttribute('hidden', '');
+        prev.textContent = '← 上一页';
+        const next = document.createElement('button');
+        next.type = 'button';
+        next.className = 'anni-cal-nav next';
+        next.setAttribute('hidden', '');
+        next.textContent = '下一页 →';
+        const stamp = document.createElement('div');
+        stamp.className = 'anni-cal-stamp';
+        stamp.setAttribute('hidden', '');
+        prev.addEventListener('click', () => flipAnniPage(-1));
+        next.addEventListener('click', () => flipAnniPage(1));
+        container.appendChild(prev);
+        container.appendChild(next);
+        container.appendChild(stamp);
+        anniCalState.navPrev = prev;
+        anniCalState.navNext = next;
+        anniCalState.stamp = stamp;
+      }
+      
+      showAnniPage(Math.min(keepPage, pages.length - 1), true);
+    }
+    
+    function showAnniPage(idx, instant) {
+      const st = anniCalState;
+      if (!st) return;
+      st.page = idx;
+      st.pages.forEach((pg, i) => {
+        pg.style.display = (i === idx) ? '' : 'none';
+        pg.classList.remove('flip-up', 'flip-in');
+      });
+      if (!instant) st.pages[idx].classList.add('flip-in');
+      if (st.navPrev) st.navPrev.style.display = idx > 0 ? '' : 'none';
+      if (st.navNext) st.navNext.style.display = idx < st.pages.length - 1 ? '' : 'none';
+      if (st.stamp) st.stamp.textContent = `第 ${idx + 1} 页`;
+    }
+    
+    // 翻挂历式翻页：旧页向上掀起（flip-up 绝对定位在上层），新页在下方露出
+    function flipAnniPage(dir) {
+      const st = anniCalState;
+      if (!st || st.flipping) return;
+      const next = st.page + dir;
+      if (next < 0 || next >= st.pages.length) return;
+      st.flipping = true;
+      const oldPg = st.pages[st.page];
+      const newPg = st.pages[next];
+      st.page = next;
+      newPg.style.display = '';
+      newPg.classList.add('flip-in');
+      oldPg.classList.add('flip-up');
+      let finished = false;
+      const done = () => {
+        if (finished) return;
+        finished = true;
+        oldPg.classList.remove('flip-up');
+        oldPg.style.display = 'none';
+        newPg.classList.remove('flip-in');
+        st.flipping = false;
+      };
+      oldPg.addEventListener('animationend', done, { once: true });
+      setTimeout(done, 550); // 兜底：动画事件未触发时也保证状态复原
+      if (st.navPrev) st.navPrev.style.display = next > 0 ? '' : 'none';
+      if (st.navNext) st.navNext.style.display = next < st.pages.length - 1 ? '' : 'none';
+      if (st.stamp) st.stamp.textContent = `第 ${next + 1} 页`;
+    }
+    
+    // 窗口宽度跨过电脑/手机分界时，月历自动组装/拆除
+    if (desktopMedia.addEventListener) {
+      desktopMedia.addEventListener('change', () => {
+        const list = document.getElementById('anni-list');
+        if (list && list.querySelector('.anni-item')) setupAnniCalendar(list);
+      });
     }
     
     // ===== Memory (Random Draw) =====
@@ -5173,7 +8042,18 @@
     
     // ===== Event Listeners =====
     document.getElementById('enter-btn').addEventListener('click', () => {
-      showPage('password-page');
+      const envelope = document.querySelector('.envelope');
+      // 电脑端：信封翻盖打开、信纸抽出后再进入密码页；手机端直接进入
+      if (!desktopMedia.matches || !envelope) {
+        showPage('password-page');
+        return;
+      }
+      if (envelope.classList.contains('opening')) return;
+      envelope.classList.add('opening');
+      setTimeout(() => {
+        showPage('password-page');
+        envelope.classList.remove('opening'); // 重置，返回落地页时信封保持合上
+      }, 1250);
     });
     
     const passwordInput = document.getElementById('password-input');
@@ -5190,6 +8070,13 @@
         passwordError.classList.add('show');
         passwordInput.value = '';
         passwordInput.focus();
+        // 电脑端：信纸左右轻晃（shake 样式仅 min-width:769px 生效，手机端无视觉变化）
+        const pwBox = document.querySelector('.password-box');
+        if (pwBox) {
+          pwBox.classList.remove('shake');
+          void pwBox.offsetWidth; // 强制重排，保证连续输错时动画重新触发
+          pwBox.classList.add('shake');
+        }
         return;
       }
       
@@ -5542,109 +8429,10 @@
       if (e.key === 'Escape') closeActiveOverlay();
     });
     
-    // ===== Starfield Canvas =====
-    const canvas = document.getElementById('starfield');
-    const ctx = canvas.getContext('2d');
-    let stars = [];
-    let animationId = null;
-    let isTouch = window.matchMedia('(pointer: coarse)').matches;
-    
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    
-    class Star {
-      constructor() {
-        this.reset();
-      }
-      
-      reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2.5 + 0.5;
-        this.baseAlpha = Math.random() * 0.4 + 0.2;
-        this.alpha = this.baseAlpha;
-        this.breatheSpeed = Math.random() * 0.02 + 0.01;
-        this.breathePhase = Math.random() * Math.PI * 2;
-        this.vx = (Math.random() - 0.5) * 0.3;
-        this.vy = (Math.random() - 0.5) * 0.3;
-      }
-      
-      update() {
-        this.breathePhase += this.breatheSpeed;
-        this.alpha = this.baseAlpha + Math.sin(this.breathePhase) * 0.15;
-        
-        // Mouse interaction
-        if (!isTouch && mouseX > -100 && mouseY > -100) {
-          const dx = this.x - mouseX;
-          const dy = this.y - mouseY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            const force = (120 - dist) / 120;
-            this.vx += (dx / dist) * force * 0.05;
-            this.vy += (dy / dist) * force * 0.05;
-          }
-        }
-        
-        this.x += this.vx;
-        this.y += this.vy;
-        
-        // Friction
-        this.vx *= 0.99;
-        this.vy *= 0.99;
-        
-        // Wrap around
-        if (this.x < 0) this.x = canvas.width;
-        if (this.x > canvas.width) this.x = 0;
-        if (this.y < 0) this.y = canvas.height;
-        if (this.y > canvas.height) this.y = 0;
-      }
-      
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, this.alpha)})`;
-        ctx.fill();
-      }
-    }
-    
-    function initStars() {
-      stars = [];
-      const count = isTouch ? 60 : 100;
-      for (let i = 0; i < count; i++) {
-        stars.push(new Star());
-      }
-    }
-    
-    function animateStars() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      stars.forEach(star => {
-        star.update();
-        star.draw();
-      });
-      animationId = requestAnimationFrame(animateStars);
-    }
-    
-    window.addEventListener('resize', () => {
-      resizeCanvas();
-      initStars();
-    });
-    
-    window.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
-    
-    window.addEventListener('touchstart', () => { isTouch = true; }, { passive: true });
-    
     // 用户首次交互时尝试播放音乐
     // 音乐仅通过右下角音乐按钮控制，不再监听全局点击
     
     // ===== Initialization =====
-    resizeCanvas();
-    initStars();
-    animateStars();
     initMusic();
     loadMemorySources(); // 预加载回忆数据源
     checkAuth();
