@@ -5077,11 +5077,75 @@
       
       #page-map .map-legend {
         display: flex;
-        justify-content: center;
-        gap: 34px;
+        align-items: center;
+        gap: 16px;
         margin-top: 12px;
         font-size: 14px;
         color: rgba(74, 59, 46, 0.75);
+      }
+      /* 图例组占满剩余空间并居中（开关/坐标区收起时图例独居一行居中） */
+      #page-map .map-legend-items {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        gap: 34px;
+      }
+      /* 「手动标注」开关按钮（贴纸风） */
+      #page-map .map-manual-toggle {
+        flex: none;
+        border: 1.5px solid rgba(140, 112, 74, 0.5);
+        background: #fff8ea;
+        border-radius: 999px;
+        padding: 6px 16px;
+        font-size: 13.5px;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        color: #6a4f36;
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+      #page-map .map-manual-toggle:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(70, 50, 30, 0.18); }
+      /* 开启态高亮 */
+      #page-map .map-manual-toggle.manual-on {
+        background: #e891a8;
+        border-color: #b45a6e;
+        color: #fff;
+        box-shadow: 0 0 0 3px rgba(232, 145, 168, 0.3), 0 5px 12px rgba(180, 90, 110, 0.35);
+      }
+      /* 坐标定位区（开启后出现在图例右侧、开关旁边） */
+      #page-map .map-manual-bar {
+        flex: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #page-map .map-manual-input {
+        width: 250px;
+        border: 1.5px solid rgba(140, 112, 74, 0.4);
+        background: rgba(255, 252, 245, 0.92);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: 13.5px;
+        color: #4a3b2e;
+        outline: none;
+      }
+      #page-map .map-manual-input:focus { border-color: rgba(180, 90, 110, 0.6); }
+      #page-map .map-manual-input::placeholder { color: rgba(74, 59, 46, 0.4); }
+      #page-map .map-manual-locate {
+        border: 1.5px solid rgba(140, 112, 74, 0.5);
+        background: #fff8ea;
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-size: 13px;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        color: #6a4f36;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      #page-map .map-manual-locate:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(70, 50, 30, 0.18); }
+      /* 标注模式：地图光标变为十字图钉感 */
+      #page-map .map-canvas-wrap.manual-mode,
+      #page-map .map-canvas-wrap.manual-mode .amap_container {
+        cursor: crosshair;
       }
       
       /* 三选一弹窗的按钮竖排 */
@@ -5680,9 +5744,16 @@
             </div>
           </div>
           <div class="map-legend font-wenkai">
-            <span>🐷🐱 当前位置</span>
-            <span>❤️ 我们一起去过</span>
-            <span>⭐ 未来想去</span>
+            <button type="button" class="map-manual-toggle" id="map-manual-toggle">📍 手动标注</button>
+            <div class="map-manual-bar" id="map-manual-bar" style="display:none">
+              <input type="text" id="map-manual-coords" class="map-manual-input font-wenkai" placeholder="纬度, 经度 例：35.664, 138.568" autocomplete="off">
+              <button type="button" class="map-manual-locate" id="map-manual-locate">定位</button>
+            </div>
+            <div class="map-legend-items">
+              <span>🐷🐱 当前位置</span>
+              <span>❤️ 我们一起去过</span>
+              <span>⭐ 未来想去</span>
+            </div>
           </div>
         </div>
       </div>
@@ -5981,6 +6052,9 @@
     <div class="glass-card modal-content">
       <h3 class="font-serif" style="font-size:20px;margin-bottom:8px;color:var(--soft-pink)">📍 <span id="map-choice-city"></span></h3>
       <p class="font-wenkai" style="margin-bottom:18px;color:rgba(45,45,90,0.7)">要把这里标成什么呢？</p>
+      <div id="map-choice-name-row" style="display:none;margin-bottom:14px">
+        <input type="text" class="input" id="map-choice-name" placeholder="给这个地方起个名字，如：甲府、冰岛" maxlength="30">
+      </div>
       <div class="map-choice-actions">
         <button type="button" class="btn map-choice-btn" id="map-choice-current">📍 标为我的当前位置</button>
         <button type="button" class="btn map-choice-btn" id="map-choice-visited">❤️ 我们一起去过</button>
@@ -9105,7 +9179,7 @@
     
     // ===== Miss（想你电波） =====
     // PushPlus 推送 token（留空即跳过推送，其余功能照常；八月初再填）
-    const PUSH_TOKEN_BEIDOU = '';
+    const PUSH_TOKEN_BEIDOU = 'bc1872ffda0a4f6c8265ca88bd3a419b';
     const PUSH_TOKEN_XIAOXIAO = '';
     
     let missCache = [];
@@ -9339,6 +9413,26 @@
         // 右下角手绘风缩放按钮
         document.getElementById('map-zoom-in').addEventListener('click', () => { if (mapInstance) mapInstance.zoomIn(); });
         document.getElementById('map-zoom-out').addEventListener('click', () => { if (mapInstance) mapInstance.zoomOut(); });
+        // 手动标注：按下/松开位移 ≤6px 视为单击落钉，超过则视为拖动平移
+        const container = document.getElementById('map-container');
+        container.addEventListener('mousedown', (e) => {
+          const rect = container.getBoundingClientRect();
+          mapMouseDownPos = [e.clientX - rect.left, e.clientY - rect.top];
+        });
+        container.addEventListener('mouseup', (e) => {
+          if (!manualMarkMode || !mapMouseDownPos || !mapInstance) { mapMouseDownPos = null; return; }
+          // 点在已有钉子或信息卡上时不落钉（交给各自自身的点击逻辑）
+          if (e.target.closest && (e.target.closest('.map-pin') || e.target.closest('.map-info-card'))) {
+            mapMouseDownPos = null;
+            return;
+          }
+          const rect = container.getBoundingClientRect();
+          const dx = (e.clientX - rect.left) - mapMouseDownPos[0];
+          const dy = (e.clientY - rect.top) - mapMouseDownPos[1];
+          mapMouseDownPos = null;
+          if (Math.sqrt(dx * dx + dy * dy) > 6) return; // 拖动平移，不落钉
+          handleManualMapClick(e.clientX - rect.left, e.clientY - rect.top);
+        });
       } else {
         mapInstance.resize();
       }
@@ -9354,6 +9448,7 @@
         pendingSearchPlace = { name, lng, lat };
         if (mapInstance) mapInstance.setZoomAndCenter(11, [lng, lat], false, 600);
         document.getElementById('map-choice-city').textContent = name;
+        document.getElementById('map-choice-name-row').style.display = 'none'; // 搜索模式名称来自搜索，不显示手输行
         document.getElementById('map-choice-modal').classList.add('active');
         const input = document.getElementById('map-search-input');
         if (input) input.blur();
@@ -9660,6 +9755,7 @@
       if (!requireAuth()) return;
       if (!supabase) { showToast('Supabase 未配置'); return; }
       if (!pendingSearchPlace) return;
+      if (!pendingSearchPlace.name) { showToast('先给这个地方起个名字吧 📍'); return; }
       const identity = safeGetItem('identity');
       const owner = identity === '北斗' ? 'beidou' : 'xiaoxiao';
       try {
@@ -9783,6 +9879,57 @@
       } catch (e) {
         console.error(e);
         showToast('删除失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    // ===== 手动标注（解决海外城市搜不到：单击落钉 / 坐标定位） =====
+    let manualMarkMode = false;   // 手动标注开关状态
+    let mapMouseDownPos = null;   // 按下时的容器内坐标（用于区分单击与拖动）
+    
+    /** 切换手动标注模式：开关高亮、光标变十字、坐标区显隐 */
+    function toggleManualMarkMode() {
+      manualMarkMode = !manualMarkMode;
+      document.getElementById('map-manual-toggle').classList.toggle('manual-on', manualMarkMode);
+      document.getElementById('map-manual-bar').style.display = manualMarkMode ? 'flex' : 'none';
+      const wrap = document.querySelector('#page-map .map-canvas-wrap');
+      if (wrap) wrap.classList.toggle('manual-mode', manualMarkMode);
+      if (manualMarkMode) showToast('标注模式已开启：单击地图落钉 📍');
+    }
+    
+    /** 「定位」：解析「纬度, 经度」（容忍空格与中英文逗号），飞到该点等待单击落钉 */
+    function locateManualCoords() {
+      if (!mapInstance) return;
+      const raw = (document.getElementById('map-manual-coords').value || '').trim();
+      const parts = raw.split(/[,，]/).map(s => s.trim()).filter(s => s !== '');
+      const lat = parts.length === 2 ? Number(parts[0]) : NaN;
+      const lng = parts.length === 2 ? Number(parts[1]) : NaN;
+      if (!isFinite(lat) || !isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+        showToast('坐标格式不对哦，按「纬度, 经度」填写，例：35.664, 138.568');
+        return;
+      }
+      mapInstance.setZoomAndCenter(12, [lng, lat], false, 600);
+      showToast('已飞到目标点，单击地图落下钉子 📍');
+    }
+    
+    /** 标注模式下单击地图（位移 ≤6px）：经纬度取自单击处，弹三选一（名称手输） */
+    function handleManualMapClick(x, y) {
+      if (!mapInstance) return;
+      const lnglat = mapInstance.containerToLngLat(new AMap.Pixel(x, y));
+      if (!lnglat) return;
+      pendingSearchPlace = { name: '', lng: lnglat.lng, lat: lnglat.lat };
+      document.getElementById('map-choice-city').textContent = '手动选点';
+      const nameRow = document.getElementById('map-choice-name-row');
+      nameRow.style.display = 'block';
+      document.getElementById('map-choice-name').value = '';
+      document.getElementById('map-choice-modal').classList.add('active');
+      setTimeout(() => document.getElementById('map-choice-name').focus(), 60);
+    }
+    
+    /** 三选一按钮点击时：手动模式把手输名称写回 pendingSearchPlace，后续流程与搜索标注完全一致 */
+    function syncManualChoiceName() {
+      const row = document.getElementById('map-choice-name-row');
+      if (row.style.display !== 'none' && pendingSearchPlace) {
+        pendingSearchPlace.name = (document.getElementById('map-choice-name').value || '').trim();
       }
     }
 
@@ -10510,16 +10657,20 @@
       }
     });
     
-    // ===== Map Places Events（足迹：三选一 + 稿纸表单） =====
+    // ===== Map Places Events（足迹：三选一 + 稿纸表单 + 手动标注） =====
     document.getElementById('map-choice-current').addEventListener('click', () => {
+      syncManualChoiceName();
+      if (pendingSearchPlace && !pendingSearchPlace.name) { showToast('先给这个地方起个名字吧 📍'); return; }
       document.getElementById('map-choice-modal').classList.remove('active');
       markCurrentPlace();
     });
     document.getElementById('map-choice-visited').addEventListener('click', () => {
+      syncManualChoiceName();
       document.getElementById('map-choice-modal').classList.remove('active');
       openMapPlaceModal('visited-add', null);
     });
     document.getElementById('map-choice-planned').addEventListener('click', () => {
+      syncManualChoiceName();
       document.getElementById('map-choice-modal').classList.remove('active');
       openMapPlaceModal('planned-add', null);
     });
@@ -10536,6 +10687,13 @@
       if (e.target.id === 'map-place-modal') e.target.classList.remove('active');
     });
     document.getElementById('map-place-form').addEventListener('submit', submitMapPlaceForm);
+    
+    // 手动标注：开关 / 定位按钮 / 坐标框回车
+    document.getElementById('map-manual-toggle').addEventListener('click', toggleManualMarkMode);
+    document.getElementById('map-manual-locate').addEventListener('click', locateManualCoords);
+    document.getElementById('map-manual-coords').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); locateManualCoords(); }
+    });
     
     // ===== Escape key to close overlays =====
     function closeActiveOverlay() {
