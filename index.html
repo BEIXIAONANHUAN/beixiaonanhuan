@@ -47,6 +47,24 @@
       font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
       color: var(--primary-text);
       line-height: 1.6;
+      /* 手机端粉紫渐变底（电脑端被桌面媒体查询的 bg-paper 背景覆盖，不受影响） */
+      background: linear-gradient(135deg, #a8c0ff 0%, #fbc2eb 100%);
+      background-attachment: fixed;
+    }
+    
+    /* 手机端星空 canvas：最底层，不挡内容；电脑端隐藏（各页有自己的插画背景） */
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    @media (min-width: 769px) {
+      #starfield { display: none; }
     }
     
     /* Page container */
@@ -5421,6 +5439,7 @@
   </style>
 </head>
 <body>
+  <canvas id="starfield"></canvas>
   <div class="app">
     <!-- 1. Landing Page -->
     <section id="landing-page" class="active">
@@ -10739,6 +10758,84 @@
     initMusic();
     loadMemorySources(); // 预加载回忆数据源
     checkAuth();
+    
+    // ===== 手机端星空背景 =====
+    (function () {
+      const canvas = document.getElementById('starfield');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let stars = [];
+      let animationId = null;
+      const isMobile = () => window.innerWidth <= 768;
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+
+      class Star {
+        constructor() { this.reset(); }
+        reset() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * 2.5 + 0.5;
+          this.baseAlpha = Math.random() * 0.4 + 0.2;
+          this.alpha = this.baseAlpha;
+          this.breatheSpeed = Math.random() * 0.02 + 0.01;
+          this.breathePhase = Math.random() * Math.PI * 2;
+          this.vx = (Math.random() - 0.5) * 0.3;
+          this.vy = (Math.random() - 0.5) * 0.3;
+        }
+        update() {
+          this.breathePhase += this.breatheSpeed;
+          this.alpha = this.baseAlpha + Math.sin(this.breathePhase) * 0.15;
+          this.x += this.vx;
+          this.y += this.vy;
+          this.vx *= 0.99;
+          this.vy *= 0.99;
+          if (this.x < 0) this.x = canvas.width;
+          if (this.x > canvas.width) this.x = 0;
+          if (this.y < 0) this.y = canvas.height;
+          if (this.y > canvas.height) this.y = 0;
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, this.alpha)})`;
+          ctx.fill();
+        }
+      }
+
+      function initStars() {
+        stars = [];
+        for (let i = 0; i < 60; i++) stars.push(new Star());
+      }
+
+      function animateStars() {
+        if (!isMobile()) { animationId = null; return; } // 电脑端不运行
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => { s.update(); s.draw(); });
+        animationId = requestAnimationFrame(animateStars);
+      }
+
+      function startIfMobile() {
+        resizeCanvas();
+        if (isMobile()) {
+          initStars();
+          if (animationId === null) animateStars();
+        }
+      }
+
+      window.addEventListener('resize', () => {
+        if (isMobile()) {
+          resizeCanvas();
+          initStars();
+          if (animationId === null) animateStars();
+        }
+      });
+
+      startIfMobile();
+    })();
   });
   </script>
 </body>
