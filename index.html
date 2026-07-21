@@ -11,6 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css">
+  <!-- 祝福语手写体（Zhi Mang Xing）：走 loli.net 镜像，国内可访问 -->
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Zhi+Mang+Xing&display=swap">
   
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -487,6 +489,26 @@
       box-shadow: var(--shadow-hover);
     }
     
+    /* 首页右下角身份祝福：仅电脑端显示（桌面样式见下方首页改版段） */
+    .home-blessing {
+      display: none;
+    }
+    
+    /* 足迹页手机端提示（电脑端隐藏，见首页改版段） */
+    .map-mobile-tip {
+      margin: 26vh auto 0;
+      padding: 0 24px;
+      text-align: center;
+      font-size: 17px;
+      line-height: 1.8;
+      color: rgba(45, 45, 90, 0.65);
+    }
+    
+    /* 足迹页桌面端地图区：默认隐藏（手机端只见上方提示），桌面媒体查询内放开 */
+    .map-desktop {
+      display: none;
+    }
+    
     .latest-message-header {
       display: flex;
       align-items: center;
@@ -603,6 +625,364 @@
     .sub-page {
       max-width: 720px;
       margin: 0 auto;
+    }
+    
+    /* ========== 心愿清单（基础样式：手机端可用，电脑端细化见桌面媒体查询） ========== */
+    .wish-add-row {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    
+    .wish-section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(90, 74, 58, 0.85);
+      margin: 22px 0 12px;
+      letter-spacing: 0.05em;
+    }
+    
+    .wish-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      background: #fffdf6;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(62, 44, 30, 0.12);
+    }
+    
+    .wish-icon {
+      flex: none;
+      width: 36px;
+      height: 36px;
+    }
+    
+    .wish-icon svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .wish-main {
+      position: relative;
+      flex: 1 1 calc(100% - 56px);
+      min-width: 0;
+    }
+    
+    .wish-text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #4a3b30;
+      word-break: break-word;
+      transition: color 0.3s ease;
+    }
+    
+    /* 手写划线（未实现时 width 0；已实现静态 100%；动画时 JS 驱动） */
+    .wish-strike {
+      position: absolute;
+      left: -2px;
+      top: 50%;
+      height: 3px;
+      width: 0;
+      background: linear-gradient(90deg, rgba(122, 72, 52, 0.9), rgba(122, 72, 52, 0.7));
+      border-radius: 2px;
+      transform: translateY(-50%) rotate(-1.2deg);
+      transition: width 0.55s ease;
+      pointer-events: none;
+    }
+    
+    .wish-item.done .wish-strike { width: calc(100% + 4px); }
+    .wish-item.done .wish-text { color: rgba(90, 74, 58, 0.5); }
+    
+    /* 红色「已实现」圆印章（已实现条目静态盖在文字右侧） */
+    .wish-stamp {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      width: 76px;
+      height: 76px;
+      margin-top: -38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid rgba(192, 57, 43, 0.85);
+      border-radius: 50%;
+      background: rgba(192, 57, 43, 0.05);
+      box-shadow: inset 0 0 10px rgba(192, 57, 43, 0.25);
+      color: rgba(192, 57, 43, 0.92);
+      font-family: 'Zhi Mang Xing', 'LXGW WenKai', cursive;
+      font-size: 21px;
+      letter-spacing: 0.08em;
+      transform: rotate(-14deg);
+      pointer-events: none;
+      z-index: 3;
+    }
+    
+    .wish-stamp::before {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border: 1.5px solid rgba(192, 57, 43, 0.5);
+      border-radius: 50%;
+    }
+    
+    .wish-date {
+      flex: none;
+      order: 3;
+      font-size: 12px;
+      color: rgba(90, 74, 58, 0.55);
+      white-space: nowrap;
+    }
+    
+    .wish-actions {
+      flex: none;
+      order: 4;
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+    }
+    
+    .wish-action-btn {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 252, 245, 0.9);
+      box-shadow: 0 2px 6px rgba(62, 44, 30, 0.15);
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    
+    .wish-action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(62, 44, 30, 0.2);
+    }
+    
+    .wish-action-btn:active { transform: scale(0.94); }
+    
+    .wish-edit-form {
+      display: none;
+      flex: 1 1 100%;
+      order: 5;
+      width: 100%;
+    }
+    
+    .wish-edit-form.active { display: block; }
+    
+    .wish-empty {
+      padding: 28px 16px;
+      text-align: center;
+      font-size: 15px;
+      color: rgba(90, 74, 58, 0.55);
+    }
+    
+    /* 手绘分隔线（两区域之间） */
+    .wish-divider {
+      margin: 26px 0 6px;
+      height: 24px;
+    }
+    
+    .wish-divider svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* 仪式动画期间的全屏锁定层（透明，拦截一切操作） */
+    .wish-lock-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: transparent;
+      cursor: wait;
+    }
+    
+    .wish-lock-overlay.active { display: block; }
+    
+    /* ========== 想你电波（基础样式：手机端可用，电脑端细化见桌面媒体查询） ========== */
+    .miss-stage {
+      padding: 14px 0 26px;
+      text-align: center;
+    }
+    
+    .miss-heart-wrap {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .miss-heart-btn {
+      position: relative;
+      z-index: 2;
+      display: block;
+      width: 132px;
+      height: 132px;
+      padding: 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+      filter: drop-shadow(0 8px 22px rgba(224, 80, 126, 0.45));
+      transition: transform 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .miss-heart-btn svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform-origin: center;
+    }
+    
+    /* 悬停时轻轻跳动 */
+    .miss-heart-btn:hover svg {
+      animation: miss-heart-beat 0.7s ease-in-out infinite;
+    }
+    
+    .miss-heart-btn:active { transform: scale(0.92); }
+    
+    @keyframes miss-heart-beat {
+      0%, 100% { transform: scale(1); }
+      35% { transform: scale(1.09); }
+      65% { transform: scale(0.97); }
+    }
+    
+    /* 电波扩散：同心圆波纹从爱心向外扩散 */
+    .miss-ripple {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 150px;
+      height: 150px;
+      border: 3px solid rgba(255, 158, 188, 0.85);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0.35);
+      opacity: 0.9;
+      animation: miss-ripple-wave 1.25s ease-out forwards;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    @keyframes miss-ripple-wave {
+      to {
+        transform: translate(-50%, -50%) scale(3.4);
+        opacity: 0;
+      }
+    }
+    
+    .miss-heart-hint {
+      margin-top: 14px;
+      font-size: 14px;
+      color: rgba(90, 74, 58, 0.6);
+    }
+    
+    /* 面板容器：手机端纵向排列，爱心在最上方（桌面端三栏 grid 见桌面媒体查询） */
+    .miss-panels {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .miss-panels .miss-stage { order: -1; }
+    
+    /* 月光玻璃面板：深蓝半透明透出星空 + 极细淡蓝白月光描边 */
+    .miss-panel {
+      margin-bottom: 0;
+      padding: 18px 20px;
+      background: rgba(18, 24, 58, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(186, 214, 255, 0.28);
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(8, 10, 30, 0.28);
+    }
+    
+    .miss-panel-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #e8efff;
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+    
+    .miss-history-item {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 9px 2px;
+      border-bottom: 1px dashed rgba(186, 214, 255, 0.16);
+      font-size: 15px;
+      line-height: 1.6;
+      color: #dfe8ff;
+    }
+    
+    .miss-history-item:last-child { border-bottom: none; }
+    
+    .miss-history-time {
+      flex: none;
+      font-size: 12.5px;
+      color: rgba(223, 232, 255, 0.55);
+      white-space: nowrap;
+    }
+    
+    .miss-history-note {
+      color: rgba(223, 232, 255, 0.8);
+      word-break: break-word;
+    }
+    
+    /* 「查看更多 / 收起」按钮 */
+    .miss-more-btn {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px dashed rgba(186, 214, 255, 0.35);
+      border-radius: 8px;
+      background: rgba(186, 214, 255, 0.08);
+      color: rgba(223, 232, 255, 0.8);
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    
+    .miss-more-btn:hover { background: rgba(186, 214, 255, 0.16); }
+    
+    .miss-stats-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 20px;
+    }
+    
+    .miss-stats-col-title {
+      font-size: 13.5px;
+      color: rgba(223, 232, 255, 0.6);
+      margin-bottom: 8px;
+    }
+    
+    .miss-stats-row {
+      padding: 6px 2px;
+      font-size: 14.5px;
+      color: #dfe8ff;
+      border-bottom: 1px dashed rgba(186, 214, 255, 0.12);
+    }
+    
+    .miss-stats-row:last-child { border-bottom: none; }
+    
+    /* 统计数字：淡金色点缀 */
+    .miss-num {
+      color: #f0d9a8;
+      font-weight: 600;
+    }
+    
+    .miss-empty {
+      padding: 20px 10px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(223, 232, 255, 0.5);
     }
     
     .empty-state {
@@ -2600,16 +2980,17 @@
       
       .logout-btn:hover { background: rgba(255, 250, 240, 0.6); }
       
-      /* 右侧：软木板（圆角区域）上钉着的六张入口卡 */
+      /* 右侧：软木板（圆角区域）上钉着的九张入口卡（3×3，跨左列三行；
+         顶端对齐，木板上沿与左侧日历卡上沿齐平，右下角留空给祝福语） */
       .quick-entries {
         grid-column: 2;
-        grid-row: 2 / 4;
+        grid-row: 2 / 5;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 26px 22px;
+        gap: 30px 24px;
         align-self: start;
         margin-bottom: 0;
-        padding: 38px 34px;
+        padding: 56px 44px;
         background: #a97c63 url('assets/bg-cork.jpg') center / cover;
         border: 12px solid #7d5a44;
         border-radius: 16px;
@@ -2623,7 +3004,7 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        padding: 28px 12px 22px;
+        padding: 26px 12px 22px;
         text-align: center;
         cursor: pointer;
         background: #fffdf6;
@@ -2643,8 +3024,11 @@
       .quick-entry:nth-child(4) { --tilt: 2.6deg; }
       .quick-entry:nth-child(5) { --tilt: -2.9deg; }
       .quick-entry:nth-child(6) { --tilt: 1.2deg; }
+      .quick-entry:nth-child(7) { --tilt: 2.2deg; }
+      .quick-entry:nth-child(8) { --tilt: -1.8deg; }
+      .quick-entry:nth-child(9) { --tilt: 2.9deg; }
       
-      /* 顶部图钉（内联 SVG，六张颜色各异） */
+      /* 顶部图钉（内联 SVG，九张颜色各异） */
       .quick-entry::before {
         content: '';
         position: absolute;
@@ -2663,6 +3047,9 @@
       .quick-entry:nth-child(4)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%232980b9'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
       .quick-entry:nth-child(5)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%238e44ad'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
       .quick-entry:nth-child(6)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%2327ae60'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
+      .quick-entry:nth-child(7)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%23e84393'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
+      .quick-entry:nth-child(8)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%2334495e'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
+      .quick-entry:nth-child(9)::before { --pin: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M11 12 L12.6 22 L11.4 22 Z' fill='%23777777'/><circle cx='12' cy='7' r='6' fill='%238d6e63'/><circle cx='10' cy='5' r='1.8' fill='rgba(255,255,255,0.65)'/></svg>"); }
       
       /* 悬停翘起、图钉微晃；点击下沉回弹 */
       .quick-entry:hover {
@@ -2681,7 +3068,7 @@
       }
       
       .quick-entry .icon {
-        font-size: 34px;
+        font-size: 32px;
         line-height: 1;
       }
       
@@ -2691,9 +3078,11 @@
         color: #4a3b30;
       }
       
-      /* 右下：斜放在桌面上的淡黄色便签（和纸胶带贴角） */
+      /* 左列底部：斜放在桌面上的淡黄色便签（和纸胶带贴角），位于退出登录按钮下方。
+         translateY(72px) 把便签落回左列底部、靠近页面下缘的原位（仅视觉平移，
+         不改变 grid 轨道，软木板与右下角祝福语位置均不受影响） */
       .latest-message-card {
-        grid-column: 2;
+        grid-column: 1;
         grid-row: 4;
         position: relative;
         width: min(540px, 94%);
@@ -2706,7 +3095,7 @@
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
         box-shadow: 0 14px 30px rgba(62, 44, 30, 0.24);
-        transform: rotate(-2.2deg);
+        transform: translateY(72px) rotate(-2.2deg);
         transition: transform 0.22s ease, box-shadow 0.22s ease;
       }
       
@@ -2725,7 +3114,7 @@
       }
       
       .latest-message-card:hover {
-        transform: rotate(-2.2deg) translateY(-4px);
+        transform: translateY(72px) rotate(-2.2deg) translateY(-4px);
         box-shadow: 0 20px 38px rgba(62, 44, 30, 0.28);
       }
       
@@ -2733,6 +3122,43 @@
       .latest-message-date { color: rgba(107, 83, 32, 0.6); }
       .latest-message-body { color: #5a4a26; }
       .latest-message-author { color: rgba(107, 83, 32, 0.7); }
+      
+      /* 右下角身份祝福：萌萌手写体，按身份分色（北斗玫瑰豆沙 / 笑笑雾蓝）。
+         独立第 5 行（软木板跨 2~4 行，此为其左下角正下方空区），
+         左端与软木板左缘垂直对齐、向右一行排开，淡淡融入墙面不抢主体 */
+      .home-blessing {
+        grid-column: 2;
+        grid-row: 5;
+        align-self: end;
+        justify-self: start;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 100%;
+        margin: 0 0 32px 0;
+        white-space: nowrap;
+        font-family: 'Zhi Mang Xing', 'LXGW WenKai', cursive;
+        font-size: clamp(32px, 2.7vw, 40px);
+        line-height: 1.4;
+        color: #b85c6e;
+        text-shadow: 0 1px 0 rgba(255, 252, 245, 0.5);
+        transform: rotate(-1.2deg);
+        pointer-events: none;
+      }
+      
+      .home-blessing:empty { display: none; }
+      
+      .home-blessing.blessing-beidou { color: #b85c6e; }
+      .home-blessing.blessing-xiaoxiao { color: #5b7fa6; }
+      
+      .home-blessing svg {
+        width: 30px;
+        height: 30px;
+        flex: none;
+      }
+      
+      /* 足迹页手机端提示在电脑端不显示 */
+      .map-mobile-tip { display: none; }
     }
     
     /* ===== 第三阶段基础：麻绳与邮戳装饰在手机端隐藏 ===== */
@@ -3738,14 +4164,16 @@
       /* ---------- 任务1：彼此档案 = 一本摊开的手账 ---------- */
       #profiles-page { max-width: none; }
       
-      /* 手账本体：摊开居中，max-width 1300px */
+      /* 手账本体：摊开居中，zoom 1.25 等比放大（书脊/书签带/页角/探头/字体行高同步缩放，
+         不变形不错位）；布局宽 70vw × 1.25 ≈ 渲染 87.5% 屏宽，两侧留白收窄到约 6% */
       .profiles-desktop {
         position: relative;
         display: flex;
         align-items: stretch;
-        max-width: 1300px;
+        max-width: 70vw;
         margin: 28px auto 0;
         perspective: 1800px;
+        zoom: 1.25;
       }
       
       /* 进入页面时轻微摊开动画 */
@@ -3786,7 +4214,9 @@
         display: flex;
         flex-direction: column;
         padding: 36px 46px 26px;
-        min-height: 66vh;
+        /* zoom 1.25 会同步放大 vh：63vh × 1.25 ≈ 渲染 79vh，
+           书下沿延伸到接近屏幕底部，顶部/底部留白大致相等 */
+        min-height: 63vh;
         background:
           repeating-linear-gradient(to bottom, transparent 0, transparent 31px, rgba(140, 112, 74, 0.16) 32px),
           linear-gradient(rgba(252, 246, 231, 0.9), rgba(252, 246, 231, 0.9)),
@@ -4358,11 +4788,12 @@
     /* ==================== 电脑端专属背景部署（仅背景层；布局/逻辑/既有效果一律不动） ==================== */
     @media (min-width: 769px) {
       /* 1. 首页 → 房间的墙：整页铺满固定；软木板与日历卡像挂在墙上（盖住原奶白纸底）。
-            版心仍限 1400px 居中：页面改为全宽后用等效侧 padding 收拢，网格布局不变 */
+            版心仍限 1400px：页面改为全宽后用等效侧 padding 收拢，网格布局不变；
+            版心整体左移 48px（左窄右宽），收窄左列与屏幕左缘的距离 */
       #home-page {
         max-width: none;
-        padding-left: max(32px, calc((100vw - 1400px) / 2));
-        padding-right: max(32px, calc((100vw - 1400px) / 2));
+        padding-left: max(20px, calc((100vw - 1400px) / 2 - 48px));
+        padding-right: max(20px, calc((100vw - 1400px) / 2 + 48px));
         background:
           linear-gradient(rgba(255, 252, 245, 0.2), rgba(255, 252, 245, 0.2)),
           #ece4d4 url('assets/bg-home.jpg') center / cover no-repeat fixed;
@@ -4374,6 +4805,131 @@
           linear-gradient(rgba(255, 252, 245, 0.18), rgba(255, 252, 245, 0.18)),
           #b28a62 url('assets/bg-photos.jpg') center / cover no-repeat fixed;
       }
+      
+      /* 心愿清单 → 专属背景整页铺满固定；清单行像手账纸页浮在上方 */
+      #page-wish {
+        max-width: none;
+        background:
+          linear-gradient(rgba(255, 252, 245, 0.24), rgba(255, 252, 245, 0.24)),
+          #f2e7d5 url('assets/bg-wish.jpg') center / cover no-repeat fixed;
+      }
+      
+      #page-wish .wish-board {
+        max-width: 780px;
+        margin: 0 auto;
+      }
+      
+      #page-wish .wish-add-row { margin-bottom: 26px; }
+      
+      #page-wish .wish-section-title {
+        font-size: 21px;
+        margin: 30px 0 16px;
+      }
+      
+      /* 每条心愿 = 手账纸上的一行，交替微倾斜，悬停轻翘（桌面端单行不换行） */
+      #page-wish .wish-item {
+        flex-wrap: nowrap;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+        border-radius: 8px 12px 10px 12px / 12px 9px 12px 8px;
+        box-shadow: 0 8px 20px rgba(62, 44, 30, 0.16);
+        transform: rotate(var(--wish-tilt, 0deg));
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      
+      #page-wish .wish-main { flex: 1 1 auto; }
+      
+      #page-wish .wish-item:nth-child(odd) { --wish-tilt: -0.5deg; }
+      #page-wish .wish-item:nth-child(even) { --wish-tilt: 0.6deg; }
+      
+      #page-wish .wish-item:hover {
+        transform: rotate(0deg) translateY(-2px);
+        box-shadow: 0 14px 28px rgba(62, 44, 30, 0.2);
+      }
+      
+      #page-wish .wish-icon { width: 42px; height: 42px; }
+      
+      #page-wish .wish-text { font-size: 18px; }
+      
+      #page-wish .wish-date { font-size: 12.5px; }
+      
+      /* 仪式动画中正在滑动的心愿条（fixed 定位由 JS 设置） */
+      #page-wish .wish-item.wish-flying {
+        box-shadow: 0 22px 44px rgba(62, 44, 30, 0.3);
+        transform: none;
+      }
+      
+      /* 想你电波 → 深夜星空：整页铺满固定；标题浅色系浮在星空上 */
+      /* 注意：选择器必须带 .active——裸 ID 的 display:flex 特异性会盖过 section{display:none}，
+         导致本页未激活时也以 opacity:0 占位一屏（全站多出一屏空白的 bug 根因） */
+      #page-miss.active {
+        max-width: none;
+        background:
+          linear-gradient(rgba(18, 20, 44, 0.18), rgba(18, 20, 44, 0.18)),
+          #14162e url('assets/bg-miss.jpg') center / cover no-repeat fixed;
+        /* 三件套整体垂直居中：页面撑满一屏，panels 用 auto margin 居中于剩余空间 */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+      }
+      
+      #page-miss .page-title {
+        color: #fdf3f6;
+        text-shadow: 0 2px 18px rgba(224, 80, 126, 0.5);
+      }
+      
+      /* 想你电波：三件套摊开——历史贴左缘 / 爱心页面正中心 / 统计贴右缘 */
+      #page-miss .miss-panels {
+        max-width: none;
+        /* 上下 auto margin：在 flex 页面中吸收剩余空间，三件套整体垂直居中（尺寸不变） */
+        margin: auto 0;
+        display: grid;
+        grid-template-columns: minmax(300px, 360px) 1fr minmax(280px, 340px);
+        gap: 24px;
+        align-items: stretch;
+        min-height: 65vh;
+      }
+      
+      /* 正中心：超大手绘爱心是页面绝对主角（覆盖手机端的 order: -1） */
+      #page-miss .miss-stage {
+        order: 0;
+        align-self: center;
+        justify-self: center;
+        padding: 0;
+      }
+      
+      #page-miss .miss-heart-btn {
+        width: 260px;
+        height: 260px;
+        filter: drop-shadow(0 14px 42px rgba(224, 80, 126, 0.62));
+      }
+      
+      /* 桌面端波纹跟随爱心放大 */
+      #page-miss .miss-ripple {
+        width: 272px;
+        height: 272px;
+      }
+      
+      #page-miss .miss-heart-hint {
+        font-size: 15px;
+        color: rgba(253, 243, 246, 0.75);
+        text-shadow: 0 1px 8px rgba(18, 20, 44, 0.6);
+      }
+      
+      /* 历史/统计面板：月光玻璃（基础样式），纵向拉高同高 */
+      #page-miss .miss-panel {
+        padding: 22px 24px;
+        border-radius: 10px 14px 12px 14px / 14px 11px 14px 10px;
+        box-shadow: 0 14px 34px rgba(8, 10, 30, 0.4);
+      }
+      
+      #page-miss .miss-panel-title { font-size: 19px; }
+      
+      #page-miss .miss-history-item { font-size: 16px; }
+      
+      #page-miss #miss-history-panel { transform: rotate(-0.4deg); }
+      #page-miss #miss-stats-panel { transform: rotate(0.5deg); }
       
       /* 3. 彼此档案 → 书房桌角：整页铺满固定，摊开的手账置于桌面中央空白区 */
       #profiles-page {
@@ -4396,6 +4952,227 @@
           linear-gradient(rgba(255, 252, 245, 0.28), rgba(255, 252, 245, 0.28)),
           #ecdcd2 url('assets/bg-anni.jpg') center / cover no-repeat fixed;
       }
+      
+      /* 6. 我们的足迹 → bg-map：整页铺满固定，地图嵌在桌面中央的手账框里 */
+      /* 同 page-miss：选择器必须带 .active，避免裸 ID display:flex 盖过页面隐藏机制 */
+      #page-map.active {
+        max-width: none;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        background:
+          linear-gradient(rgba(255, 252, 245, 0.22), rgba(255, 252, 245, 0.22)),
+          #e8dcc4 url('assets/bg-map.jpg') center / cover no-repeat fixed;
+      }
+      
+      /* 手账地图区在页面中垂直水平居中，占尽可能大的区域 */
+      #page-map .map-desktop {
+        display: block;
+        flex: none;
+        margin: auto;
+        width: min(1520px, 95vw);
+      }
+      
+      /* 手账边框：奶油纸托底 + 顶部两条斜贴胶带收边 */
+      #page-map .map-journal {
+        position: relative;
+        background:
+          linear-gradient(rgba(253, 248, 236, 0.94), rgba(253, 248, 236, 0.94)),
+          url('assets/bg-paper.jpg') center / cover no-repeat;
+        border-radius: 14px 18px 16px 18px / 18px 14px 18px 14px;
+        padding: 18px 22px 16px;
+        box-shadow: 0 24px 60px rgba(70, 50, 30, 0.3), inset 0 0 40px rgba(190, 160, 110, 0.1);
+      }
+      #page-map .map-journal::before,
+      #page-map .map-journal::after {
+        content: '';
+        position: absolute;
+        top: -13px;
+        width: 120px;
+        height: 28px;
+        background: rgba(240, 224, 188, 0.78);
+        border-left: 2px dashed rgba(160, 130, 90, 0.4);
+        border-right: 2px dashed rgba(160, 130, 90, 0.4);
+        box-shadow: 0 3px 8px rgba(70, 50, 30, 0.18);
+      }
+      #page-map .map-journal::before { left: 8%; transform: rotate(-5deg); }
+      #page-map .map-journal::after { right: 8%; transform: rotate(4deg); }
+      
+      /* 搜索框：横线纸手账感 */
+      #page-map .map-search-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+        padding: 4px 16px;
+        background: rgba(255, 252, 245, 0.92);
+        border: 1.5px solid rgba(140, 112, 74, 0.4);
+        border-radius: 999px;
+        box-shadow: inset 0 2px 6px rgba(140, 112, 74, 0.12);
+      }
+      #page-map .map-search-icon { font-size: 16px; }
+      #page-map .map-search-input {
+        flex: 1;
+        border: none;
+        background: none;
+        outline: none;
+        padding: 9px 0;
+        font-size: 15.5px;
+        color: #4a3b2e;
+      }
+      #page-map .map-search-input::placeholder { color: rgba(74, 59, 46, 0.45); }
+      
+      #page-map .map-canvas-wrap {
+        position: relative;
+        border-radius: 10px 12px 11px 12px / 12px 10px 12px 10px;
+        overflow: hidden;
+        border: 2px solid rgba(140, 112, 74, 0.4);
+        box-shadow: inset 0 0 30px rgba(140, 112, 74, 0.15);
+      }
+      #page-map #map-container {
+        height: 64vh;
+        background: #e9efe6;
+      }
+      /* 本地受限时的友好降级层 */
+      #page-map .map-fallback {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 16px;
+        line-height: 2;
+        color: rgba(74, 59, 46, 0.7);
+        background: rgba(253, 248, 236, 0.92);
+        z-index: 5;
+      }
+      /* 右下角手绘风缩放按钮 */
+      #page-map .map-zoom-btns {
+        position: absolute;
+        right: 14px;
+        bottom: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 6;
+      }
+      #page-map .map-zoom-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 50% 46% 52% 48% / 48% 52% 46% 52%;
+        border: 2px solid rgba(140, 112, 74, 0.55);
+        background: #fdf8ec;
+        font-size: 15px;
+        cursor: pointer;
+        box-shadow: 0 5px 12px rgba(70, 50, 30, 0.25);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      #page-map .map-zoom-btn:hover {
+        transform: translateY(-2px) rotate(-2deg);
+        box-shadow: 0 8px 16px rgba(70, 50, 30, 0.3);
+      }
+      #page-map .map-zoom-btn:active { transform: translateY(1px); }
+      
+      #page-map .map-legend {
+        display: flex;
+        justify-content: center;
+        gap: 34px;
+        margin-top: 12px;
+        font-size: 14px;
+        color: rgba(74, 59, 46, 0.75);
+      }
+      
+      /* 三选一弹窗的按钮竖排 */
+      .map-choice-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .map-choice-btn { width: 100%; }
+      
+      /* 高德搜索下拉的手账化微调 */
+      .amap-sug-result {
+        border-radius: 10px !important;
+        box-shadow: 0 12px 30px rgba(70, 50, 30, 0.22) !important;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+      }
+      
+      /* 地图钉：手绘 SVG 的投影与指针 */
+      .map-pin {
+        cursor: pointer;
+        filter: drop-shadow(0 3px 4px rgba(70, 50, 30, 0.35));
+        transition: transform 0.15s ease;
+      }
+      .map-pin:hover { transform: translateY(-3px); }
+      
+      /* 钉子弹出的信纸小卡片（高德自定义 InfoWindow） */
+      .map-info-card {
+        position: relative;
+        width: 252px;
+        padding: 14px 16px 12px;
+        background:
+          repeating-linear-gradient(to bottom, transparent 0, transparent 25px, rgba(140, 112, 74, 0.14) 26px),
+          linear-gradient(rgba(253, 248, 236, 0.97), rgba(253, 248, 236, 0.97)),
+          url('assets/bg-paper.jpg') center / cover no-repeat;
+        border: 1.5px solid rgba(140, 112, 74, 0.45);
+        border-radius: 10px 12px 11px 12px / 12px 10px 12px 10px;
+        box-shadow: 0 14px 34px rgba(70, 50, 30, 0.35);
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        color: #4a3b2e;
+      }
+      /* 卡片底部小尖角，指向钉子 */
+      .map-info-card::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: -9px;
+        transform: translateX(-50%);
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-top: 9px solid #f3ead4;
+      }
+      .map-info-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; padding-right: 20px; }
+      .map-info-row { font-size: 13.5px; line-height: 1.8; word-break: break-all; }
+      .map-info-photo {
+        width: 100%;
+        border-radius: 8px;
+        margin-top: 6px;
+        cursor: pointer;
+        border: 3px solid #fff;
+        box-shadow: 0 3px 8px rgba(70, 50, 30, 0.2);
+      }
+      .map-info-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+      .map-info-btn {
+        border: 1.5px solid rgba(140, 112, 74, 0.5);
+        background: #fff8ea;
+        border-radius: 999px;
+        padding: 4px 12px;
+        font-size: 12.5px;
+        font-family: 'LXGW WenKai', 'Noto Sans SC', sans-serif;
+        color: #6a4f36;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .map-info-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(70, 50, 30, 0.18); }
+      .map-info-close {
+        position: absolute;
+        top: 6px;
+        right: 9px;
+        border: none;
+        background: none;
+        font-size: 13px;
+        color: rgba(106, 79, 54, 0.6);
+        cursor: pointer;
+      }
+      .map-info-close:hover { color: #6a4f36; }
     }
     
     /* 时光轴编辑遮罩层（仅手机端显示） */
@@ -4659,12 +5436,27 @@
           <span class="icon">🎂</span>
           <span class="text">纪念日</span>
         </div>
+        <div class="glass-card quick-entry" data-page="page-map">
+          <span class="icon">🗺️</span>
+          <span class="text">我们的足迹</span>
+        </div>
+        <div class="glass-card quick-entry" data-page="page-miss">
+          <span class="icon">💓</span>
+          <span class="text">想你电波</span>
+        </div>
+        <div class="glass-card quick-entry" data-page="page-wish">
+          <span class="icon">⭐</span>
+          <span class="text">心愿清单</span>
+        </div>
       </div>
       
       <div class="home-actions">
         <button class="btn btn-primary draw-card-btn" id="draw-card-btn">✨ 抽一张甜蜜卡片</button>
         <button class="btn logout-btn" id="logout-btn">退出登录</button>
       </div>
+      
+      <!-- 右下角身份祝福（仅电脑端显示；文案由 initHome 按登录身份填入） -->
+      <div class="home-blessing font-wenkai" id="home-blessing" aria-hidden="true"></div>
     </section>
     
     <!-- 4. Messages Page -->
@@ -4861,6 +5653,135 @@
       </div>
     </section>
     
+    <!-- 11. Map Page（我们的足迹：桌面端高德地图手账；手机端仅显示提示） -->
+    <section id="page-map" class="sub-page">
+      <div class="page-header">
+        <button class="back-btn" data-back="home-page">💒 返回首页</button>
+        <h2 class="page-title font-serif">🗺️ 我们的足迹</h2>
+        <div style="width:60px"></div>
+      </div>
+      <div class="map-mobile-tip font-wenkai">🗺️ 地图板块请在电脑上查看哦</div>
+      
+      <!-- 桌面端：手账边框包裹的地图（手机端隐藏，见 CSS） -->
+      <div class="map-desktop" id="map-desktop">
+        <div class="map-journal">
+          <div class="map-search-bar">
+            <span class="map-search-icon">🔎</span>
+            <input type="text" id="map-search-input" class="map-search-input font-wenkai" placeholder="输入城市或地名，把回忆钉在地图上..." autocomplete="off">
+          </div>
+          <div class="map-canvas-wrap">
+            <div id="map-container"></div>
+            <div class="map-fallback font-wenkai" id="map-fallback" style="display:none">
+              地图暂时没加载出来 🌧️<br>本地预览受域名限制属正常现象，线上打开就能看到了
+            </div>
+            <div class="map-zoom-btns">
+              <button type="button" class="map-zoom-btn" id="map-zoom-in" aria-label="放大地图">➕</button>
+              <button type="button" class="map-zoom-btn" id="map-zoom-out" aria-label="缩小地图">➖</button>
+            </div>
+          </div>
+          <div class="map-legend font-wenkai">
+            <span>🐷🐱 当前位置</span>
+            <span>❤️ 我们一起去过</span>
+            <span>⭐ 未来想去</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 12. Miss Page（想你电波） -->
+    <section id="page-miss" class="sub-page">
+      <div class="page-header">
+        <button class="back-btn" data-back="home-page">💒 返回首页</button>
+        <h2 class="page-title font-wenkai">💓 想你电波</h2>
+        <div style="width:60px"></div>
+      </div>
+      
+      <div class="miss-panels">
+        <div class="miss-panel" id="miss-history-panel">
+          <div class="miss-panel-title font-wenkai">📜 历史记录</div>
+          <div class="miss-history-list" id="miss-history-list">
+            <div class="miss-history-item"><span class="miss-history-time skeleton" style="display:inline-block;height:14px;width:90px"></span></div>
+            <div class="miss-history-item"><span class="miss-history-time skeleton" style="display:inline-block;height:14px;width:70%"></span></div>
+          </div>
+        </div>
+        
+        <div class="miss-stage">
+          <div class="miss-heart-wrap" id="miss-heart-wrap">
+            <button class="miss-heart-btn" id="miss-heart-btn" aria-label="发送想你电波">
+              <svg viewBox="0 0 32 32" aria-hidden="true">
+                <defs>
+                  <linearGradient id="missHeartGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#f78fb0"/>
+                    <stop offset="1" stop-color="#e0507e"/>
+                  </linearGradient>
+                </defs>
+                <path d="M16 27.5 C10.5 22 4.5 17.2 4.5 11.2 C4.5 7 7.8 4.2 11.2 4.2 C13.6 4.2 15.4 5.6 16 7.4 C16.6 5.6 18.4 4.2 20.8 4.2 C24.2 4.2 27.5 7 27.5 11.2 C27.5 17.2 21.5 22 16 27.5 Z" fill="url(#missHeartGrad)" stroke="#c9406c" stroke-width="0.7" stroke-linejoin="round"/>
+                <path d="M8.5 10.5 C8.8 8.6 10.2 7.4 11.8 7.5" stroke="rgba(255,255,255,0.75)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="miss-heart-hint font-wenkai">点一下爱心，把想念发射给 Ta 💫</div>
+        </div>
+        
+        <div class="miss-panel" id="miss-stats-panel">
+          <div class="miss-panel-title font-wenkai">📊 统计</div>
+          <div class="miss-stats-cols">
+            <div class="miss-stats-col">
+              <div class="miss-stats-col-title font-wenkai" id="miss-stats-month-title">今年逐月</div>
+              <div id="miss-stats-monthly"></div>
+            </div>
+            <div class="miss-stats-col">
+              <div class="miss-stats-col-title font-wenkai">往年归档</div>
+              <div id="miss-stats-yearly"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 13. Wish Page（心愿清单） -->
+    <section id="page-wish" class="sub-page">
+      <div class="page-header">
+        <button class="back-btn" data-back="home-page">💒 返回首页</button>
+        <h2 class="page-title font-serif">⭐ 心愿清单</h2>
+        <div style="width:60px"></div>
+      </div>
+      
+      <div class="wish-board" id="wish-board">
+        <div class="wish-add-row">
+          <button class="btn btn-primary" id="add-wish-btn">➕ 添加心愿</button>
+        </div>
+        
+        <!-- 上方：等待实现（按许下日期正序） -->
+        <div class="wish-section" id="wish-pending-section">
+          <div class="wish-section-title font-wenkai">🌱 等待实现</div>
+          <div class="wish-list" id="wish-pending-list">
+            <div class="wish-item">
+              <div class="wish-main"><span class="wish-text skeleton" style="display:block;height:18px;width:70%"></span></div>
+            </div>
+            <div class="wish-item">
+              <div class="wish-main"><span class="wish-text skeleton" style="display:block;height:18px;width:55%"></span></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 手绘分隔线 -->
+        <div class="wish-divider" id="wish-divider" aria-hidden="true">
+          <svg viewBox="0 0 600 24" preserveAspectRatio="none">
+            <path d="M4 12 Q 34 4, 64 12 T 124 12 T 184 12 T 244 12 T 304 12 T 364 12 T 424 12 T 484 12 T 544 12 T 596 12" fill="none" stroke="rgba(122, 92, 62, 0.5)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/>
+          </svg>
+        </div>
+        
+        <!-- 下方：已实现 · 纪念区（常驻显示，按实现日期倒序） -->
+        <div class="wish-section" id="wish-done-section">
+          <div class="wish-section-title font-wenkai">🎉 已实现 · 纪念区</div>
+          <div class="wish-list" id="wish-done-list">
+            <div class="wish-empty font-wenkai">还没有已实现的心愿，等你们来盖章 ✨</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
     <!-- Timeline Edit Overlay (mobile) -->
     <div class="timeline-edit-overlay" id="timeline-edit-overlay"></div>
     
@@ -5022,6 +5943,80 @@
     </div>
   </div>
   
+  <!-- Add Wish Modal -->
+  <div class="modal-overlay" id="wish-add-modal">
+    <div class="glass-card modal-content">
+      <h3 class="font-serif" style="font-size:20px;margin-bottom:20px;color:var(--soft-pink)">➕ 添加心愿</h3>
+      <form id="wish-add-form" class="edit-form" style="text-align:left">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">心愿</label>
+        <input type="text" class="input" name="text" placeholder="写下一个小小的心愿..." required maxlength="100">
+        <div class="edit-actions" style="margin-top:16px">
+          <button type="button" class="btn" id="cancel-wish-add">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- 心愿实现仪式的全屏操作锁定层（透明） -->
+  <div class="wish-lock-overlay" id="wish-lock-overlay"></div>
+  
+  <!-- Send Miss Modal（想你电波：附带留言，可留空） -->
+  <div class="modal-overlay" id="miss-send-modal">
+    <div class="glass-card modal-content">
+      <h3 class="font-serif" style="font-size:20px;margin-bottom:20px;color:var(--soft-pink)">💓 发射想你电波</h3>
+      <form id="miss-send-form" class="edit-form" style="text-align:left">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">附带一句留言（可留空）</label>
+        <input type="text" class="input" name="note" placeholder="想对 Ta 说..." maxlength="100">
+        <div class="edit-actions" style="margin-top:16px">
+          <button type="button" class="btn" id="cancel-miss-send">取消</button>
+          <button type="submit" class="btn btn-primary">发送 💌</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Map Choice Modal（足迹：搜索选中地点后的三选一） -->
+  <div class="modal-overlay" id="map-choice-modal">
+    <div class="glass-card modal-content">
+      <h3 class="font-serif" style="font-size:20px;margin-bottom:8px;color:var(--soft-pink)">📍 <span id="map-choice-city"></span></h3>
+      <p class="font-wenkai" style="margin-bottom:18px;color:rgba(45,45,90,0.7)">要把这里标成什么呢？</p>
+      <div class="map-choice-actions">
+        <button type="button" class="btn map-choice-btn" id="map-choice-current">📍 标为我的当前位置</button>
+        <button type="button" class="btn map-choice-btn" id="map-choice-visited">❤️ 我们一起去过</button>
+        <button type="button" class="btn map-choice-btn" id="map-choice-planned">⭐ 未来想去</button>
+      </div>
+      <div class="edit-actions" style="margin-top:14px">
+        <button type="button" class="btn" id="map-choice-cancel">取消</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Map Place Modal（足迹：去过/想去/编辑/打卡 共用的稿纸表单） -->
+  <div class="modal-overlay" id="map-place-modal">
+    <div class="glass-card modal-content">
+      <h3 class="font-serif" id="map-place-modal-title" style="font-size:20px;margin-bottom:20px;color:var(--soft-pink)">❤️ 我们一起去过</h3>
+      <form id="map-place-form" class="edit-form" style="text-align:left">
+        <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">地点名称</label>
+        <input type="text" class="input" name="city_name" placeholder="这个地方叫..." required maxlength="30">
+        <div id="map-place-date-field">
+          <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">日期</label>
+          <input type="date" class="input" name="visit_date">
+        </div>
+        <label id="map-place-note-label" style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">一句话回忆</label>
+        <input type="text" class="input" name="note" placeholder="写一句当时的心情..." maxlength="60">
+        <div id="map-place-photo-field">
+          <label style="font-size:13px;color:rgba(45,45,90,0.7);margin-bottom:4px;display:block">照片链接（可选）</label>
+          <input type="url" class="input" name="photo_url" placeholder="https://...">
+        </div>
+        <div class="edit-actions" style="margin-top:16px">
+          <button type="button" class="btn" id="cancel-map-place">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
   <!-- Anniversary Today Overlay -->
   <div class="anniversary-today-overlay" id="anniversary-today-overlay">
     <div class="glass-card anniversary-today-content">
@@ -5075,7 +6070,8 @@
     const pages = [
       'landing-page', 'password-page', 'home-page',
       'messages-page', 'timeline-page', 'photos-page',
-      'profiles-page', 'countdown-page', 'anniversaries-page'
+      'profiles-page', 'countdown-page', 'anniversaries-page',
+      'page-map', 'page-miss', 'page-wish'
     ];
     
     const bgMusic = document.getElementById('bg-music');
@@ -5412,6 +6408,23 @@
         welcomeEl.textContent = '欢迎回家，笑笑 💗';
       } else {
         welcomeEl.textContent = '欢迎回家 💕';
+      }
+      
+      // 右下角身份祝福（仅电脑端显示，手机端 CSS 隐藏；未识别身份时不显示）
+      const blessingEl = document.getElementById('home-blessing');
+      const heartSvg = (fill, stroke) =>
+        `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27.5 C10.5 22 4.5 17.2 4.5 11.2 C4.5 7 7.8 4.2 11.2 4.2 C13.6 4.2 15.4 5.6 16 7.4 C16.6 5.6 18.4 4.2 20.8 4.2 C24.2 4.2 27.5 7 27.5 11.2 C27.5 17.2 21.5 22 16 27.5 Z" fill="${fill}" stroke="${stroke}" stroke-width="1.4" stroke-linejoin="round"/></svg>`;
+      if (id === '北斗') {
+        blessingEl.innerHTML = `我家桐桐猪永远健健康康平平安安开开心心${heartSvg('#f27ba7', '#d95f8f')}`;
+        blessingEl.classList.add('blessing-beidou');
+        blessingEl.classList.remove('blessing-xiaoxiao');
+      } else if (id === '笑笑') {
+        blessingEl.innerHTML = `我家小语涵永远健健康康平平安安开开心心${heartSvg('#6aa6e8', '#4a86c8')}`;
+        blessingEl.classList.add('blessing-xiaoxiao');
+        blessingEl.classList.remove('blessing-beidou');
+      } else {
+        blessingEl.innerHTML = '';
+        blessingEl.classList.remove('blessing-beidou', 'blessing-xiaoxiao');
       }
       
       const reunited = daysSinceInclusive('2025-07-06');
@@ -7736,6 +8749,1044 @@
       }
     };
     
+    // ===== Wishes（心愿清单） =====
+    let wishesCache = [];
+    let wishAnimating = false;
+    let wishJustCompletedId = null; // 本次会话刚实现的心愿 id（同日期并列时排最前）
+    
+    // 北斗提的心愿 → 小猪头；笑笑提的 → 小猫头（图标不落姓名）
+    const WISH_PIG_SVG = `<svg viewBox="0 0 40 40"><path d="M11 14 C8 8 9 4 13 5 C16 6 16 10 15 13 Z" fill="#f0a5b8"/><path d="M29 14 C32 8 31 4 27 5 C24 6 24 10 25 13 Z" fill="#f0a5b8"/><circle cx="20" cy="23" r="14" fill="#f9c9d6"/><ellipse cx="20" cy="26" rx="6.5" ry="4.6" fill="#f0a5b8"/><circle cx="17.6" cy="26" r="1.4" fill="#a8546a"/><circle cx="22.4" cy="26" r="1.4" fill="#a8546a"/><circle cx="14.6" cy="20" r="1.7" fill="#54323d"/><circle cx="25.4" cy="20" r="1.7" fill="#54323d"/><circle cx="15.2" cy="19.3" r="0.55" fill="#fff"/><circle cx="26" cy="19.3" r="0.55" fill="#fff"/></svg>`;
+    const WISH_CAT_SVG = `<svg viewBox="0 0 40 40"><path d="M11 15 L8.5 5 L18 10.5 Z" fill="#d9b48f"/><path d="M29 15 L31.5 5 L22 10.5 Z" fill="#d9b48f"/><path d="M12 13.4 L10.7 8.4 L15.4 11.2 Z" fill="#eec3c6"/><path d="M28 13.4 L29.3 8.4 L24.6 11.2 Z" fill="#eec3c6"/><circle cx="20" cy="23" r="13" fill="#ecd2ae"/><circle cx="15" cy="21.4" r="1.7" fill="#4a3828"/><circle cx="25" cy="21.4" r="1.7" fill="#4a3828"/><circle cx="15.6" cy="20.7" r="0.55" fill="#fff"/><circle cx="25.6" cy="20.7" r="0.55" fill="#fff"/><path d="M18.4 26.2 Q20 27.8 21.6 26.2" stroke="#4a3828" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M4 22 L11 23 M4.5 26.5 L11 25.4" stroke="#b89a74" stroke-width="1.2" stroke-linecap="round"/><path d="M36 22 L29 23 M35.5 26.5 L29 25.4" stroke="#b89a74" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+    
+    function wishCreatorIcon(createdBy) {
+      return (createdBy === 'beidou' || createdBy === '北斗') ? WISH_PIG_SVG : WISH_CAT_SVG;
+    }
+    
+    function wishDateLabel(w) {
+      const created = `许于 ${formatDateCN(w.created_date)}`;
+      return w.completed ? `${created} · 实现于 ${formatDateCN(w.completed_date)}` : created;
+    }
+    
+    function wishItemHtml(w) {
+      const isDone = !!w.completed;
+      const id = String(w.id);
+      const safeId = escapeHtml(id);
+      return `
+        <div class="wish-item${isDone ? ' done' : ''}" data-wish-id="${safeId}">
+          <span class="wish-icon" aria-hidden="true">${wishCreatorIcon(w.created_by)}</span>
+          <div class="wish-main">
+            <span class="wish-text font-wenkai">${escapeHtml(w.text || '')}</span>
+            <span class="wish-strike" aria-hidden="true"></span>
+            ${isDone ? '<span class="wish-stamp" aria-hidden="true">已实现</span>' : ''}
+          </div>
+          <span class="wish-date">${wishDateLabel(w)}</span>
+          <div class="wish-actions">
+            ${isDone
+              ? '<button class="wish-action-btn" data-act="uncomplete" title="退回未实现">↩️</button>'
+              : '<button class="wish-action-btn" data-act="complete" title="标记实现">⭐</button>'}
+            <button class="wish-action-btn" data-act="edit" title="编辑">✏️</button>
+            <button class="wish-action-btn" data-act="delete" title="删除">🗑️</button>
+          </div>
+          <div class="wish-edit-form" id="wish-edit-form-${safeId}">
+            <form class="edit-form" onsubmit="event.preventDefault(); window.saveWishEdit('${safeId}');">
+              <input type="text" class="input" id="wish-edit-text-${safeId}" value="${escapeHtml(w.text || '')}" maxlength="100" required>
+              <div class="edit-actions" style="margin-top:10px">
+                <button type="submit" class="btn btn-primary">保存 💾</button>
+                <button type="button" class="btn" onclick="window.closeWishEditForm('${safeId}')">取消 ❌</button>
+              </div>
+            </form>
+          </div>
+        </div>`;
+    }
+    
+    async function loadWishes() {
+      if (!supabase) {
+        wishesCache = [];
+        renderWishes();
+        return;
+      }
+      try {
+        const { data, error } = await supabase.from('wishes').select('*');
+        if (error) throw error;
+        wishesCache = data || [];
+        renderWishes();
+      } catch (e) {
+        console.error(e);
+        showToast('心愿加载失败：' + (e.message || '未知错误'));
+        renderWishes(); // 用当前缓存渲染，避免骨架空白条残留（首次加载失败时显示空态）
+      }
+    }
+    
+    function renderWishes() {
+      const pendingList = document.getElementById('wish-pending-list');
+      const doneList = document.getElementById('wish-done-list');
+      
+      // 等待实现：按许下日期正序（先许的在前）
+      const pending = wishesCache
+        .filter(w => !w.completed)
+        .sort((a, b) => String(a.created_date).localeCompare(String(b.created_date)));
+      // 纪念区：按实现日期倒序（最新实现的在前；同一天的本次会话刚实现的排最前）
+      const done = wishesCache
+        .filter(w => w.completed)
+        .sort((a, b) => {
+          const cmp = String(b.completed_date).localeCompare(String(a.completed_date));
+          if (cmp !== 0) return cmp;
+          if (String(a.id) === String(wishJustCompletedId)) return -1;
+          if (String(b.id) === String(wishJustCompletedId)) return 1;
+          return 0;
+        });
+      
+      pendingList.innerHTML = pending.length
+        ? pending.map(wishItemHtml).join('')
+        : '<div class="wish-empty font-wenkai">还没有心愿，点上方按钮许下第一个吧 ⭐</div>';
+      // 纪念区常驻显示：空数据时显示空状态提示，不隐藏区域
+      doneList.innerHTML = done.length
+        ? done.map(wishItemHtml).join('')
+        : '<div class="wish-empty font-wenkai">还没有已实现的心愿，等你们来盖章 ✨</div>';
+      
+      bindWishActions();
+    }
+    
+    function bindWishActions() {
+      document.querySelectorAll('#wish-board .wish-action-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (wishAnimating) return;
+          const row = btn.closest('.wish-item');
+          if (!row) return;
+          const id = row.dataset.wishId;
+          const act = btn.dataset.act;
+          if (act === 'complete') completeWishWithCeremony(id);
+          else if (act === 'uncomplete') uncompleteWish(id);
+          else if (act === 'edit') window.openWishEditForm(id);
+          else if (act === 'delete') openDeleteModal('真的要删掉这个心愿吗？⭐', () => deleteWish(id));
+        });
+      });
+    }
+    
+    async function addWish(text) {
+      if (!requireAuth()) throw new Error('需登录后使用');
+      if (!supabase) {
+        showToast('Supabase 未配置，无法添加心愿');
+        throw new Error('Supabase not configured');
+      }
+      const identity = safeGetItem('identity');
+      const createdBy = identity === '北斗' ? 'beidou' : 'xiaoxiao';
+      const { error } = await supabase.from('wishes').insert([{
+        text,
+        created_by: createdBy,
+        created_date: getTodayString(),
+        completed: false,
+        completed_date: null
+      }]);
+      // 把后端返回的 message/details/hint 都带出来，方便排查
+      if (error) {
+        const detail = [error.message, error.details, error.hint]
+          .filter(Boolean).join(' | ');
+        throw new Error(detail || '未知错误');
+      }
+    }
+    
+    async function deleteWish(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法删除心愿');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('wishes').delete().eq('id', id);
+        if (error) throw error;
+        showToast('心愿已删除');
+        loadWishes();
+      } catch (e) {
+        console.error(e);
+        showToast('删除失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    window.openWishEditForm = function(id) {
+      const form = document.getElementById(`wish-edit-form-${id}`);
+      if (form) form.classList.add('active');
+    };
+    
+    window.closeWishEditForm = function(id) {
+      const form = document.getElementById(`wish-edit-form-${id}`);
+      if (form) form.classList.remove('active');
+    };
+    
+    window.saveWishEdit = async function(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法编辑心愿');
+        return;
+      }
+      const input = document.getElementById(`wish-edit-text-${id}`);
+      const text = input ? input.value.trim() : '';
+      if (!text) {
+        showToast('心愿内容不能为空～');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('wishes').update({ text }).eq('id', id);
+        if (error) throw error;
+        showToast('心愿已更新 ⭐');
+        loadWishes();
+      } catch (e) {
+        console.error(e);
+        showToast('更新失败：' + (e.message || '未知错误'));
+      }
+    };
+    
+    async function uncompleteWish(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('wishes')
+          .update({ completed: false, completed_date: null })
+          .eq('id', id);
+        if (error) throw error;
+        showToast('已退回等待实现 🌱');
+        loadWishes();
+      } catch (e) {
+        console.error(e);
+        showToast('操作失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    // ===== 标记实现仪式：全屏锁定 → 盖章 → 划线 → 滑入纪念区 → 落位后同步数据库 =====
+    function wishLockPrevent(e) { e.preventDefault(); }
+    function wishLockPreventKey(e) { e.preventDefault(); e.stopPropagation(); }
+    
+    function lockWishScreen() {
+      document.getElementById('wish-lock-overlay').classList.add('active');
+      document.addEventListener('wheel', wishLockPrevent, { passive: false });
+      document.addEventListener('touchmove', wishLockPrevent, { passive: false });
+      document.addEventListener('keydown', wishLockPreventKey, true);
+    }
+    
+    function unlockWishScreen() {
+      document.getElementById('wish-lock-overlay').classList.remove('active');
+      document.removeEventListener('wheel', wishLockPrevent);
+      document.removeEventListener('touchmove', wishLockPrevent);
+      document.removeEventListener('keydown', wishLockPreventKey, true);
+    }
+    
+    function wishWait(ms) { return new Promise(r => setTimeout(r, ms)); }
+    
+    async function completeWishWithCeremony(id) {
+      if (wishAnimating) return;
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置');
+        return;
+      }
+      const item = wishesCache.find(w => String(w.id) === String(id));
+      if (!item || item.completed) return;
+      
+      wishAnimating = true;
+      lockWishScreen();
+      
+      const done = async (ok, message) => {
+        unlockWishScreen();
+        wishAnimating = false;
+        if (message) showToast(message);
+        loadWishes();
+      };
+      
+      const row = document.querySelector(`.wish-item[data-wish-id="${CSS.escape(String(id))}"]`);
+      const today = getTodayString();
+      
+      // 兜底：找不到 DOM 行时不播放动画，直接更新数据库
+      if (!row) {
+        try {
+          const { error } = await supabase.from('wishes')
+            .update({ completed: true, completed_date: today })
+            .eq('id', id);
+          if (error) throw error;
+          wishesCache = wishesCache.map(w => String(w.id) === String(id)
+            ? { ...w, completed: true, completed_date: today } : w);
+          wishJustCompletedId = id;
+          await done(true, '心愿实现啦 🎉');
+        } catch (e) {
+          console.error(e);
+          await done(false, '操作失败：' + (e.message || '未知错误'));
+        }
+        return;
+      }
+      
+      try {
+        // 隐藏操作按钮，避免动画过程中的视觉干扰
+        const actions = row.querySelector('.wish-actions');
+        if (actions) actions.style.visibility = 'hidden';
+        
+        // 1. 红印章从上方落下（带回弹），落章瞬间纸张震动
+        const main = row.querySelector('.wish-main');
+        const stamp = document.createElement('span');
+        stamp.className = 'wish-stamp';
+        stamp.textContent = '已实现';
+        main.appendChild(stamp);
+        const stampAnim = stamp.animate([
+          { transform: 'translateY(-280px) scale(2.2) rotate(-32deg)', opacity: 0 },
+          { transform: 'translateY(0) scale(0.9) rotate(-14deg)', opacity: 1, offset: 0.62 },
+          { transform: 'translateY(0) scale(1.06) rotate(-14deg)', opacity: 1, offset: 0.8 },
+          { transform: 'translateY(0) scale(1) rotate(-14deg)', opacity: 1 }
+        ], { duration: 620, easing: 'cubic-bezier(0.25, 0.8, 0.35, 1)', fill: 'forwards' });
+        // 纸张震动（用独立 translate 属性，不干扰卡片自身的 rotate 倾斜）
+        row.animate([
+          { translate: '0 0' },
+          { translate: '0 3px' },
+          { translate: '0 -1.5px' },
+          { translate: '0 1px' },
+          { translate: '0 0' }
+        ], { duration: 340, delay: 380, easing: 'ease-out' });
+        await stampAnim.finished;
+        
+        // 2. 手写横线从左到右把心愿轻轻划掉，文字同步变淡
+        const strike = row.querySelector('.wish-strike');
+        strike.style.width = 'calc(100% + 4px)'; // 由 CSS transition 播放 0.55s
+        const textEl = row.querySelector('.wish-text');
+        textEl.style.color = 'rgba(90, 74, 58, 0.5)';
+        await wishWait(760);
+        
+        // 3. 整条心愿滑向纪念区「实现日期倒序」的首位（今天完成的必然排最前）
+        const doneList = document.getElementById('wish-done-list');
+        
+        const startRect = row.getBoundingClientRect();
+        const firstDone = doneList.firstElementChild;
+        const targetRect = firstDone ? firstDone.getBoundingClientRect() : doneList.getBoundingClientRect();
+        
+        // 占位元素防止等待区列表瞬间塌陷
+        const placeholder = document.createElement('div');
+        placeholder.style.height = startRect.height + 'px';
+        placeholder.style.marginBottom = getComputedStyle(row).marginBottom;
+        row.parentNode.insertBefore(placeholder, row);
+        
+        // 原条转为 fixed 飞行（锁定层 z-index 10000 之下，可见但不可点）
+        row.classList.add('wish-flying');
+        row.style.position = 'fixed';
+        row.style.left = startRect.left + 'px';
+        row.style.top = startRect.top + 'px';
+        row.style.width = startRect.width + 'px';
+        row.style.height = startRect.height + 'px';
+        row.style.margin = '0';
+        row.style.zIndex = '9990';
+        
+        const dx = targetRect.left - startRect.left;
+        const dy = targetRect.top - startRect.top;
+        
+        placeholder.animate([
+          { height: startRect.height + 'px', opacity: 1 },
+          { height: '0px', opacity: 0 }
+        ], { duration: 700, easing: 'ease-in-out', fill: 'forwards' });
+        
+        const flyAnim = row.animate([
+          { transform: 'translate(0, 0) rotate(0deg)' },
+          { transform: `translate(${dx * 0.5}px, ${dy * 0.55}px) rotate(1.5deg)`, offset: 0.5 },
+          { transform: `translate(${dx}px, ${dy}px) rotate(0deg)` }
+        ], { duration: 780, easing: 'cubic-bezier(0.45, 0.05, 0.25, 1)', fill: 'forwards' });
+        await flyAnim.finished;
+        
+        // 4. 落位后同步数据库，再以最终状态重渲染（动画只播这一次，绝不重播）
+        const { error } = await supabase.from('wishes')
+          .update({ completed: true, completed_date: today })
+          .eq('id', id);
+        if (error) throw error;
+        wishesCache = wishesCache.map(w => String(w.id) === String(id)
+          ? { ...w, completed: true, completed_date: today } : w);
+        wishJustCompletedId = id;
+        await done(true, '心愿实现啦 🎉');
+      } catch (e) {
+        console.error(e);
+        await done(false, '操作失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    // ===== Miss（想你电波） =====
+    // PushPlus 推送 token（留空即跳过推送，其余功能照常；八月初再填）
+    const PUSH_TOKEN_BEIDOU = '';
+    const PUSH_TOKEN_XIAOXIAO = '';
+    
+    let missCache = [];
+    let missSending = false;
+    let missHistoryExpanded = false; // 历史记录：默认只显示最近 10 条
+    
+    function missSenderDisplay(sender) {
+      return (sender === 'beidou' || sender === '北斗') ? '北斗' : '笑笑';
+    }
+    
+    // 历史记录时间「7月21日 00:24」；跨年记录带年份「2025年7月21日 00:24」
+    function formatMissDateTime(dateInput) {
+      const d = new Date(dateInput);
+      if (isNaN(d)) return '';
+      const now = new Date();
+      const datePart = d.getFullYear() === now.getFullYear()
+        ? `${d.getMonth() + 1}月${d.getDate()}日`
+        : `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      return `${datePart} ${hh}:${mm}`;
+    }
+    
+    // 推送内容用时间格式「2026年7月21日 00:24」
+    function formatMissPushTime(date) {
+      const hh = String(date.getHours()).padStart(2, '0');
+      const mm = String(date.getMinutes()).padStart(2, '0');
+      return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${hh}:${mm}`;
+    }
+    
+    async function loadMissMessages() {
+      if (!supabase) {
+        missCache = [];
+        renderMiss();
+        return;
+      }
+      try {
+        const { data, error } = await supabase
+          .from('miss_messages')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        missCache = data || [];
+        renderMiss();
+      } catch (e) {
+        console.error(e);
+        showToast('电波加载失败：' + (e.message || '未知错误'));
+        renderMiss();
+      }
+    }
+    
+    function renderMiss() {
+      renderMissHistory();
+      renderMissStats();
+    }
+    
+    function renderMissHistory() {
+      const list = document.getElementById('miss-history-list');
+      if (!missCache.length) {
+        list.innerHTML = '<div class="miss-empty font-wenkai">还没有电波记录，点上面的爱心发出第一声想念吧 💓</div>';
+        return;
+      }
+      const LIMIT = 10;
+      const shown = missHistoryExpanded ? missCache : missCache.slice(0, LIMIT);
+      let html = shown.map(m => {
+        const who = missSenderDisplay(m.sender);
+        const note = (m.note || '').trim();
+        return `
+          <div class="miss-history-item">
+            <span class="miss-history-time">${formatMissDateTime(m.created_at)}</span>
+            <span class="font-wenkai">${escapeHtml(who)}想你了${note ? ` · <span class="miss-history-note">附留言：${escapeHtml(note)}</span>` : ''}</span>
+          </div>`;
+      }).join('');
+      if (missCache.length > LIMIT) {
+        html += missHistoryExpanded
+          ? '<button class="miss-more-btn font-wenkai" id="miss-more-btn">收起 ▲</button>'
+          : `<button class="miss-more-btn font-wenkai" id="miss-more-btn">查看更多（共 ${missCache.length} 条）▼</button>`;
+      }
+      list.innerHTML = html;
+      const moreBtn = document.getElementById('miss-more-btn');
+      if (moreBtn) {
+        moreBtn.addEventListener('click', () => {
+          missHistoryExpanded = !missHistoryExpanded;
+          renderMissHistory();
+        });
+      }
+    }
+    
+    function renderMissStats() {
+      const now = new Date();
+      const curYear = now.getFullYear();
+      const monthly = new Array(12).fill(0);
+      const yearly = {}; // 过往年份归档：year -> count
+      missCache.forEach(m => {
+        const d = new Date(m.created_at);
+        if (isNaN(d)) return;
+        const y = d.getFullYear();
+        if (y === curYear) monthly[d.getMonth()]++;
+        else yearly[y] = (yearly[y] || 0) + 1;
+      });
+      
+      document.getElementById('miss-stats-month-title').textContent = `${curYear}年逐月`;
+      document.getElementById('miss-stats-monthly').innerHTML = monthly
+        .map((count, i) => `<div class="miss-stats-row font-wenkai">${i + 1}月互相想了 <span class="miss-num">${count}</span> 次</div>`)
+        .join('');
+      
+      const years = Object.keys(yearly).sort((a, b) => Number(b) - Number(a));
+      document.getElementById('miss-stats-yearly').innerHTML = years.length
+        ? years.map(y => `<div class="miss-stats-row font-wenkai">${y}年互相想了 <span class="miss-num">${yearly[y]}</span> 次</div>`).join('')
+        : '<div class="miss-empty font-wenkai" style="padding:12px 4px;text-align:left">跨年后的记录会归档到这里</div>';
+    }
+    
+    /* 电波扩散动画：三连同心圆波纹从爱心向外扩散 */
+    function playMissRipples() {
+      const wrap = document.getElementById('miss-heart-wrap');
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          const ripple = document.createElement('span');
+          ripple.className = 'miss-ripple';
+          wrap.appendChild(ripple);
+          ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+        }, i * 220);
+      }
+    }
+    
+    /* PushPlus 推送：token 留空直接跳过；失败静默降级，仅 console 留日志 */
+    async function sendMissPush(senderDisplay, note, timeStr) {
+      const identity = safeGetItem('identity');
+      const targetToken = identity === '北斗' ? PUSH_TOKEN_XIAOXIAO : PUSH_TOKEN_BEIDOU;
+      if (!targetToken) return;
+      let content = `${senderDisplay}想你了 ❤️`;
+      if (note) content += `\n💬 留言：${note}`;
+      content += `\n🕐 ${timeStr}`;
+      try {
+        await fetch('https://www.pushplus.plus/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token: targetToken,
+            title: '💌 北笑南欢 · 想你电波',
+            content
+          })
+        });
+      } catch (e) {
+        console.error('PushPlus 推送失败（已静默降级，记录已照常保存）：', e);
+      }
+    }
+    
+    async function sendMiss(note) {
+      if (!requireAuth()) throw new Error('需登录后使用');
+      if (!supabase) {
+        showToast('Supabase 未配置，无法发送');
+        throw new Error('Supabase not configured');
+      }
+      const identity = safeGetItem('identity');
+      const sender = identity === '北斗' ? 'beidou' : 'xiaoxiao';
+      const now = new Date();
+      const { error } = await supabase.from('miss_messages').insert([{
+        sender,
+        note: note || '',
+        created_at: now.toISOString()
+      }]);
+      if (error) {
+        const detail = [error.message, error.details, error.hint].filter(Boolean).join(' | ');
+        throw new Error(detail || '未知错误');
+      }
+      // 推送不阻塞主流程：异步发出，失败仅 console 留日志
+      sendMissPush(missSenderDisplay(sender), note, formatMissPushTime(now));
+    }
+
+    // ===== Map Places（我们的足迹：高德地图 + map_places 表） =====
+    const AMAP_KEY = '6b586ff7142b638ea901b079460f898c';
+    const AMAP_SECURITY_CODE = '7b8d087e363a4427e91e3d89da2a87bd';
+    let amapLoadPromise = null;
+    let mapInstance = null;
+    let mapGeocoder = null;
+    let mapInfoWindow = null;
+    let mapPlacesCache = [];
+    let mapMarkerList = [];      // 当前地图上的 AMap.Marker 实例
+    let mapLineObj = null;       // 两人之间的虚线航线
+    let mapLineLabel = null;     // 航线距离标注
+    let pendingSearchPlace = null; // 搜索选中的点 { name, lng, lat }
+    let mapPlaceModalMode = 'visited-add'; // visited-add | planned-add | visited-edit | planned-edit | checkin
+    let editingMapPlaceId = null;
+    
+    /** 加载高德 JS API 2.0（先配置 securityJsCode），只加载一次；失败时重置 promise 允许重试 */
+    function loadAmapScript() {
+      if (amapLoadPromise) return amapLoadPromise;
+      amapLoadPromise = new Promise((resolve, reject) => {
+        window._AMapSecurityConfig = { securityJsCode: AMAP_SECURITY_CODE };
+        const script = document.createElement('script');
+        script.src = 'https://webapi.amap.com/maps?v=2.0&key=' + AMAP_KEY + '&plugin=AMap.AutoComplete,AMap.PlaceSearch,AMap.Geocoder';
+        script.onload = () => resolve();
+        script.onerror = () => { amapLoadPromise = null; reject(new Error('高德地图脚本加载失败')); };
+        document.head.appendChild(script);
+      });
+      return amapLoadPromise;
+    }
+    
+    /** 进入足迹页（桌面端）：初始化地图 + 加载标注；本地域名受限时显示友好降级层 */
+    async function initMapPage() {
+      if (!desktopMedia.matches) return; // 手机端只有提示，不初始化地图
+      if (!mapInstance) {
+        try {
+          await loadAmapScript();
+        } catch (e) {
+          console.warn('[map] 高德脚本加载失败（本地预览受域名白名单限制属正常）：', e);
+          document.getElementById('map-fallback').style.display = 'flex';
+          return;
+        }
+        try {
+          mapInstance = new AMap.Map('map-container', {
+            zoom: 4,
+            center: [108, 34],
+            scrollWheel: false,  // 禁止滚轮缩放：滚轮只滚动页面
+            dragEnable: true,    // 鼠标左键按住拖动平移
+            mapStyle: 'amap://styles/fresh'
+          });
+        } catch (e) {
+          console.error('[map] 地图初始化失败：', e);
+          document.getElementById('map-fallback').style.display = 'flex';
+          mapInstance = null;
+          return;
+        }
+        mapInfoWindow = new AMap.InfoWindow({ isCustom: true, offset: new AMap.Pixel(0, -54) });
+        mapGeocoder = new AMap.Geocoder({});
+        // 搜索联想：输入城市名 → 下拉候选 → 选中
+        const auto = new AMap.AutoComplete({ input: 'map-search-input' });
+        const placeSearch = new AMap.PlaceSearch({});
+        auto.on('select', (e) => onMapSearchSelect(e, placeSearch));
+        // 右下角手绘风缩放按钮
+        document.getElementById('map-zoom-in').addEventListener('click', () => { if (mapInstance) mapInstance.zoomIn(); });
+        document.getElementById('map-zoom-out').addEventListener('click', () => { if (mapInstance) mapInstance.zoomOut(); });
+      } else {
+        mapInstance.resize();
+      }
+      loadMapPlaces(true);
+    }
+    
+    /** 搜索候选选中：地图飞至该地，弹出三选一 */
+    function onMapSearchSelect(e, placeSearch) {
+      const poi = e.poi || {};
+      const name = poi.name || '';
+      if (!name) return;
+      const locate = (lng, lat) => {
+        pendingSearchPlace = { name, lng, lat };
+        if (mapInstance) mapInstance.setZoomAndCenter(11, [lng, lat], false, 600);
+        document.getElementById('map-choice-city').textContent = name;
+        document.getElementById('map-choice-modal').classList.add('active');
+        const input = document.getElementById('map-search-input');
+        if (input) input.blur();
+      };
+      if (poi.location && typeof poi.location.lng === 'number') {
+        locate(poi.location.lng, poi.location.lat);
+      } else {
+        // 城市类候选常无精确坐标，依次用 PlaceSearch / Geocoder 兜底
+        placeSearch.search((poi.district ? poi.district : '') + name, (status, result) => {
+          const pois = result && result.poiList && result.poiList.pois;
+          if (status === 'complete' && pois && pois.length && pois[0].location) {
+            locate(pois[0].location.lng, pois[0].location.lat);
+          } else if (mapGeocoder) {
+            mapGeocoder.getLocation(name, (st, res) => {
+              if (st === 'complete' && res.geocodes && res.geocodes.length) {
+                locate(res.geocodes[0].location.lng, res.geocodes[0].location.lat);
+              } else {
+                showToast('没定位到这个地方，换个关键词试试 🔎');
+              }
+            });
+          } else {
+            showToast('没定位到这个地方，换个关键词试试 🔎');
+          }
+        });
+      }
+    }
+    
+    /** 读取全部标注并重绘；fitToCurrent 为 true 时把视野框到当前位置钉 */
+    async function loadMapPlaces(fitToCurrent) {
+      if (!supabase) return;
+      try {
+        const { data, error } = await supabase.from('map_places').select('*');
+        if (error) throw error;
+        mapPlacesCache = data || [];
+        renderMapMarkers();
+        if (fitToCurrent) fitMapToCurrent();
+      } catch (e) {
+        console.error(e);
+        showToast('足迹加载失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    /** 视野：框住两颗当前位置钉；尚未标注则默认同时包含中国与日本 */
+    function fitMapToCurrent() {
+      if (!mapInstance) return;
+      const currents = mapPlacesCache.filter(p => p.type === 'current');
+      if (currents.length >= 2) {
+        const a = currents[0], b = currents[1];
+        if (Math.abs(a.lng - b.lng) < 2 && Math.abs(a.lat - b.lat) < 2) {
+          mapInstance.setZoomAndCenter(10, [(a.lng + b.lng) / 2, (a.lat + b.lat) / 2], false, 500);
+        } else {
+          mapInstance.setBounds(new AMap.Bounds(
+            [Math.min(a.lng, b.lng), Math.min(a.lat, b.lat)],
+            [Math.max(a.lng, b.lng), Math.max(a.lat, b.lat)]
+          ), false, [90, 90, 90, 90]);
+        }
+      } else if (currents.length === 1) {
+        mapInstance.setZoomAndCenter(6, [currents[0].lng, currents[0].lat], false, 500);
+      } else {
+        mapInstance.setBounds(new AMap.Bounds([72, 17], [147, 47]), false, [70, 70, 70, 70]);
+      }
+    }
+    
+    /** haversine 直线距离（公里） */
+    function haversineKm(a, b) {
+      const R = 6371, rad = Math.PI / 180;
+      const dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad;
+      const s = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+        + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
+    }
+    
+    /** 两点间向北鼓起的贝塞尔弧线采样点（航线感） */
+    function arcPath(a, b) {
+      const dx = b.lng - a.lng, dy = b.lat - a.lat;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1e-6;
+      let nx = -dy / dist, ny = dx / dist;
+      if (ny < 0) { nx = -nx; ny = -ny; } // 始终向弧线北侧鼓
+      const off = dist * 0.16;
+      const cx = (a.lng + b.lng) / 2 + nx * off;
+      const cy = (a.lat + b.lat) / 2 + ny * off;
+      const pts = [];
+      for (let i = 0; i <= 48; i++) {
+        const t = i / 48, u = 1 - t;
+        pts.push([u * u * a.lng + 2 * u * t * cx + t * t * b.lng,
+                  u * u * a.lat + 2 * u * t * cy + t * t * b.lat]);
+      }
+      return pts;
+    }
+    
+    /** 手绘风钉子 SVG：pig 猪钉 / cat 猫钉 / heart 爱心钉 / star 星星钉 / merged 猪猫合体钉 */
+    function mapMarkerSvg(kind) {
+      if (kind === 'pig') {
+        return `<div class="map-pin"><svg width="46" height="56" viewBox="0 0 46 56">
+          <path d="M23 54 C11 42 5 33 5 23 A18 18 0 1 1 41 23 C41 33 35 42 23 54 Z" fill="#f7b8c6" stroke="#b45a6e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M13 15 L9.5 5 L19 10 Z" fill="#f2a0b4" stroke="#b45a6e" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M33 15 L36.5 5 L27 10 Z" fill="#f2a0b4" stroke="#b45a6e" stroke-width="1.5" stroke-linejoin="round"/>
+          <circle cx="16.5" cy="20" r="1.8" fill="#5a3a42"/><circle cx="29.5" cy="20" r="1.8" fill="#5a3a42"/>
+          <ellipse cx="23" cy="26.5" rx="6" ry="4.6" fill="#f290a8"/>
+          <circle cx="21" cy="26.5" r="1.3" fill="#a34a5e"/><circle cx="25" cy="26.5" r="1.3" fill="#a34a5e"/>
+        </svg></div>`;
+      }
+      if (kind === 'cat') {
+        return `<div class="map-pin"><svg width="46" height="56" viewBox="0 0 46 56">
+          <path d="M23 54 C11 42 5 33 5 23 A18 18 0 1 1 41 23 C41 33 35 42 23 54 Z" fill="#f3e0c0" stroke="#a37a4e" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M13 15 L10 5 L20 10.5 Z" fill="#e8cfa8" stroke="#a37a4e" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M33 15 L36 5 L26 10.5 Z" fill="#e8cfa8" stroke="#a37a4e" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M14 13 L12.2 8 L17 10.5 Z" fill="#d9a0a8"/>
+          <path d="M32 13 L33.8 8 L29 10.5 Z" fill="#d9a0a8"/>
+          <circle cx="16.5" cy="21" r="1.8" fill="#4a3826"/><circle cx="29.5" cy="21" r="1.8" fill="#4a3826"/>
+          <path d="M21 25 L25 25 L23 27.2 Z" fill="#d98a94"/>
+          <path d="M23 27.2 Q20.5 30 18 28.5 M23 27.2 Q25.5 30 28 28.5" stroke="#8a6a48" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <path d="M6 22 L13 23 M6.8 26.5 L13.5 25.4 M40 22 L33 23 M39.2 26.5 L32.5 25.4" stroke="#b99a70" stroke-width="1.1" stroke-linecap="round"/>
+        </svg></div>`;
+      }
+      if (kind === 'heart') {
+        return `<div class="map-pin"><svg width="44" height="54" viewBox="0 0 44 54">
+          <path d="M22 52 C10 41 4 33 4 23 A17.5 17.5 0 1 1 40 23 C40 33 34 41 22 52 Z" fill="#e05a7e" stroke="#a83a58" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M22 33 C16 27.5 12.5 24 12.5 19.8 C12.5 16.4 15 14 17.9 14 C19.9 14 21.4 15.2 22 16.6 C22.6 15.2 24.1 14 26.1 14 C29 14 31.5 16.4 31.5 19.8 C31.5 24 28 27.5 22 33 Z" fill="#ffffff" opacity="0.95"/>
+        </svg></div>`;
+      }
+      if (kind === 'star') {
+        return `<div class="map-pin"><svg width="44" height="54" viewBox="0 0 44 54">
+          <path d="M22 52 C10 41 4 33 4 23 A17.5 17.5 0 1 1 40 23 C40 33 34 41 22 52 Z" fill="#f2c14e" stroke="#b8862a" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M22 12.5 L24.9 19.4 L32.4 20.1 L26.7 25 L28.5 32.3 L22 28.4 L15.5 32.3 L17.3 25 L11.6 20.1 L19.1 19.4 Z" fill="#ffffff" opacity="0.95" stroke="#d9a83c" stroke-width="0.8" stroke-linejoin="round"/>
+        </svg></div>`;
+      }
+      // merged：猪猫相拥合体钉（同城时替代两颗当前位置钉）
+      return `<div class="map-pin"><svg width="64" height="62" viewBox="0 0 64 62">
+        <path d="M32 60 C18 48 10 39 10 28 A22 22 0 1 1 54 28 C54 39 46 48 32 60 Z" fill="#fbe3d2" stroke="#b45a6e" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M32 13 C30.5 11 28 11.5 28 13.6 C28 15.5 30 17 32 18.6 C34 17 36 15.5 36 13.6 C36 11.5 33.5 11 32 13 Z" fill="#e05a7e"/>
+        <path d="M21 21 L17.5 12 L26 16 Z" fill="#f2a0b4" stroke="#b45a6e" stroke-width="1.2" stroke-linejoin="round"/>
+        <circle cx="25" cy="30" r="10.5" fill="#f7b8c6"/>
+        <circle cx="21.5" cy="28" r="1.5" fill="#5a3a42"/><circle cx="28.5" cy="28" r="1.5" fill="#5a3a42"/>
+        <ellipse cx="25" cy="33" rx="4.2" ry="3.1" fill="#f290a8"/>
+        <circle cx="23.6" cy="33" r="0.9" fill="#a34a5e"/><circle cx="26.4" cy="33" r="0.9" fill="#a34a5e"/>
+        <path d="M43 21 L46.5 12 L38 16 Z" fill="#e8cfa8" stroke="#a37a4e" stroke-width="1.2" stroke-linejoin="round"/>
+        <circle cx="39" cy="30" r="10.5" fill="#f3e0c0"/>
+        <circle cx="35.5" cy="28" r="1.5" fill="#4a3826"/><circle cx="42.5" cy="28" r="1.5" fill="#4a3826"/>
+        <path d="M37.5 32 L40.5 32 L39 33.8 Z" fill="#d98a94"/>
+        <path d="M39 33.8 Q37 36 34.8 34.8 M39 33.8 Q41 36 43.2 34.8" stroke="#8a6a48" stroke-width="1" fill="none" stroke-linecap="round"/>
+      </svg></div>`;
+    }
+    
+    /** 清空地图上的钉子、航线与信息卡 */
+    function clearMapOverlays() {
+      if (mapInstance) {
+        mapMarkerList.forEach(m => mapInstance.remove(m));
+        if (mapLineObj) mapInstance.remove(mapLineObj);
+        if (mapLineLabel) mapInstance.remove(mapLineLabel);
+      }
+      mapMarkerList = [];
+      mapLineObj = null;
+      mapLineLabel = null;
+      if (mapInfoWindow) mapInfoWindow.close();
+    }
+    
+    /** 重绘全部钉子；两颗当前位置钉 <50km 时合体，否则画虚线航线 + 距离标注 */
+    function renderMapMarkers() {
+      if (!mapInstance) return;
+      clearMapOverlays();
+      const currents = mapPlacesCache.filter(p => p.type === 'current');
+      let merged = null;
+      if (currents.length === 2 && haversineKm(currents[0], currents[1]) < 50) {
+        merged = {
+          lng: (currents[0].lng + currents[1].lng) / 2,
+          lat: (currents[0].lat + currents[1].lat) / 2,
+          places: currents
+        };
+      }
+      
+      mapPlacesCache.forEach(p => {
+        if (p.type === 'current' && merged) return; // 合体时不单独画
+        let kind = 'heart';
+        if (p.type === 'current') kind = (p.owner === 'beidou' || p.created_by === 'beidou') ? 'pig' : 'cat';
+        else if (p.type === 'planned') kind = 'star';
+        const marker = new AMap.Marker({
+          position: [p.lng, p.lat],
+          content: mapMarkerSvg(kind),
+          offset: kind === 'heart' || kind === 'star' ? new AMap.Pixel(-22, -52) : new AMap.Pixel(-23, -54),
+          zIndex: p.type === 'current' ? 130 : 110
+        });
+        marker.on('click', () => openMapInfoCard(p));
+        mapInstance.add(marker);
+        mapMarkerList.push(marker);
+      });
+      
+      if (merged) {
+        const marker = new AMap.Marker({
+          position: [merged.lng, merged.lat],
+          content: mapMarkerSvg('merged'),
+          offset: new AMap.Pixel(-32, -58),
+          zIndex: 140
+        });
+        marker.on('click', () => openMergedInfoCard(merged));
+        mapInstance.add(marker);
+        mapMarkerList.push(marker);
+      } else if (currents.length === 2) {
+        drawMapLine(currents[0], currents[1]);
+      }
+    }
+    
+    /** 两颗当前位置钉之间：虚线弧线 + 「直线距离约 XXXX 公里」 */
+    function drawMapLine(a, b) {
+      const d = haversineKm(a, b);
+      const pts = arcPath(a, b);
+      mapLineObj = new AMap.Polyline({
+        path: pts,
+        strokeColor: '#e05a7e',
+        strokeWeight: 2.5,
+        strokeOpacity: 0.85,
+        strokeStyle: 'dashed',
+        strokeDasharray: [9, 7],
+        lineJoin: 'round',
+        showDir: false,
+        zIndex: 90
+      });
+      mapInstance.add(mapLineObj);
+      mapLineLabel = new AMap.Text({
+        text: '直线距离约 ' + Math.round(d).toLocaleString() + ' 公里',
+        position: pts[Math.floor(pts.length / 2)],
+        anchor: 'bottom-center',
+        offset: new AMap.Pixel(0, -8),
+        style: {
+          'background-color': '#fdf8ec',
+          'border': '1.5px solid rgba(160, 120, 80, 0.55)',
+          'border-radius': '999px',
+          'padding': '4px 12px',
+          'font-size': '13px',
+          'color': '#8a5a48',
+          'font-family': "'LXGW WenKai', 'Noto Sans SC', sans-serif",
+          'box-shadow': '0 4px 10px rgba(70, 50, 30, 0.2)'
+        },
+        zIndex: 95
+      });
+      mapInstance.add(mapLineLabel);
+    }
+    
+    /** 钉子的信纸小卡片（含编辑/删除/打卡按钮，直接绑定事件） */
+    function buildMapInfoCard(place) {
+      const card = document.createElement('div');
+      card.className = 'map-info-card';
+      let html = '<button type="button" class="map-info-close" data-act="close" aria-label="关闭">✕</button>';
+      if (place.type === 'current') {
+        const isPig = (place.owner === 'beidou' || place.created_by === 'beidou');
+        html += `<div class="map-info-title">${isPig ? '🐷 北斗' : '🐱 笑笑'}现在在这里</div>` +
+          `<div class="map-info-row">📍 ${escapeHtml(place.city_name || '')}</div>` +
+          (place.visit_date ? `<div class="map-info-row">🗓 标注于 ${formatDateCN(place.visit_date)}</div>` : '') +
+          `<div class="map-info-actions"><button type="button" class="map-info-btn" data-act="delete">删除</button></div>`;
+      } else if (place.type === 'visited') {
+        html += `<div class="map-info-title">❤️ 我们一起去过</div>` +
+          `<div class="map-info-row">📍 ${escapeHtml(place.city_name || '')}</div>` +
+          (place.visit_date ? `<div class="map-info-row">🗓 ${formatDateCN(place.visit_date)}</div>` : '') +
+          (place.note ? `<div class="map-info-row">💬 ${escapeHtml(place.note)}</div>` : '') +
+          (place.photo_url ? `<img class="map-info-photo" src="${escapeHtml(place.photo_url)}" alt="一起去的照片" data-act="photo" data-url="${escapeHtml(place.photo_url)}">` : '') +
+          `<div class="map-info-actions"><button type="button" class="map-info-btn" data-act="edit">编辑</button><button type="button" class="map-info-btn" data-act="delete">删除</button></div>`;
+      } else {
+        html += `<div class="map-info-title">⭐ 未来想去</div>` +
+          `<div class="map-info-row">📍 ${escapeHtml(place.city_name || '')}</div>` +
+          (place.note ? `<div class="map-info-row">💬 ${escapeHtml(place.note)}</div>` : '') +
+          `<div class="map-info-actions"><button type="button" class="map-info-btn" data-act="checkin">✅ 打卡</button><button type="button" class="map-info-btn" data-act="edit">编辑</button><button type="button" class="map-info-btn" data-act="delete">删除</button></div>`;
+      }
+      card.innerHTML = html;
+      card.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-act]');
+        if (!btn) return;
+        e.stopPropagation();
+        const act = btn.dataset.act;
+        if (act === 'close') mapInfoWindow.close();
+        else if (act === 'photo') openLightbox(btn.dataset.url);
+        else if (act === 'edit') { mapInfoWindow.close(); openMapPlaceModal(place.type === 'visited' ? 'visited-edit' : 'planned-edit', place); }
+        else if (act === 'delete') { mapInfoWindow.close(); openDeleteModal('真的要删掉这条足迹吗？📍', () => deleteMapPlace(place.id)); }
+        else if (act === 'checkin') { mapInfoWindow.close(); openMapPlaceModal('checkin', place); }
+      });
+      return card;
+    }
+    
+    function openMapInfoCard(place) {
+      if (!mapInfoWindow || !mapInstance) return;
+      mapInfoWindow.setContent(buildMapInfoCard(place));
+      mapInfoWindow.open(mapInstance, [place.lng, place.lat]);
+    }
+    
+    /** 合体钉的小卡片：同城状态说明 */
+    function openMergedInfoCard(merged) {
+      if (!mapInfoWindow || !mapInstance) return;
+      const names = merged.places.map(p => p.city_name).filter(Boolean);
+      const cityText = (names.length === 2 && names[0] !== names[1]) ? names.join(' · ') : (names[0] || '同一座城市');
+      const card = document.createElement('div');
+      card.className = 'map-info-card';
+      card.innerHTML = '<button type="button" class="map-info-close" data-act="close" aria-label="关闭">✕</button>' +
+        `<div class="map-info-title">🐷🐱 你们在一起啦</div>` +
+        `<div class="map-info-row">📍 ${escapeHtml(cityText)}</div>` +
+        `<div class="map-info-row">航线和公里数先收起来，等下次想念时再上线 💕</div>`;
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('[data-act="close"]')) mapInfoWindow.close();
+      });
+      mapInfoWindow.setContent(card);
+      mapInfoWindow.open(mapInstance, [merged.lng, merged.lat]);
+    }
+    
+    /** 「标为我的当前位置」：同一人重复标注时新钉替换旧钉 */
+    async function markCurrentPlace() {
+      if (!requireAuth()) return;
+      if (!supabase) { showToast('Supabase 未配置'); return; }
+      if (!pendingSearchPlace) return;
+      const identity = safeGetItem('identity');
+      const owner = identity === '北斗' ? 'beidou' : 'xiaoxiao';
+      try {
+        const { error: delErr } = await supabase.from('map_places').delete().eq('type', 'current').eq('owner', owner);
+        if (delErr) throw delErr;
+        const { error } = await supabase.from('map_places').insert([{
+          type: 'current',
+          owner,
+          city_name: pendingSearchPlace.name,
+          lng: pendingSearchPlace.lng,
+          lat: pendingSearchPlace.lat,
+          visit_date: getTodayString(),
+          created_by: owner
+        }]);
+        if (error) {
+          const detail = [error.message, error.details, error.hint].filter(Boolean).join(' | ');
+          throw new Error(detail || '未知错误');
+        }
+        showToast('已钉上你的当前位置 📍');
+        loadMapPlaces(false);
+      } catch (e) {
+        console.error(e);
+        showToast('标注失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    /** 打开足迹表单弹窗（添加去过/想去、编辑、打卡五种模式） */
+    function openMapPlaceModal(mode, place) {
+      mapPlaceModalMode = mode;
+      editingMapPlaceId = place ? place.id : null;
+      const form = document.getElementById('map-place-form');
+      form.reset();
+      const isPlanned = (mode === 'planned-add' || mode === 'planned-edit');
+      document.getElementById('map-place-modal-title').textContent =
+        mode === 'checkin' ? '✅ 打卡留念' : (isPlanned ? '⭐ 未来想去' : '❤️ 我们一起去过');
+      document.getElementById('map-place-note-label').textContent = isPlanned ? '一句话期待' : '一句话回忆';
+      document.getElementById('map-place-date-field').style.display = isPlanned ? 'none' : 'block';
+      document.getElementById('map-place-photo-field').style.display = isPlanned ? 'none' : 'block';
+      // 预填
+      if (place) {
+        form.elements['city_name'].value = place.city_name || '';
+        if (mode !== 'checkin') {
+          form.elements['note'].value = place.note || '';
+          form.elements['photo_url'].value = place.photo_url || '';
+        }
+      } else if (pendingSearchPlace) {
+        form.elements['city_name'].value = pendingSearchPlace.name;
+      }
+      form.elements['visit_date'].value =
+        (mode === 'visited-edit' && place && place.visit_date) ? place.visit_date : getTodayString();
+      document.getElementById('map-place-modal').classList.add('active');
+    }
+    
+    /** 足迹表单提交：按模式分发 添加/编辑/打卡 */
+    async function submitMapPlaceForm(e) {
+      e.preventDefault();
+      if (!requireAuth()) return;
+      if (!supabase) { showToast('Supabase 未配置'); return; }
+      const form = e.target;
+      const cityName = (form.elements['city_name'].value || '').trim();
+      const note = (form.elements['note'].value || '').trim();
+      const photoUrl = (form.elements['photo_url'].value || '').trim();
+      const visitDate = form.elements['visit_date'].value || getTodayString();
+      if (!cityName) { showToast('地点名称还没填哦'); return; }
+      const identity = safeGetItem('identity');
+      const createdBy = identity === '北斗' ? 'beidou' : 'xiaoxiao';
+      const errText = (error) => [error.message, error.details, error.hint].filter(Boolean).join(' | ') || '未知错误';
+      try {
+        if (mapPlaceModalMode === 'visited-add' || mapPlaceModalMode === 'planned-add') {
+          if (!pendingSearchPlace) { showToast('先搜索选中一个地点 🔎'); return; }
+          const isVisited = mapPlaceModalMode === 'visited-add';
+          const { error } = await supabase.from('map_places').insert([{
+            type: isVisited ? 'visited' : 'planned',
+            owner: null,
+            city_name: cityName,
+            lng: pendingSearchPlace.lng,
+            lat: pendingSearchPlace.lat,
+            visit_date: isVisited ? visitDate : null,
+            note: note || '',
+            photo_url: isVisited ? (photoUrl || null) : null,
+            created_by: createdBy
+          }]);
+          if (error) throw new Error(errText(error));
+          showToast(isVisited ? '回忆已钉上地图 ❤️' : '愿望已钉上地图 ⭐');
+        } else if (mapPlaceModalMode === 'checkin') {
+          // 打卡：想去 → 去过，日期默认当天可改，可补回忆和照片
+          const { error } = await supabase.from('map_places').update({
+            type: 'visited',
+            city_name: cityName,
+            visit_date: visitDate,
+            note: note || '',
+            photo_url: photoUrl || null
+          }).eq('id', editingMapPlaceId);
+          if (error) throw new Error(errText(error));
+          showToast('打卡成功，愿望成真 ✅');
+        } else {
+          const isVisited = mapPlaceModalMode === 'visited-edit';
+          const updates = isVisited
+            ? { city_name: cityName, visit_date: visitDate, note: note || '', photo_url: photoUrl || null }
+            : { city_name: cityName, note: note || '' };
+          const { error } = await supabase.from('map_places').update(updates).eq('id', editingMapPlaceId);
+          if (error) throw new Error(errText(error));
+          showToast('足迹已更新 📍');
+        }
+        document.getElementById('map-place-modal').classList.remove('active');
+        loadMapPlaces(false);
+      } catch (err) {
+        console.error(err);
+        showToast('保存失败：' + (err.message || '未知错误'));
+      }
+    }
+    
+    async function deleteMapPlace(id) {
+      if (!requireAuth()) return;
+      if (!supabase) { showToast('Supabase 未配置'); return; }
+      try {
+        const { error } = await supabase.from('map_places').delete().eq('id', id);
+        if (error) throw error;
+        showToast('足迹已删除');
+        loadMapPlaces(false);
+      } catch (e) {
+        console.error(e);
+        showToast('删除失败：' + (e.message || '未知错误'));
+      }
+    }
+
+    
     /**
      * 检测今天是否是某个纪念日（仅比较月/日），每天只展示一次
      */
@@ -8126,6 +10177,10 @@
         if (pageId === 'profiles-page') loadProfiles();
         if (pageId === 'countdown-page') loadCountdowns();
         if (pageId === 'anniversaries-page') loadAnniversaries();
+        if (pageId === 'page-wish') loadWishes();
+        if (pageId === 'page-miss') loadMissMessages();
+        // 足迹页：延迟到 showPage 后初始化，确保地图容器已可见（高德需要量到尺寸）
+        if (pageId === 'page-map') setTimeout(initMapPage, 60);
         showPage(pageId);
       });
     });
@@ -8393,6 +10448,95 @@
       if (e.target.id === 'anniversary-today-overlay') closeAnniversaryToday();
     });
     
+    // 心愿清单新增
+    document.getElementById('add-wish-btn').addEventListener('click', () => {
+      document.getElementById('wish-add-form').reset();
+      document.getElementById('wish-add-modal').classList.add('active');
+    });
+    document.getElementById('cancel-wish-add').addEventListener('click', () => {
+      document.getElementById('wish-add-modal').classList.remove('active');
+    });
+    document.getElementById('wish-add-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'wish-add-modal') document.getElementById('wish-add-modal').classList.remove('active');
+    });
+    document.getElementById('wish-add-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const text = (form.elements['text'].value || '').trim();
+      if (!text) {
+        showToast('先写下心愿内容哦～');
+        return;
+      }
+      try {
+        await addWish(text);
+        form.reset();
+        document.getElementById('wish-add-modal').classList.remove('active');
+        showToast('心愿已许下 🌟');
+        loadWishes();
+      } catch (err) {
+        console.error(err);
+        showToast('添加失败：' + (err.message || '未知错误'));
+      }
+    });
+    
+    // 想你电波：点爱心弹输入框，确认后播放电波扩散动画并发送
+    document.getElementById('miss-heart-btn').addEventListener('click', () => {
+      document.getElementById('miss-send-form').reset();
+      document.getElementById('miss-send-modal').classList.add('active');
+    });
+    document.getElementById('cancel-miss-send').addEventListener('click', () => {
+      document.getElementById('miss-send-modal').classList.remove('active');
+    });
+    document.getElementById('miss-send-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'miss-send-modal') document.getElementById('miss-send-modal').classList.remove('active');
+    });
+    document.getElementById('miss-send-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (missSending) return;
+      const form = e.target;
+      const note = (form.elements['note'].value || '').trim();
+      missSending = true;
+      try {
+        document.getElementById('miss-send-modal').classList.remove('active');
+        playMissRipples();
+        await sendMiss(note);
+        showToast('想念已发出 💌');
+        loadMissMessages();
+      } catch (err) {
+        console.error(err);
+        showToast('发送失败：' + (err.message || '未知错误'));
+      } finally {
+        missSending = false;
+      }
+    });
+    
+    // ===== Map Places Events（足迹：三选一 + 稿纸表单） =====
+    document.getElementById('map-choice-current').addEventListener('click', () => {
+      document.getElementById('map-choice-modal').classList.remove('active');
+      markCurrentPlace();
+    });
+    document.getElementById('map-choice-visited').addEventListener('click', () => {
+      document.getElementById('map-choice-modal').classList.remove('active');
+      openMapPlaceModal('visited-add', null);
+    });
+    document.getElementById('map-choice-planned').addEventListener('click', () => {
+      document.getElementById('map-choice-modal').classList.remove('active');
+      openMapPlaceModal('planned-add', null);
+    });
+    document.getElementById('map-choice-cancel').addEventListener('click', () => {
+      document.getElementById('map-choice-modal').classList.remove('active');
+    });
+    document.getElementById('map-choice-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'map-choice-modal') e.target.classList.remove('active');
+    });
+    document.getElementById('cancel-map-place').addEventListener('click', () => {
+      document.getElementById('map-place-modal').classList.remove('active');
+    });
+    document.getElementById('map-place-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'map-place-modal') e.target.classList.remove('active');
+    });
+    document.getElementById('map-place-form').addEventListener('submit', submitMapPlaceForm);
+    
     // ===== Escape key to close overlays =====
     function closeActiveOverlay() {
       const overlayMap = {
@@ -8405,7 +10549,8 @@
       };
       const modalIds = [
         'timeline-add-modal', 'photo-add-modal', 'profile-add-modal',
-        'countdown-add-modal', 'anniversary-add-modal'
+        'countdown-add-modal', 'anniversary-add-modal', 'wish-add-modal',
+        'miss-send-modal', 'map-choice-modal', 'map-place-modal'
       ];
       
       for (const [id, closeFn] of Object.entries(overlayMap)) {
