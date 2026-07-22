@@ -67,6 +67,11 @@
       #starfield { display: none; }
     }
     
+    /* 电脑端板块固定背景层（.app 外，见桌面媒体查询）：默认隐藏 */
+    .page-fixed-bg {
+      display: none;
+    }
+    
     /* Page container */
     .app {
       position: relative;
@@ -3096,6 +3101,19 @@
         color: #4a3b30;
       }
       
+      /* 九张入口卡的主题插画皮肤（仅电脑端；按 data-page 一一对应。
+         卡片自身 border-radius 会自动把背景裁成圆角，无需 overflow:hidden，
+         图钉 ::before 在卡片外定位，不受影响；#fffdf6 兜底色在图片加载前垫底） */
+      .quick-entry[data-page="messages-page"] { background: #fffdf6 url('assets/card-liuyan.jpg') center / cover no-repeat; }
+      .quick-entry[data-page="timeline-page"] { background: #fffdf6 url('assets/card-shiguang.jpg') center / cover no-repeat; }
+      .quick-entry[data-page="photos-page"] { background: #fffdf6 url('assets/card-zhaopian.jpg') center / cover no-repeat; }
+      .quick-entry[data-page="profiles-page"] { background: #fffdf6 url('assets/card-dangan.jpg') center / cover no-repeat; }
+      .quick-entry[data-page="countdown-page"] { background: #fffdf6 url('assets/card-daojishi.jpg') center / cover no-repeat; }
+      .quick-entry[data-page="anniversaries-page"] { background: #fffdf6 url('assets/card-jinian.jpg') center / cover no-repeat; }
+      .quick-entry[data-page="page-map"] { background: #fffdf6 url('assets/card-zuji.jpg') center / cover no-repeat; }
+      .quick-entry[data-page="page-miss"] { background: #fffdf6 url('assets/card-dianbo.jpg') center / cover no-repeat; }
+      .quick-entry[data-page="page-wish"] { background: #fffdf6 url('assets/card-xinyuan.jpg') center / cover no-repeat; }
+      
       /* 左列底部：斜放在桌面上的淡黄色便签（和纸胶带贴角），位于退出登录按钮下方。
          translateY(72px) 把便签落回左列底部、靠近页面下缘的原位（仅视觉平移，
          不改变 grid 轨道，软木板与右下角祝福语位置均不受影响） */
@@ -3188,7 +3206,8 @@
       /* ---------- 整面软木板背景 ---------- */
       #messages-page {
         max-width: none;
-        background: #8a6a52 url('assets/bg-cork.jpg') center / cover;
+        /* 板块背景已移到 .app 外的固定层 #bg-fixed-messages（fixed 铺满视口、滚动不跟随）；
+         此处不再设背景，只保留边缘暗角内阴影 */
         box-shadow: inset 0 0 120px rgba(40, 25, 15, 0.35);
       }
       
@@ -4817,12 +4836,31 @@
           #ece4d4 url('assets/bg-home.jpg') center / cover no-repeat fixed;
       }
       
-      /* 2. 照片墙 → 木质书桌：整页铺满固定，拍立得直接散布桌面，标题浮在上方 */
-      #photos-page {
+      /* 2. 照片墙 → 阳光地毯：背景在固定层 #bg-fixed-photos（见本块下方「固定背景层」段），
+         此处不再设背景（.app 内任何 fixed/attachment-fixed 都会被 .app 的 perspective 囚禁而随内容滚动） */
+      
+      /* 附：留言板/照片墙的固定背景层——position:fixed 铺满视口，滚动时纹丝不动，只有内容移动；
+         图层在 .app 外（HTML 注释有详述），:has 按当前激活板块显隐，切走即隐藏不串层 */
+      .page-fixed-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+      #bg-fixed-messages { background-color: #8a6a52; background-image: url('assets/bg-letter.jpg'); }
+      #bg-fixed-photos {
         background:
           linear-gradient(rgba(255, 252, 245, 0.18), rgba(255, 252, 245, 0.18)),
-          #b28a62 url('assets/bg-photos.jpg') center / cover no-repeat fixed;
+          #b28a62 url('assets/bg-moments.jpg') center / cover no-repeat;
       }
+      body:has(#messages-page.active) #bg-fixed-messages,
+      body:has(#photos-page.active) #bg-fixed-photos { display: block; }
       
       /* 心愿清单 → 专属背景整页铺满固定；清单行像手账纸页浮在上方 */
       #page-wish {
@@ -5893,6 +5931,13 @@
       </div>
     </div>
   </div>
+  
+  <!-- 电脑端「留言板/照片墙」固定背景层（仅桌面显示）：
+       必须放 .app 外——.app 的 perspective（翻书页转场）会把 position:fixed 与
+       background-attachment:fixed 囚禁成相对 .app 定位，导致背景随内容滚动；
+       显隐由桌面 CSS 的 body:has(#板块.active) 控制，切换板块自动隐藏不串层 -->
+  <div class="page-fixed-bg" id="bg-fixed-messages" aria-hidden="true"></div>
+  <div class="page-fixed-bg" id="bg-fixed-photos" aria-hidden="true"></div>
   
   <!-- Background Music -->
   <audio id="bg-music" src="assets/bg-music.mp3" loop preload="auto" style="display:none"></audio>
