@@ -6573,6 +6573,192 @@
       loadLatestMessage();
     }
     
+    // ===== 隐藏彩蛋：爱心弹窗动画（仅电脑端首页身份祝福触发） =====
+    // 触发后生成全屏透明容器，动画结束或中途 Esc / 左键点击即整体移除；
+    // 不改动 body/html 任何样式，关闭后页面无任何残留。
+    (function blessingEasterEgg() {
+      const blessingEl = document.getElementById('home-blessing');
+      if (!blessingEl) return;
+
+      const EGG_TEXTS = ['niangniangniang!', '桐桐猪要按时吃饭', '小语涵今天也很可爱', '我想你了', '别熬夜，早点睡', '多喝水呀', '天天开心呀', '顺顺利利', '天凉了多穿衣服', '愿你平安健康', '小猪小猫天下第一好', '永远在一起'];
+      const EGG_COLORS = ['#c4f0f0', '#c8f2c8', '#ffd6e7', '#fff3b8', '#f6c6f6', '#c9e2ff']; // 青/绿/粉/淡黄/洋红/浅蓝（柔和浅色）
+      const HEART_COUNT = 128;
+
+      let eggRunning = false; // 运行期间禁止重复触发
+      let eggOverlay = null;
+      let eggTimer = 0;
+      let eggZ = 0;
+      let eggLastText = '';
+
+      // 祝福语的外观、字体、颜色、位置一律不动，仅电脑端放开指针事件让它可点
+      // （桌面 CSS 里它是 pointer-events:none 的纯装饰；手机端不挂任何东西）
+      function syncBlessingPointer() {
+        blessingEl.style.pointerEvents = desktopMedia.matches ? 'auto' : '';
+      }
+      syncBlessingPointer();
+      if (desktopMedia.addEventListener) desktopMedia.addEventListener('change', syncBlessingPointer);
+
+      blessingEl.addEventListener('click', () => {
+        if (!desktopMedia.matches) return;          // 仅电脑端触发
+        if (!blessingEl.textContent.trim()) return; // 未识别身份时没有祝福，不触发
+        startEgg();
+      });
+
+      // 爱心参数方程 x=16sin³t, y=13cost−5cos2t−2cos3t−cos4t
+      // 按弧长均匀取点；t=0 即顶部缺口，点序在屏幕上呈顺时针
+      // （缺口→右上弧线→右侧→底部尖角→左侧→左上弧线→回到缺口）
+      function heartOutline(count) {
+        const SAMPLES = 2048;
+        const xs = [0], ys = [5], cum = [0]; // t=0 处为顶部缺口 (0, 5)
+        for (let i = 1; i <= SAMPLES; i++) {
+          const t = i / SAMPLES * Math.PI * 2;
+          xs.push(16 * Math.pow(Math.sin(t), 3));
+          ys.push(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+          cum.push(cum[i - 1] + Math.hypot(xs[i] - xs[i - 1], ys[i] - ys[i - 1]));
+        }
+        const total = cum[SAMPLES];
+        const pts = [];
+        let j = 0;
+        for (let k = 0; k < count; k++) {
+          const target = total * k / count;
+          while (j < SAMPLES - 1 && cum[j + 1] < target) j++;
+          const f = (target - cum[j]) / (cum[j + 1] - cum[j] || 1);
+          pts.push([xs[j] + (xs[j + 1] - xs[j]) * f, ys[j] + (ys[j + 1] - ys[j]) * f]);
+        }
+        return pts;
+      }
+
+      // 随机文案，相邻弹窗不连续相同
+      function pickEggText() {
+        let t;
+        do { t = EGG_TEXTS[Math.floor(Math.random() * EGG_TEXTS.length)]; } while (t === eggLastText);
+        eggLastText = t;
+        return t;
+      }
+
+      // 生成一个仿 Windows 经典风格的小弹窗（渐变标题栏 + 装饰性 × + 彩色正文）
+      // fadeIn=true 时渐显出现（约 250ms，opacity 0→1 配合 scale 0.95→1）；
+      // 爱心阶段不传此参，保持瞬间出现的原样不变
+      function spawnEggPopup(cx, cy, uiScale, fadeIn) {
+        const w = Math.round(166 * uiScale);
+        const h = Math.round(92 * uiScale);
+        const barH = Math.round(20 * uiScale);
+        const bg = EGG_COLORS[Math.floor(Math.random() * EGG_COLORS.length)];
+        const el = document.createElement('div');
+        el.style.cssText = `position:absolute;left:${Math.round(cx - w / 2)}px;top:${Math.round(cy - h / 2)}px;width:${w}px;height:${h}px;z-index:${++eggZ};background:${bg};border:1px solid #2c5cd6;border-radius:7px 7px 3px 3px;box-shadow:2px 3px 12px rgba(0,0,0,.35);overflow:hidden;font-family:'Microsoft YaHei',sans-serif;user-select:none;${fadeIn ? 'opacity:0;transform:scale(0.95);transition:opacity .25s ease,transform .25s ease;' : ''}`;
+        el.innerHTML =
+          `<div style="height:${barH}px;background:linear-gradient(90deg,#0058e6,#3a93ff);display:flex;align-items:center;justify-content:space-between;padding:0 4px 0 8px;box-sizing:border-box;">` +
+            `<span style="color:#fff;font-size:${Math.round(12 * uiScale)}px;line-height:1;">♡</span>` +
+            `<span style="width:${Math.round(16 * uiScale)}px;height:${Math.round(14 * uiScale)}px;background:linear-gradient(180deg,#f0745f,#d4402e);border:1px solid #a02c1c;border-radius:2px;color:#fff;font-size:${Math.round(11 * uiScale)}px;line-height:${Math.round(13 * uiScale)}px;text-align:center;box-sizing:border-box;">×</span>` +
+          `</div>` +
+          `<div style="height:${h - barH}px;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px 8px;box-sizing:border-box;color:#3d3d3d;font-size:${Math.round(13 * uiScale)}px;line-height:1.35;">${pickEggText()}</div>`;
+        eggOverlay.appendChild(el);
+        if (fadeIn) {
+          void el.offsetWidth; // 强制 reflow 让初始状态先生效，再置终值触发 transition
+          el.style.opacity = '1';
+          el.style.transform = 'scale(1)';
+        }
+      }
+
+      function closeEgg() {
+        if (!eggRunning) return;
+        eggRunning = false;
+        clearTimeout(eggTimer);
+        document.removeEventListener('keydown', onEggKeydown, true);
+        if (eggOverlay) { eggOverlay.remove(); eggOverlay = null; }
+      }
+
+      function onEggKeydown(e) {
+        if (e.key === 'Escape') { e.stopPropagation(); closeEgg(); }
+      }
+
+      function startEgg() {
+        if (eggRunning) return;
+        eggRunning = true;
+        eggZ = 0;
+        eggLastText = '';
+
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const uiScale = Math.max(0.8, Math.min(1.25, vh / 1080)); // 弹窗尺寸随分辨率轻微等比缩放
+
+        // 全屏透明容器，z-index 全站最高；结束时整体移除
+        eggOverlay = document.createElement('div');
+        eggOverlay.style.cssText = 'position:fixed;inset:0;z-index:999999;overflow:hidden;background:transparent;';
+        // 任意阶段：左键点击屏幕（含弹窗上的装饰 ×）立即关闭全部；
+        // 用 click 而非 mousedown 关闭，确保这次点击被容器完整吞掉、不会穿透到页面按钮
+        eggOverlay.addEventListener('mousedown', (e) => { e.stopPropagation(); });
+        eggOverlay.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeEgg();
+        });
+        document.addEventListener('keydown', onEggKeydown, true);
+        document.body.appendChild(eggOverlay);
+
+        // 第一阶段：弹窗沿爱心轮廓逐个生成、按顺序堆叠
+        const pts = heartOutline(HEART_COUNT);
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        for (const [x, y] of pts) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+        // 爱心整体缩放到约占屏幕高度 75%，同时保证不超出屏幕边缘
+        const scale = Math.min(0.75 * vh / (maxY - minY), 0.9 * vw / (maxX - minX));
+        const midX = (minX + maxX) / 2;
+        const midY = (minY + maxY) / 2;
+        const toSX = (x) => vw / 2 + (x - midX) * scale;
+        const toSY = (y) => vh / 2 - (y - midY) * scale;
+
+        // 第三阶段：满屏弹窗，分批加速铺满（整体节奏放慢，约 4~6 秒铺完；弹窗柔和渐显）
+        const fillScreen = () => {
+          const total = Math.max(220, Math.min(480, Math.round(324 * vw * vh / (1920 * 1080))));
+          const w = 166 * uiScale, h = 92 * uiScale;
+          let placed = 0;
+          let delay = 280;
+          const batch = () => {
+            if (!eggRunning) return;
+            const n = 4 + Math.floor(Math.random() * 9); // 每批 4~12 个
+            for (let k = 0; k < n && placed < total; k++) {
+              placed++;
+              // 完全随机散布，允许略微超出屏幕边缘被裁切，四周也能覆盖到；渐显出现
+              spawnEggPopup(
+                -0.15 * w + Math.random() * (vw - 0.7 * w) + w / 2,
+                -0.15 * h + Math.random() * (vh - 0.7 * h) + h / 2,
+                uiScale,
+                true
+              );
+            }
+            if (placed < total) {
+              delay = Math.max(45, delay * 0.95); // 批间隔逐渐缩短（开始稍慢、逐渐加快）
+              eggTimer = setTimeout(batch, delay);
+            }
+            // 第四阶段：铺满后定格，不再调度任何定时器，只等手动关闭
+          };
+          batch();
+        };
+
+        let i = 0;
+        const spawnHeart = () => {
+          if (!eggRunning) return;
+          if (i < pts.length) {
+            const p = pts[i++];
+            spawnEggPopup(toSX(p[0]), toSY(p[1]), uiScale);
+            eggTimer = setTimeout(spawnHeart, 30 + Math.random() * 20); // 每 30~50ms 一个
+          } else {
+            // 第二阶段：爱心完整形成后停留 1 秒，然后全部同时瞬间消失
+            eggTimer = setTimeout(() => {
+              if (!eggRunning) return;
+              eggOverlay.innerHTML = '';
+              fillScreen();
+            }, 1000);
+          }
+        };
+        spawnHeart();
+      }
+    })();
+    
     // ===== Messages / Supabase =====
     async function loadLatestMessage() {
       const body = document.getElementById('latest-message-body');
