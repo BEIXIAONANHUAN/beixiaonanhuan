@@ -2200,6 +2200,62 @@
       font-size: 14px;
     }
 
+    /* 「标记抵达」小圆章按钮：单次倒计时专属，卡片底部居中，半透明玫瑰豆沙 */
+    .countdown-arrive-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin: 14px auto 0;
+      padding: 6px 14px;
+      font-size: 12.5px;
+      letter-spacing: 0.04em;
+      color: #b85c6e;
+      background: rgba(184, 92, 110, 0.1);
+      border: 1px solid rgba(184, 92, 110, 0.35);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .countdown-arrive-btn:hover {
+      transform: scale(1.06);
+      background: rgba(184, 92, 110, 0.18);
+      box-shadow: 0 4px 12px rgba(184, 92, 110, 0.28);
+    }
+
+    .countdown-arrive-btn:active { transform: scale(0.96); }
+
+    /* 归档区卡片：复用主卡片基础样式但略小、色调更柔和 */
+    .archived-countdown-card {
+      padding: 18px 16px;
+      filter: saturate(0.85);
+      opacity: 0.94;
+    }
+
+    .archived-countdown-card .archived-days {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--soft-pink);
+      line-height: 1.3;
+      margin: 4px 0 2px;
+    }
+
+    /* 悬停显现的操作按钮与主卡同一套 .countdown-actions（右上角）；
+       右移 72px 让开固定在右上角的「已抵达」印章角标，二者互不遮挡 */
+    .archived-countdown-card .countdown-actions {
+      right: 72px;
+    }
+
+    /* 归档卡片右上角的迷你「已抵达」印章（沿用 wish-stamp 双环红章，缩小角标化） */
+    .archived-mini-stamp {
+      top: 8px;
+      right: 8px;
+      width: 56px;
+      height: 56px;
+      margin-top: 0;
+      font-size: 14px;
+    }
+
     /* Anniversaries */
     .anni-actions {
       display: flex;
@@ -4561,6 +4617,12 @@
         100% { transform: rotateX(0deg); opacity: 1; }
       }
       
+      /* 归档区「已抵达的日子」：电脑端横排小台历卡（比主卡略小），分区与主区同宽居中 */
+      #countdown-archived-section { max-width: 1400px; margin: 28px auto 0; }
+      #countdown-page .countdown-list.archived-countdown-list { margin-top: 12px; gap: 24px; }
+      .archived-countdown-list .countdown-card { width: 200px; padding: 40px 14px 16px; }
+      .archived-countdown-list .countdown-card::before { background-size: 200px 25px; }
+      
       /* ---------- 任务3：纪念日 = 北笑南欢月历 ---------- */
       #anniversaries-page { max-width: none; }
       
@@ -4860,7 +4922,8 @@
           #b28a62 url('https://cdn.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-moments.jpg') center / cover no-repeat;
       }
       body:has(#messages-page.active) #bg-fixed-messages,
-      body:has(#photos-page.active) #bg-fixed-photos { display: block; }
+      body:has(#photos-page.active) #bg-fixed-photos,
+      body:has(#countdown-page.active) #bg-fixed-countdown { display: block; }
       
       /* 心愿清单 → 专属背景整页铺满固定；清单行像手账纸页浮在上方 */
       #page-wish {
@@ -4994,11 +5057,13 @@
           #c4b096 url('https://cdn.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-profiles.jpg') center / cover no-repeat fixed;
       }
       
-      /* 4. 倒计时 → 窗台晨光：整页铺满固定，台历排适当下移"站"在窗台上 */
-      #countdown-page {
+      /* 4. 倒计时 → 窗台晨光：背景已移到 .app 外的固定层 #bg-fixed-countdown（.app 的 perspective
+         会囚禁 attachment-fixed 使背景随内容滚动，与留言板/照片墙同一实现，此处不再设背景），
+         台历排适当下移"站"在窗台上 */
+      #bg-fixed-countdown {
         background:
           linear-gradient(rgba(255, 252, 245, 0.2), rgba(255, 252, 245, 0.2)),
-          #e4d4b4 url('https://cdn.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-countdown.jpg') center / cover no-repeat fixed;
+          #e4d4b4 url('https://cdn.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-countdown.jpg') center / cover no-repeat;
       }
       #countdown-page .countdown-list { margin-top: 10vh; }
       
@@ -5746,6 +5811,14 @@
       <div class="page-actions">
         <button class="btn btn-primary" id="add-countdown-btn">➕ 添加倒计时</button>
       </div>
+      
+      <!-- 已抵达的日子：归档区（常驻显示，单次倒计时专属；与心愿「已实现 · 纪念区」同一位置关系） -->
+      <div class="wish-section" id="countdown-archived-section">
+        <div class="wish-section-title font-wenkai">已抵达的日子 🎉</div>
+        <div class="countdown-list archived-countdown-list" id="archived-countdown-list">
+          <div class="wish-empty font-wenkai">还没有已抵达的倒计时，等你们一起走到那一天 ✨</div>
+        </div>
+      </div>
     </section>
     
     <!-- 9. Anniversaries Page -->
@@ -5932,12 +6005,13 @@
     </div>
   </div>
   
-  <!-- 电脑端「留言板/照片墙」固定背景层（仅桌面显示）：
+  <!-- 电脑端「留言板/照片墙/倒计时」固定背景层（仅桌面显示）：
        必须放 .app 外——.app 的 perspective（翻书页转场）会把 position:fixed 与
        background-attachment:fixed 囚禁成相对 .app 定位，导致背景随内容滚动；
        显隐由桌面 CSS 的 body:has(#板块.active) 控制，切换板块自动隐藏不串层 -->
   <div class="page-fixed-bg" id="bg-fixed-messages" aria-hidden="true"></div>
   <div class="page-fixed-bg" id="bg-fixed-photos" aria-hidden="true"></div>
+  <div class="page-fixed-bg" id="bg-fixed-countdown" aria-hidden="true"></div>
   
   <!-- Background Music -->
   <audio id="bg-music" src="https://cdn.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-music.mp3" loop preload="auto" style="display:none"></audio>
@@ -6165,6 +6239,16 @@
     </div>
   </div>
   
+  <!-- Countdown Arrival Overlay（倒计时到达日弹窗：完全复用纪念日弹窗的玻璃卡样式与遮罩，仅内容与逻辑独立） -->
+  <div class="anniversary-today-overlay" id="countdown-arrival-overlay">
+    <div class="glass-card anniversary-today-content">
+      <div class="celebrate">🎉</div>
+      <h3 class="font-serif" id="countdown-arrival-title"></h3>
+      <p class="font-wenkai" id="countdown-arrival-desc"></p>
+      <button class="btn btn-primary" id="countdown-arrival-close">收下这份期待 🎉</button>
+    </div>
+  </div>
+  
   <!-- Toast -->
   <div class="toast" id="toast"></div>
   
@@ -6362,6 +6446,7 @@
         // 先加载纪念日数据，再检测今天是否是纪念日，避免仅使用本地预设
         await loadAnniversaries();
         checkTodayAnniversary();
+        checkTodayCountdownArrivals(); // 倒计时到达日：严格排在纪念日弹窗关闭之后
       }
     }
     
@@ -8531,7 +8616,7 @@
         try {
           const { data: dbData, error } = await supabase
             .from('countdowns')
-            .select('id,title,target_date,is_recurring,created_at')
+            .select('id,title,target_date,is_recurring,created_at,archived,archived_at')
             .order('target_date', { ascending: true });
           if (error) throw error;
           data = dbData || [];
@@ -8548,7 +8633,13 @@
       }
       
       countdownsCache = data;
-      renderCountdowns(data);
+      // 归档拆分：单次且已归档的进「已抵达的日子」；每年重复的卡片永不进归档区
+      const archivedList = data
+        .filter(c => c.archived && !c.is_recurring)
+        .sort((a, b) => String(b.archived_at || '').localeCompare(String(a.archived_at || '')));
+      const activeList = data.filter(c => !(c.archived && !c.is_recurring));
+      renderCountdowns(activeList);
+      renderArchivedCountdowns(archivedList);
     }
     
     function renderCountdowns(list) {
@@ -8574,9 +8665,16 @@
               <input type="date" class="input" id="countdown-inline-date-${item.id}">
               <button class="btn btn-primary" style="min-height:36px;padding:6px 14px;font-size:13px" onclick="window.saveInlineCountdownDate('${item.id}')">保存</button>
             </div>`;
-        } else if (result.expired && !item.is_recurring) {
-          numberHtml = `<div class="countdown-number" style="font-size:28px">已到期</div>`;
+        } else if (!item.is_recurring && (result.expired || result.days <= 0)) {
+          // 单次倒计时：剩余 ≤ 0 直接显示「已到达」，到达当天同样是，不再出现 0 天
+          numberHtml = `<div class="countdown-number" style="font-size:28px">已到达</div>`;
           targetHtml = `<div class="countdown-target font-system">目标日期：${escapeHtml(item.target_date)}</div>`;
+        } else if (item.is_recurring && result.days === 0) {
+          // 每年重复：到达当天显示「就是今天！」，第二天照常滚到下一年
+          numberHtml = `<div class="countdown-number" style="font-size:32px">就是今天！</div>`;
+          targetHtml = `
+            <div class="countdown-unit">🎉</div>
+            <div class="countdown-target font-system">${escapeHtml('每年 ')}${formatDateCN(result.targetStr || item.target_date)}</div>`;
         } else {
           numberHtml = `<div class="countdown-number">${result.days}</div>`;
           targetHtml = `
@@ -8587,6 +8685,11 @@
         const deleteBtn = isMeeting
           ? ''
           : `<button class="countdown-action-btn delete-btn" data-id="${escapeHtml(item.id)}" title="删除">🗑️</button>`;
+        
+        // 「标记抵达」按钮：仅单次且已设目标日期的卡片显示（每年重复 / 待设置一律不显示）
+        const arriveBtn = (!item.is_recurring && item.target_date)
+          ? `<button class="countdown-arrive-btn" data-id="${escapeHtml(item.id)}" title="标记抵达">🎉 标记抵达</button>`
+          : '';
         
         const editFormFields = isMeeting
           ? `
@@ -8618,6 +8721,7 @@
               <div class="countdown-label font-wenkai">${escapeHtml(item.title)}</div>
               ${numberHtml}
               ${targetHtml}
+              ${arriveBtn}
             </div>
             <div class="countdown-edit-form" id="countdown-edit-form-${item.id}">
               <form class="edit-form" onsubmit="event.preventDefault(); window.saveCountdownEdit('${item.id}');">
@@ -8642,7 +8746,242 @@
         });
       });
       
+      container.querySelectorAll('.countdown-arrive-btn').forEach(btn => {
+        btn.addEventListener('click', () => archiveCountdownWithCeremony(btn.dataset.id));
+      });
+      
       enhanceCountdownCards(container); // 第六阶段：数字变化时加翻页动效（仅电脑端有样式）
+    }
+    
+    // ===== 归档区「已抵达的日子 🎉」（单次倒计时专属；每年重复卡片永不进入） =====
+    function renderArchivedCountdowns(list) {
+      const container = document.getElementById('archived-countdown-list');
+      if (!container) return;
+      if (!list || list.length === 0) {
+        container.innerHTML = '<div class="wish-empty font-wenkai">还没有已抵达的倒计时，等你们一起走到那一天 ✨</div>';
+        return;
+      }
+      container.innerHTML = list.map(item => {
+        // 已抵达天数 = 今天 − 目标日期（归档当天为 0，之后每天自动增长；提前归档的负值兜底为 0）
+        const arrivedDays = Math.max(0, -daysUntil(item.target_date));
+        return `
+          <div class="glass-card countdown-card archived-countdown-card" data-countdown-id="${escapeHtml(item.id)}">
+            <span class="wish-stamp archived-mini-stamp" aria-hidden="true">已抵达</span>
+            <div class="countdown-actions">
+              <button class="countdown-action-btn" data-act="restore" data-id="${escapeHtml(item.id)}" title="退回主区">↩️</button>
+              <button class="countdown-action-btn" data-act="delete" data-id="${escapeHtml(item.id)}" title="删除">🗑️</button>
+            </div>
+            <div class="countdown-label font-wenkai">${escapeHtml(item.title)}</div>
+            <div class="archived-days">已抵达 ${arrivedDays} 天</div>
+            <div class="countdown-target font-system">目标日期：${escapeHtml(item.target_date)}</div>
+          </div>`;
+      }).join('');
+      container.querySelectorAll('.countdown-action-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          if (btn.dataset.act === 'restore') restoreArchivedCountdown(id);
+          else openDeleteModal('真的要删除这段已抵达的纪念吗？🎉', () => deleteCountdown(id));
+        });
+      });
+    }
+    
+    // 退回：archived 置回 false，卡片回到主区重新显示（已过期则显示「已到达」）
+    async function restoreArchivedCountdown(id) {
+      if (!requireAuth()) return;
+      if (!supabase) {
+        showToast('Supabase 未配置，无法操作');
+        return;
+      }
+      try {
+        const { error } = await supabase.from('countdowns')
+          .update({ archived: false, archived_at: null })
+          .eq('id', id);
+        if (error) throw error;
+        showToast('已退回主区 ↩️');
+        await loadCountdowns();
+      } catch (e) {
+        console.error(e);
+        showToast('退回失败：' + (e.message || '未知错误'));
+      }
+    }
+    
+    // ===== 归档抵达动画（总时长约 4.2s，全程屏蔽页面交互，不可点击、不可跳过、不可打断） =====
+    let countdownArchiving = false;
+    
+    function archiveWait(ms) { return new Promise(r => setTimeout(r, ms)); }
+    
+    // 从 (x, y) 炸开 30~50 片彩色纸屑：随机初速度向上喷发、重力下坠、旋转飘落，纯 transform 60fps
+    function burstConfetti(container, x, y) {
+      const COLORS = ['#f27ba7', '#c05454', '#e8b74a', '#a8c8e8', '#9fd8c0']; // 粉/玫瑰/金/淡蓝/薄荷
+      const count = 30 + Math.floor(Math.random() * 21); // 30~50 片
+      const G = 900; // 重力加速度 px/s²
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('span');
+        const size = 5 + Math.random() * 5;
+        const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        p.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:${size}px;height:${(size * (0.6 + Math.random() * 0.8)).toFixed(1)}px;background:${color};border-radius:${Math.random() < 0.4 ? '50%' : '1.5px'};pointer-events:none;will-change:transform,opacity;`;
+        container.appendChild(p);
+        const ang = Math.random() * Math.PI * 2;
+        const speed = 160 + Math.random() * 280;
+        const vx = Math.cos(ang) * speed;
+        const vy = Math.sin(ang) * speed - 260; // 整体向上喷发再受重力回落
+        const dur = 1100 + Math.random() * 500; // 1.1~1.6s 缓缓落下
+        const spin = (Math.random() - 0.5) * 900; // 旋转角速度 deg/s
+        const frames = [];
+        const steps = 12;
+        for (let s = 0; s <= steps; s++) {
+          const t = (dur / 1000) * (s / steps);
+          const px = vx * t;
+          const py = vy * t + 0.5 * G * t * t;
+          const fade = s / steps > 0.7 ? Math.max(0, 1 - (s / steps - 0.7) / 0.3) : 1;
+          frames.push({ transform: `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) rotate(${(spin * t).toFixed(0)}deg)`, opacity: fade });
+        }
+        p.animate(frames, { duration: dur, easing: 'linear' }).finished
+          .then(() => p.remove())
+          .catch(() => {}); // 动画随遮罩层一并移除时 finished 会 reject，静默即可
+      }
+    }
+    
+    async function archiveCountdownWithCeremony(id) {
+      const item = countdownsCache.find(c => String(c.id) === String(id));
+      if (!item || item.is_recurring || !item.target_date || countdownArchiving) return;
+      const card = document.querySelector(`#countdown-list .countdown-card[data-countdown-id="${id}"]`);
+      if (!card) return;
+      countdownArchiving = true;
+      try {
+        await playArchiveAnimation(card, item);
+        // 写库时机：动画播放完成后才归档；失败则提示并回滚（卡片留在主区）
+        if (!supabase) throw new Error('Supabase 未配置');
+        const { error } = await supabase.from('countdowns')
+          .update({ archived: true, archived_at: new Date().toISOString() })
+          .eq('id', id);
+        if (error) throw error;
+        showToast('这一天抵达啦，已收入纪念 🎉');
+        await loadCountdowns();
+      } catch (e) {
+        console.error(e);
+        showToast('归档失败：' + (e.message || '未知错误'));
+        card.style.visibility = ''; // 回滚动画状态：卡片留在主区
+      } finally {
+        countdownArchiving = false;
+      }
+    }
+    
+    async function playArchiveAnimation(card, item) {
+      const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'; // 全程统一平滑缓出
+      const startRect = card.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      
+      // 初始天数 = 添加当天（created_at 的日期部分）到目标日期的天数；异常时兜底用当前剩余天数
+      const remaining = Math.max(0, computeCountdownDays(item.target_date, false).days || 0);
+      let initialDays = NaN;
+      if (item.created_at) {
+        const createdYmd = formatDateToYMD(new Date(item.created_at));
+        initialDays = Math.round((parseLocalDate(item.target_date) - parseLocalDate(createdYmd)) / 86400000);
+      }
+      if (!Number.isFinite(initialDays) || initialDays < remaining) initialDays = remaining;
+      
+      // 全屏锁定层：半透明黑纱 + 飞行克隆卡；屏蔽一切指针/滚轮/触摸/键盘交互
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:99990;';
+      const block = (e) => { e.preventDefault(); e.stopPropagation(); };
+      ['mousedown', 'mouseup', 'click', 'dblclick', 'wheel', 'touchstart', 'touchmove', 'contextmenu']
+        .forEach(t => overlay.addEventListener(t, block, { passive: false }));
+      const keyBlock = (e) => { e.preventDefault(); e.stopPropagation(); };
+      document.addEventListener('keydown', keyBlock, true);
+      
+      const veil = document.createElement('div');
+      veil.style.cssText = 'position:absolute;inset:0;background:rgba(28,20,32,0.45);opacity:0;';
+      overlay.appendChild(veil);
+      
+      // 飞行克隆卡（移除操作按钮/编辑表单/抵达按钮，原卡暂时隐藏）
+      const clone = card.cloneNode(true);
+      clone.querySelectorAll('.countdown-actions, .countdown-arrive-btn, .countdown-edit-form').forEach(el => el.remove());
+      clone.style.cssText += `;position:fixed;left:${startRect.left}px;top:${startRect.top}px;width:${startRect.width}px;height:${startRect.height}px;margin:0;z-index:2;pointer-events:none;will-change:transform;`;
+      overlay.appendChild(clone);
+      document.body.appendChild(overlay);
+      card.style.visibility = 'hidden';
+      
+      try {
+        // 1) 0~0.5s：黑纱渐入，卡片平滑飞到屏幕中央并放大（电脑端约 1.5 倍；小屏自动收敛不破边）
+        const zoom = Math.min(1.5, (vw * 0.92) / startRect.width, (vh * 0.72) / startRect.height);
+        veil.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: 'ease-out', fill: 'forwards' });
+        const dx1 = vw / 2 - (startRect.left + startRect.width / 2);
+        const dy1 = vh / 2 - (startRect.top + startRect.height / 2);
+        await clone.animate([
+          { transform: 'translate(0px, 0px) scale(1)' },
+          { transform: `translate(${dx1}px, ${dy1}px) scale(${zoom})` }
+        ], { duration: 500, easing: EASE, fill: 'forwards' }).finished;
+        
+        // 2) 0.5~2.0s：天数从初始值滚到 0，固定 1.5s，先快后慢（末段 3→2→1→0 逐格可见）
+        let numEl = clone.querySelector('.countdown-number');
+        if (!numEl) {
+          numEl = document.createElement('div');
+          numEl.className = 'countdown-number';
+          (clone.querySelector('.countdown-display') || clone).appendChild(numEl);
+        }
+        numEl.style.fontSize = ''; // 清掉「已到达/待设置」的小字内联尺寸，回到大数字
+        numEl.style.fontVariantNumeric = 'tabular-nums';
+        numEl.style.display = 'inline-block';
+        numEl.style.minWidth = (String(Math.max(initialDays, 0)).length + 0.4) + 'ch'; // 固定宽度防位数抖动
+        numEl.textContent = String(initialDays);
+        const rollStart = performance.now();
+        await new Promise(resolve => {
+          const tick = (now) => {
+            const t = Math.min(1, (now - rollStart) / 1500);
+            const v = t >= 1 ? 0 : Math.ceil(initialDays * Math.pow(1 - t, 3));
+            const s = String(v);
+            if (numEl.textContent !== s) numEl.textContent = s;
+            if (t < 1) requestAnimationFrame(tick); else resolve();
+          };
+          requestAnimationFrame(tick);
+        });
+        
+        // 3) 2.0~2.6s：大红圆章「已抵达！」砰地盖上，落章瞬间屏幕轻震 + 纸屑炸开
+        const stamp = document.createElement('span');
+        stamp.className = 'wish-stamp';
+        stamp.style.cssText += ';left:50%;top:50%;width:110px;height:110px;margin:0;font-size:22px;z-index:5;';
+        stamp.innerHTML = '<span style="display:flex;flex-direction:column;align-items:center;line-height:1.2"><span style="font-size:16px">♥</span><span>已抵达！</span></span>';
+        clone.appendChild(stamp);
+        const slam = stamp.animate([
+          { transform: 'translate(-50%, -50%) scale(2.6) rotate(-32deg)', opacity: 0 },
+          { transform: 'translate(-50%, -50%) scale(0.92) rotate(-12deg)', opacity: 1, offset: 0.62 },
+          { transform: 'translate(-50%, -50%) scale(1.05) rotate(-12deg)', opacity: 1, offset: 0.82 },
+          { transform: 'translate(-50%, -50%) scale(1) rotate(-12deg)', opacity: 1 }
+        ], { duration: 400, easing: 'cubic-bezier(0.25, 0.8, 0.35, 1)', fill: 'forwards' });
+        await archiveWait(240); // 落章瞬间
+        clone.animate([ // 屏幕轻震：1~2px 快速抖动两下（独立 translate 属性，不干扰卡片 transform）
+          { translate: '0 0' }, { translate: '1.5px 0' }, { translate: '-1.5px 0' },
+          { translate: '1px 0' }, { translate: '-1px 0' }, { translate: '0 0' }
+        ], { duration: 240, easing: 'ease-out' });
+        burstConfetti(overlay, vw / 2, vh / 2);
+        await slam.finished;
+        
+        // 4) 2.6~3.5s：盖章后的卡片定格展示，纸屑缓缓落下
+        await archiveWait(900);
+        
+        // 5) 3.5~4.2s：归档区滚动进入视野，卡片缩小飞入，黑纱渐退，动画结束
+        const section = document.getElementById('countdown-archived-section');
+        let targetCx = vw / 2;
+        let targetCy = vh * 0.8;
+        if (section) {
+          section.scrollIntoView({ block: 'center' });
+          const r = section.getBoundingClientRect();
+          targetCx = r.left + r.width / 2;
+          targetCy = r.top + Math.min(r.height, 200) / 2;
+        }
+        veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-out', fill: 'forwards' });
+        const dx2 = targetCx - (startRect.left + startRect.width / 2);
+        const dy2 = targetCy - (startRect.top + startRect.height / 2);
+        await clone.animate([
+          { transform: `translate(${dx1}px, ${dy1}px) scale(${zoom})`, opacity: 1 },
+          { transform: `translate(${dx2}px, ${dy2}px) scale(0.45)`, opacity: 0.6 }
+        ], { duration: 650, easing: EASE, fill: 'forwards' }).finished;
+      } finally {
+        document.removeEventListener('keydown', keyBlock, true);
+        overlay.remove(); // 黑纱、克隆卡、纸屑一并移除，页面交互恢复
+      }
     }
     
     function isLocalPresetId(id) {
@@ -10213,6 +10552,85 @@
       document.getElementById('anniversary-today-overlay').classList.remove('active');
     }
     
+    // ===== 倒计时到达日弹窗（与纪念日弹窗样式/交互复用、逻辑与 localStorage 键完全独立） =====
+    // 严格排序：先纪念日弹窗，关闭后才弹倒计时弹窗；同一天同一个倒计时只弹一次
+    let countdownArrivalQueue = []; // 同一天多个倒计时同时归零时的待弹队列
+    let countdownArrivalOpen = false;
+    
+    // 按倒计时名称命中文案；名称包含关键词即命中，都不含走兜底
+    function countdownArrivalText(title) {
+      const t = escapeHtml(String(title || ''));
+      if (t.includes('距离下次见面')) return { h: `🎉 今天就是「${t}」的日子！`, p: '终于不用再隔着屏幕说晚安啦 💕' };
+      if (t.includes('桐桐猪的生日')) return { h: `🎉 今天就是「${t}」！`, p: '祝我们最可爱的桐桐猪生日快乐 🎂' };
+      if (t.includes('小语涵的生日')) return { h: `🎉 今天就是「${t}」！`, p: '祝我们最爱的小语涵生日快乐 🎂' };
+      if (t.includes('恋爱纪念日')) return { h: `🎉 今天就是「${t}」！`, p: '又一起走过一年啦，往后也请多多关照 💕' };
+      return { h: `🎉 今天就是「${t}」的日子！`, p: '等了这么久，终于等到这一天啦 💕' };
+    }
+    
+    function getCountdownArrivalShownIds(todayStr) {
+      if (safeGetItem('countdownArrivalLastShown') !== todayStr) return [];
+      try { return JSON.parse(safeGetItem('countdownArrivalLastIds') || '[]'); } catch (e) { return []; }
+    }
+    
+    function markCountdownArrivalShown(id) {
+      const todayStr = getTodayString();
+      const ids = getCountdownArrivalShownIds(todayStr);
+      if (!ids.includes(String(id))) ids.push(String(id));
+      safeSetItem('countdownArrivalLastShown', todayStr);
+      safeSetItem('countdownArrivalLastIds', JSON.stringify(ids));
+    }
+    
+    function showCountdownArrivalPopup(item) {
+      markCountdownArrivalShown(item.id);
+      const text = countdownArrivalText(item.title);
+      document.getElementById('countdown-arrival-title').textContent = text.h;
+      document.getElementById('countdown-arrival-desc').textContent = text.p;
+      document.getElementById('countdown-arrival-overlay').classList.add('active');
+    }
+    
+    function closeCountdownArrival() {
+      document.getElementById('countdown-arrival-overlay').classList.remove('active');
+      countdownArrivalOpen = false;
+      // 队列中还有归零的倒计时：关掉当前这个，接着弹下一个
+      if (countdownArrivalQueue.length > 0) {
+        countdownArrivalOpen = true;
+        showCountdownArrivalPopup(countdownArrivalQueue.shift());
+      }
+    }
+    
+    // 若纪念日弹窗正在展示则等它关闭，否则立即执行，保证「先纪念日、后倒计时」
+    function whenAnniversaryOverlayClosed(cb) {
+      const ov = document.getElementById('anniversary-today-overlay');
+      if (!ov || !ov.classList.contains('active')) { cb(); return; }
+      const mo = new MutationObserver(() => {
+        if (!ov.classList.contains('active')) { mo.disconnect(); cb(); }
+      });
+      mo.observe(ov, { attributes: true, attributeFilter: ['class'] });
+    }
+    
+    /**
+     * 检测今天是否有倒计时归零（剩余 0 天），登录进入首页后与纪念日同一时机调用
+     */
+    async function checkTodayCountdownArrivals() {
+      await loadCountdowns();
+      const todayStr = getTodayString();
+      const shownIds = getCountdownArrivalShownIds(todayStr);
+      const hits = countdownsCache.filter(c => {
+        if (!c || !c.target_date) return false;               // 待设置的跳过
+        if (shownIds.includes(String(c.id))) return false;    // 今天已弹过的跳过
+        const r = computeCountdownDays(c.target_date, c.is_recurring);
+        if (r.expired && !c.is_recurring) return false;       // 单次不重复且已过期的跳过
+        return r.days === 0;                                  // 剩余 0 天：今天就是这一天
+      });
+      if (hits.length === 0) return;
+      countdownArrivalQueue = hits.slice(1);
+      whenAnniversaryOverlayClosed(() => {
+        if (countdownArrivalOpen) return;
+        countdownArrivalOpen = true;
+        showCountdownArrivalPopup(hits[0]);
+      });
+    }
+    
     // ===== 电脑端收官（第六阶段）：台历翻页数字 / 月历分页（全部为增量功能，不改任何既有逻辑） =====
     
     // --- 倒计时：数字更新时加 .num-flip 类触发 0.4s 翻页（类在手机端无对应样式，无影响） ---
@@ -10550,6 +10968,7 @@
       showPage('home-page');
       await loadAnniversaries();
       checkTodayAnniversary();
+      checkTodayCountdownArrivals(); // 倒计时到达日：严格排在纪念日弹窗关闭之后
     }
     
     document.getElementById('password-submit').addEventListener('click', () => submitPassword());
@@ -10844,6 +11263,11 @@
     document.getElementById('anniversary-today-overlay').addEventListener('click', (e) => {
       if (e.target.id === 'anniversary-today-overlay') closeAnniversaryToday();
     });
+    // 倒计时到达日弹窗：同款关闭交互（点按钮或点遮罩）
+    document.getElementById('countdown-arrival-close').addEventListener('click', closeCountdownArrival);
+    document.getElementById('countdown-arrival-overlay').addEventListener('click', (e) => {
+      if (e.target.id === 'countdown-arrival-overlay') closeCountdownArrival();
+    });
     
     // 心愿清单新增
     document.getElementById('add-wish-btn').addEventListener('click', () => {
@@ -10952,6 +11376,7 @@
         'delete-modal': closeDeleteModal,
         'memory-modal': closeMemoryModal,
         'anniversary-today-overlay': closeAnniversaryToday,
+        'countdown-arrival-overlay': closeCountdownArrival,
         'timeline-edit-overlay': closeAllTimelineEditForms,
         'profile-edit-overlay': closeAllProfileEditForms
       };
