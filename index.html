@@ -4923,14 +4923,23 @@
       }
       body:has(#messages-page.active) #bg-fixed-messages,
       body:has(#photos-page.active) #bg-fixed-photos,
-      body:has(#countdown-page.active) #bg-fixed-countdown { display: block; }
+      body:has(#countdown-page.active) #bg-fixed-countdown,
+      body:has(#profiles-page.active) #bg-fixed-profiles,
+      body:has(#anniversaries-page.active) #bg-fixed-anni,
+      body:has(#page-map.active) #bg-fixed-map,
+      body:has(#page-miss.active) #bg-fixed-miss,
+      body:has(#page-wish.active) #bg-fixed-wish { display: block; }
       
-      /* 心愿清单 → 专属背景整页铺满固定；清单行像手账纸页浮在上方 */
-      #page-wish {
-        max-width: none;
+      /* 心愿清单 → 专属背景：已移到 .app 外固定层 #bg-fixed-wish（.app 的 perspective 会囚禁
+         attachment-fixed 使背景随内容滚动，与留言板/照片墙同一实现），此处不再设背景；
+         清单行像手账纸页浮在上方 */
+      #bg-fixed-wish {
         background:
           linear-gradient(rgba(255, 252, 245, 0.24), rgba(255, 252, 245, 0.24)),
-          #f2e7d5 url('https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-wish.jpg') center / cover no-repeat fixed;
+          #f2e7d5 url('https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-wish.jpg') center / cover no-repeat;
+      }
+      #page-wish {
+        max-width: none;
       }
       
       #page-wish .wish-board {
@@ -4978,14 +4987,17 @@
         transform: none;
       }
       
-      /* 想你电波 → 深夜星空：整页铺满固定；标题浅色系浮在星空上 */
+      /* 想你电波 → 深夜星空：背景已移到 .app 外固定层 #bg-fixed-miss（.app 的 perspective 会囚禁
+         attachment-fixed 使背景随内容滚动，与留言板/照片墙同一实现），此处不再设背景；标题浅色系浮在星空上 */
+      #bg-fixed-miss {
+        background:
+          linear-gradient(rgba(18, 20, 44, 0.18), rgba(18, 20, 44, 0.18)),
+          #14162e url('https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-miss.jpg') center / cover no-repeat;
+      }
       /* 注意：选择器必须带 .active——裸 ID 的 display:flex 特异性会盖过 section{display:none}，
          导致本页未激活时也以 opacity:0 占位一屏（全站多出一屏空白的 bug 根因） */
       #page-miss.active {
         max-width: none;
-        background:
-          linear-gradient(rgba(18, 20, 44, 0.18), rgba(18, 20, 44, 0.18)),
-          #14162e url('https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-miss.jpg') center / cover no-repeat fixed;
         /* 三件套整体垂直居中：页面撑满一屏，panels 用 auto margin 居中于剩余空间 */
         min-height: 100vh;
         display: flex;
@@ -5050,11 +5062,13 @@
       #page-miss #miss-history-panel { transform: rotate(-0.4deg); }
       #page-miss #miss-stats-panel { transform: rotate(0.5deg); }
       
-      /* 3. 彼此档案 → 书房桌角：整页铺满固定，摊开的手账置于桌面中央空白区 */
-      #profiles-page {
+      /* 3. 彼此档案 → 书房桌角：背景已移到 .app 外固定层 #bg-fixed-profiles（.app 的 perspective
+         会囚禁 attachment-fixed 使背景随内容滚动，与留言板/照片墙同一实现），此处不再设背景，
+         摊开的手账置于桌面中央空白区 */
+      #bg-fixed-profiles {
         background:
           linear-gradient(rgba(255, 252, 245, 0.22), rgba(255, 252, 245, 0.22)),
-          #c4b096 url('https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-profiles.jpg') center / cover no-repeat fixed;
+          #c4b096 url('https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-profiles.jpg') center / cover no-repeat;
       }
       
       /* 4. 倒计时 → 窗台晨光：背景已移到 .app 外的固定层 #bg-fixed-countdown（.app 的 perspective
@@ -5067,14 +5081,23 @@
       }
       #countdown-page .countdown-list { margin-top: 10vh; }
       
-      /* 5. 纪念日 → 碎花墙纸：整页铺满固定，北笑南欢月历像挂在碎花墙上（罩稍厚压碎花对比） */
-      #anniversaries-page {
+      /* 5. 纪念日 → 碎花墙纸：背景已移到 .app 外固定层 #bg-fixed-anni（.app 的 perspective 会囚禁
+         attachment-fixed 使背景随内容滚动，与留言板/照片墙同一实现），此处不再设背景，
+         北笑南欢月历像挂在碎花墙上（罩稍厚压碎花对比） */
+      #bg-fixed-anni {
         background:
           linear-gradient(rgba(255, 252, 245, 0.28), rgba(255, 252, 245, 0.28)),
-          #ecdcd2 url('https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-anni.jpg') center / cover no-repeat fixed;
+          #ecdcd2 url('https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-anni.jpg') center / cover no-repeat;
       }
       
-      /* 6. 我们的足迹 → bg-map：整页铺满固定，地图嵌在桌面中央的手账框里 */
+      /* 6. 我们的足迹 → bg-map：背景已移到 .app 外固定层 #bg-fixed-map（.app 的 perspective 会囚禁
+         attachment-fixed 使背景随内容滚动，与留言板/照片墙同一实现），此处不再设背景，
+         地图嵌在桌面中央的手账框里 */
+      #bg-fixed-map {
+        background:
+          linear-gradient(rgba(255, 252, 245, 0.22), rgba(255, 252, 245, 0.22)),
+          #e8dcc4 url('https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-map.jpg') center / cover no-repeat;
+      }
       /* 同 page-miss：选择器必须带 .active，避免裸 ID display:flex 盖过页面隐藏机制 */
       #page-map.active {
         max-width: none;
@@ -5082,9 +5105,6 @@
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
-        background:
-          linear-gradient(rgba(255, 252, 245, 0.22), rgba(255, 252, 245, 0.22)),
-          #e8dcc4 url('https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-map.jpg') center / cover no-repeat fixed;
       }
       
       /* 手账地图区在页面中垂直水平居中，占尽可能大的区域 */
@@ -6005,13 +6025,18 @@
     </div>
   </div>
   
-  <!-- 电脑端「留言板/照片墙/倒计时」固定背景层（仅桌面显示）：
+  <!-- 电脑端各板块固定背景层（仅桌面显示）：
        必须放 .app 外——.app 的 perspective（翻书页转场）会把 position:fixed 与
        background-attachment:fixed 囚禁成相对 .app 定位，导致背景随内容滚动；
        显隐由桌面 CSS 的 body:has(#板块.active) 控制，切换板块自动隐藏不串层 -->
   <div class="page-fixed-bg" id="bg-fixed-messages" aria-hidden="true"></div>
   <div class="page-fixed-bg" id="bg-fixed-photos" aria-hidden="true"></div>
   <div class="page-fixed-bg" id="bg-fixed-countdown" aria-hidden="true"></div>
+  <div class="page-fixed-bg" id="bg-fixed-profiles" aria-hidden="true"></div>
+  <div class="page-fixed-bg" id="bg-fixed-anni" aria-hidden="true"></div>
+  <div class="page-fixed-bg" id="bg-fixed-map" aria-hidden="true"></div>
+  <div class="page-fixed-bg" id="bg-fixed-miss" aria-hidden="true"></div>
+  <div class="page-fixed-bg" id="bg-fixed-wish" aria-hidden="true"></div>
   
   <!-- Background Music -->
   <audio id="bg-music" src="https://gcore.jsdelivr.net/gh/beixiaonanhuan/beixiaonanhuan@main/assets/bg-music.mp3" loop preload="auto" style="display:none"></audio>
