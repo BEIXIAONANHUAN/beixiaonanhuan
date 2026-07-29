@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="https://gcore.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css">
   <!-- 祝福语手写体（Zhi Mang Xing）：走 loli.net 镜像，国内可访问 -->
   <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Zhi+Mang+Xing&display=swap">
+  <!-- 纪念日月历大日期数字衬线展示体（Playfair Display）：同走 loli.net 镜像 -->
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Playfair+Display:wght@600;700&display=swap">
   
   <!-- Supabase -->
   <script src="https://gcore.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2275,6 +2277,15 @@
       justify-content: space-between;
       padding: 18px 20px;
       gap: 12px;
+      /* 手撕日历页：奶白纸感底 + 极淡水彩晕染（盖掉 .glass-card 的玻璃质感） */
+      background:
+        radial-gradient(120% 90% at 90% 98%, rgba(232, 164, 176, 0.12), transparent 56%),
+        radial-gradient(110% 85% at 6% 2%, rgba(154, 168, 143, 0.10), transparent 56%),
+        linear-gradient(168deg, #fdfaf1, #f8f0e0);
+      border: 1px solid rgba(178, 140, 122, 0.35);
+      box-shadow: 0 6px 16px rgba(96, 70, 52, 0.13);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
 
     .anni-info {
@@ -2283,18 +2294,23 @@
       gap: 4px;
       flex: 1;
       min-width: 0;
+      align-items: center;
+      text-align: center;
+      max-width: 76%; /* 中央文字区收窄，避开右下角印章与对角碎花 */
     }
 
     .anni-name {
       font-size: 17px;
       font-weight: 600;
+      color: #6b3f4c;
     }
 
     .anni-desc {
       font-size: 14px;
-      color: rgba(45, 45, 90, 0.65);
+      color: rgba(107, 63, 76, 0.68);
       line-height: 1.5;
       word-break: break-word;
+      max-width: 100%;
     }
 
     .anni-date {
@@ -2355,11 +2371,124 @@
     .anni-display {
       width: 100%;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding-top: 32px;
+      text-align: center;
+      gap: 2px;
+      position: relative;
+      padding: 24px 12px 64px; /* 底部 64px 条带预留给天数印章与右下角碎花，文字绝不进入 */
     }
+
+    /* ===== 日历页结构：年月小字 / 超大衬线日期 / 星期 / 手绘分隔 ===== */
+    .anni-cal-ym {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.32em;
+      text-indent: 0.32em; /* 补偿末位字距，视觉居中 */
+      color: rgba(138, 75, 92, 0.72);
+    }
+
+    .anni-cal-day {
+      font-family: 'Playfair Display', 'Noto Serif SC', serif;
+      font-weight: 600;
+      font-size: 54px;
+      line-height: 1.05;
+      color: #8a4b5c;
+      margin-top: 2px;
+    }
+
+    /* 天数数字下方的较小「天」字（参照倒计时卡片的数字+单位呈现） */
+    .anni-cal-day-unit {
+      font-size: 14px;
+      letter-spacing: 0.3em;
+      text-indent: 0.3em;
+      color: rgba(138, 75, 92, 0.72);
+      margin-top: 2px;
+    }
+
+    .anni-cal-week {
+      font-size: 12px; /* 与顶部完整日期行同字号 */
+      letter-spacing: 0.18em;
+      text-indent: 0.18em;
+      color: rgba(138, 75, 92, 0.66);
+    }
+
+    .anni-cal-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 52%;
+      margin: 8px 0 7px;
+      font-size: 11px;
+      line-height: 1;
+      color: rgba(178, 124, 138, 0.85);
+    }
+
+    .anni-cal-divider i {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(178, 124, 138, 0.55), transparent);
+    }
+
+    .anni-cal-divider b { font-weight: 400; }
+
+    /* ===== 右下角装饰小圆章：玫瑰红描边、微倾 -8°、居中一枚 ❤（纯装饰，与倒计时印章同族） ===== */
+    .anni-stamp {
+      position: absolute;
+      right: clamp(46px, 17%, 66px); /* 让开右下角碎花，二者错开不重叠 */
+      bottom: 9px;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2.5px solid rgba(192, 57, 43, 0.72);
+      border-radius: 50%;
+      background: rgba(192, 57, 43, 0.04);
+      box-shadow: inset 0 0 8px rgba(192, 57, 43, 0.18);
+      color: rgba(192, 57, 43, 0.85);
+      transform: rotate(-8deg);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .anni-stamp::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(192, 57, 43, 0.42);
+      border-radius: 50%;
+    }
+
+    .anni-stamp-heart { font-size: 18px; line-height: 1; }
+
+    /* ===== 水彩碎花角饰（左上/右下对角）与事件小插画（右上，避开悬停按钮） ===== */
+    .anni-floral {
+      position: absolute;
+      width: clamp(52px, 19%, 72px);
+      aspect-ratio: 1;
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .anni-floral-tl { top: 4px; left: 4px; }
+    .anni-floral-br { bottom: 4px; right: 4px; transform: rotate(180deg); }
+    .anni-floral svg { width: 100%; height: 100%; display: block; }
+
+    .anni-cal-icon {
+      position: absolute;
+      top: 36px;
+      right: 10px;
+      width: clamp(38px, 13%, 54px);
+      aspect-ratio: 1;
+      opacity: 0.85;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .anni-cal-icon svg { width: 100%; height: 100%; display: block; }
 
     .anni-edit-form {
       width: 100%;
@@ -4670,48 +4799,46 @@
         100% { opacity: 1; transform: rotateX(0deg); }
       }
       
-      /* 月历格子（常驻完整信息，去掉玻璃卡） */
+      /* 月历格子 = 手撕日历页（设计语言与手机端同源，此处定格子规格与微旋转） */
       .cal-mode .anni-item {
         display: block;
         position: relative;
-        background: linear-gradient(170deg, #fdf8ea, #f7edd8);
-        border: 1px solid rgba(160, 130, 86, 0.4);
+        background:
+          radial-gradient(120% 90% at 90% 98%, rgba(232, 164, 176, 0.12), transparent 56%),
+          radial-gradient(110% 85% at 6% 2%, rgba(154, 168, 143, 0.10), transparent 56%),
+          linear-gradient(168deg, #fdfaf1, #f8f0e0);
+        border: 1px solid rgba(178, 140, 122, 0.35);
         border-radius: 6px;
-        box-shadow: 0 8px 20px rgba(80, 60, 36, 0.18);
+        box-shadow: 0 6px 16px rgba(96, 70, 52, 0.14);
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
-        padding: 20px 22px 42px;
-        min-height: 208px;
+        padding: 8px 10px;
+        min-height: 236px;
         cursor: pointer;
+        transform: rotate(var(--rot, 0deg));
         transition: transform 0.22s ease, box-shadow 0.22s ease;
       }
+      /* 每张极轻微随机倾斜（±2° 内），像手贴上去的日历页 */
+      .cal-mode .anni-item:nth-child(3n+1) { --rot: -1.1deg; }
+      .cal-mode .anni-item:nth-child(3n+2) { --rot: 0.8deg; }
+      .cal-mode .anni-item:nth-child(4n+3) { --rot: -0.6deg; }
+      .cal-mode .anni-item:nth-child(5n) { --rot: 1.3deg; }
       .cal-mode .anni-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 14px 30px rgba(80, 60, 36, 0.26);
+        transform: rotate(var(--rot, 0deg)) translateY(-5px);
+        box-shadow: 0 12px 26px rgba(96, 70, 52, 0.2);
       }
-      .cal-mode .anni-display { display: block; padding-top: 0; }
-      .cal-mode .anni-info { display: flex; flex-direction: column; gap: 6px; }
-      .cal-mode .anni-name { order: 1; font-size: 19px; font-weight: 700; color: #5a4326; }
-      .cal-mode .anni-date { order: 2; font-size: 13px; color: rgba(106, 84, 58, 0.6); }
+      .cal-mode .anni-display { padding: 22px 14px 64px; }
+      .cal-mode .anni-cal-day { font-size: 64px; }
+      .cal-mode .anni-info { gap: 6px; }
+      .cal-mode .anni-name { font-size: 19px; font-weight: 700; }
       .cal-mode .anni-desc {
-        order: 3;
-        margin-top: 4px;
+        margin-top: 2px;
         font-size: 14px;
-        color: rgba(74, 59, 44, 0.88);
         line-height: 1.7;
         display: -webkit-box;
         -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
         overflow: hidden;
-      }
-      .cal-mode .anni-days {
-        position: absolute;
-        right: 16px;
-        bottom: 12px;
-        font-size: 13px;
-        font-weight: 400;
-        color: rgba(150, 100, 70, 0.85);
-        text-align: right;
       }
       
       /* 悬停格子浮现 ✏️🗑️ 贴纸按钮 */
@@ -9284,6 +9411,42 @@
       renderAnniversaries(data);
     }
     
+    // ===== 纪念日日历页：星期计算 / 水彩碎花 / 事件小插画（纯视觉，数据与绑定不变） =====
+    function anniWeekdayCN(dateStr) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(dateStr || ''));
+      if (!m) return '';
+      const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+      return isNaN(d.getTime()) ? '' : '星期' + '日一二三四五六'[d.getDay()];
+    }
+    
+    // 水彩碎花藤蔓（左上角一簇；右下角复用同一 SVG 并 CSS 旋转 180°，见 .anni-floral-br）
+    const ANNI_FLORAL_SVG = `<svg viewBox="0 0 96 96" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="27" cy="24" r="15" fill="#f2c4cd" opacity="0.28"/><circle cx="56" cy="56" r="11" fill="#f2c4cd" opacity="0.22"/><path d="M5 5c15 4 26 13 32 25s9 28 6 44" stroke="#9aa88f" stroke-width="2" opacity="0.75"/><path d="M20 20c6-2.4 12-1.4 15.4 2.6-6 2.4-12 1.4-15.4-2.6z" fill="#aab89e" stroke="#9aa88f" stroke-width="1.2" opacity="0.85"/><path d="M34 47c-6.4-1-11.6 1.4-13.6 6.4 6.4 1 11.6-1.4 13.6-6.4z" fill="#aab89e" stroke="#9aa88f" stroke-width="1.2" opacity="0.85"/><g opacity="0.9"><circle cx="27" cy="15" r="5" fill="#f2c4cd"/><circle cx="35.5" cy="20" r="5" fill="#f2c4cd"/><circle cx="33" cy="29" r="5" fill="#f2c4cd"/><circle cx="24" cy="29.5" r="5" fill="#f2c4cd"/><circle cx="20" cy="21" r="5" fill="#f2c4cd"/><circle cx="27.5" cy="22.5" r="2.8" fill="#e8b64c"/></g><g opacity="0.85"><circle cx="52" cy="50" r="4" fill="#f6d4da"/><circle cx="59" cy="53.5" r="4" fill="#f6d4da"/><circle cx="57" cy="60.5" r="4" fill="#f6d4da"/><circle cx="50" cy="60" r="4" fill="#f6d4da"/><circle cx="47.5" cy="54" r="4" fill="#f6d4da"/><circle cx="53.5" cy="55" r="2.2" fill="#e8b64c"/></g><g opacity="0.8"><circle cx="40" cy="72" r="3.2" fill="#f6d4da"/><circle cx="46" cy="75" r="3.2" fill="#f6d4da"/><circle cx="44" cy="80.5" r="3.2" fill="#f6d4da"/><circle cx="38" cy="80" r="3.2" fill="#f6d4da"/><circle cx="36" cy="75.5" r="3.2" fill="#f6d4da"/><circle cx="41" cy="76.5" r="1.8" fill="#e8b64c"/></g></svg>`;
+    
+    // 事件专属小插画（内联 SVG，手绘风柔和线条，与碎花同色系）
+    const ANNI_ICON_SVGS = {
+      cake: `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 26h30v10a3 3 0 0 1-3 3H12a3 3 0 0 1-3-3V26z" fill="#f7d3da" stroke="#b96a7d" stroke-width="2"/><path d="M9 26c0 2.8 3 3.4 5 2.2 1.8-1 3.4-1 5 .2 1.9 1.3 3.7 1.3 5.2 0 1.6-1.2 3.2-1.2 5-.2 2 1.2 4.8.6 4.8-2.2v-2a3 3 0 0 0-3-3H12a3 3 0 0 0-3 3v2z" fill="#fdf0f2" stroke="#b96a7d" stroke-width="2"/><path d="M24 18v-5.5" stroke="#9aa88f" stroke-width="2"/><path d="M24 9.2c-1.9 1.2-1.9 3 0 4.3 1.9-1.3 1.9-3.1 0-4.3z" fill="#f2c14e" stroke="#cf9430" stroke-width="1.2"/><path d="M7 42.5h34" stroke="#b96a7d" stroke-width="2"/></svg>`,
+      hearts: `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 22.5c-1.7-3.2-6.4-4.8-9-2.2-2.4 2.4.5 7.7 9 13.7 8.5-6 11.4-11.3 9-13.7-2.6-2.6-7.3-1-9 2.2z" fill="#f3c3cb" stroke="#b96a7d" stroke-width="2"/><path d="M31.5 30.5c-1.2-2.2-4.5-3.3-6.3-1.5-1.7 1.7.4 5.4 6.3 9.6 5.9-4.2 8-7.9 6.3-9.6-1.8-1.8-5.1-.7-6.3 1.5z" fill="#e89aa8" stroke="#b96a7d" stroke-width="2"/></svg>`,
+      computer: `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="9" width="32" height="23" rx="3" fill="#e9eef4" stroke="#7f96ad" stroke-width="2"/><path d="M24 24.2c-1.2-2-4.2-2.4-5.6-.8-1.3 1.5.2 4.2 5.6 7 5.4-2.8 6.9-5.5 5.6-7-1.4-1.6-4.4-1.2-5.6.8z" fill="#f3c3cb" stroke="#b96a7d" stroke-width="1.6"/><path d="M24 32v5M16 41.5h16" stroke="#7f96ad" stroke-width="2"/></svg>`,
+      plane: `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M41 8L9 23l12 5.5L27 39 41 8z" fill="#e9eef4" stroke="#7f96ad" stroke-width="2"/><path d="M41 8L21 28.5" stroke="#7f96ad" stroke-width="1.6"/><path d="M6 30h5M10 35h4" stroke="#b9c7d4" stroke-width="1.6"/></svg>`,
+      cap: `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 9L5 17.5 24 26l19-8.5L24 9z" fill="#e9eef4" stroke="#7f96ad" stroke-width="2"/><path d="M13 21.5V30c0 3.2 5 5.8 11 5.8s11-2.6 11-5.8v-8.5" fill="#f4f7fa" stroke="#7f96ad" stroke-width="2"/><path d="M39.5 19.5V30" stroke="#cf9430" stroke-width="2"/><circle cx="39.5" cy="33" r="2.6" fill="#f2c14e" stroke="#cf9430" stroke-width="1.4"/></svg>`,
+      cat: `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 19.5L9 9l10 6.5M36.5 19.5L39 9l-10 6.5" fill="#f3d9c2" stroke="#b98d68" stroke-width="2"/><circle cx="24" cy="27.5" r="14" fill="#f7e6d4" stroke="#b98d68" stroke-width="2"/><path d="M18 25.5h.01M30 25.5h.01" stroke="#7a5b40" stroke-width="2.8"/><path d="M22.4 29.6h3.2l-1.6 1.8-1.6-1.8z" fill="#d4838f"/><path d="M21.5 33c.8 1.1 1.7 1.6 2.5 1.6s1.7-.5 2.5-1.6" stroke="#7a5b40" stroke-width="1.6"/><path d="M5.5 26l6.5 1M5 31.5l6.5-1M42.5 26l-6.5 1M43 31.5l-6.5-1" stroke="#b98d68" stroke-width="1.5"/></svg>`,
+      pig: `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 16.5L9.5 10l8 3.5M35 16.5l3.5-6.5-8 3.5" fill="#f3c3cb" stroke="#c27b8a" stroke-width="2"/><circle cx="24" cy="27.5" r="14" fill="#fbdde2" stroke="#c27b8a" stroke-width="2"/><path d="M18 23.5h.01M30 23.5h.01" stroke="#8a4b5c" stroke-width="2.8"/><ellipse cx="24" cy="30" rx="5.6" ry="4.2" fill="#f3aeba" stroke="#c27b8a" stroke-width="1.6"/><path d="M22 30h.01M26 30h.01" stroke="#8a4b5c" stroke-width="2.4"/></svg>`,
+      sakura: `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g fill="#f6c9d2" stroke="#c98a99" stroke-width="1.5"><path d="M24 7.5c3.2 3.7 3.2 8.3 0 11.5-3.2-3.2-3.2-7.8 0-11.5z"/><path d="M38.8 18.7c-.9 4.7-4 7.9-7.9 7.9.9-4.6 4-7.8 7.9-7.9z"/><path d="M33.2 37.6c-4.5 1.5-8.7.2-10.7-3 4.5-1.4 8.6-.2 10.7 3z"/><path d="M14.8 37.6c2.1-3.2 6.2-4.4 10.7-3-2 3.2-6.2 4.5-10.7 3z"/><path d="M9.2 18.7c3.9.1 7 3.3 7.9 7.9-3.9 0-7-3.2-7.9-7.9z"/></g><circle cx="24" cy="26" r="2.6" fill="#f2c14e" stroke="#cf9430" stroke-width="1.2"/><path d="M24 30.5V40M24 34l4.5-2.2M24 36.5L19.5 34" stroke="#9aa88f" stroke-width="1.8"/></svg>`
+    };
+    
+    // 按名称+描述关键词先到先得匹配小插画，兜底小樱花
+    function anniPickIcon(text) {
+      const t = String(text || '');
+      if (/生日|诞生/.test(t)) return ANNI_ICON_SVGS.cake;
+      if (/在一起|复合|恋爱|表白|纪念/.test(t)) return ANNI_ICON_SVGS.hearts;
+      if (/网站|上线/.test(t)) return ANNI_ICON_SVGS.computer;
+      if (/旅行|见面|回国|机票/.test(t)) return ANNI_ICON_SVGS.plane;
+      if (/毕业|开学|入学/.test(t)) return ANNI_ICON_SVGS.cap;
+      if (/猫|小语涵/.test(t)) return ANNI_ICON_SVGS.cat;
+      if (/猪|桐桐/.test(t)) return ANNI_ICON_SVGS.pig;
+      return ANNI_ICON_SVGS.sakura;
+    }
+    
     function renderAnniversaries(list) {
       const container = document.getElementById('anni-list');
       
@@ -9299,6 +9462,12 @@
       container.innerHTML = list.map(item => {
         let diff = daysSinceInclusive(item.date);
         if (diff < 0) diff = 0;
+        const dm = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(item.date || ''));
+        const yy = dm ? dm[1] : '';
+        const mm = dm ? dm[2] : '';
+        const dd = dm ? dm[3] : '';
+        const weekCN = anniWeekdayCN(item.date);
+        const iconSvg = anniPickIcon(`${item.title || ''} ${item.description || ''}`);
         return `
           <div class="glass-card anni-item" data-anniversary-id="${escapeHtml(item.id)}">
             <div class="anni-actions">
@@ -9306,12 +9475,19 @@
               <button class="anni-action-btn delete-btn" data-id="${escapeHtml(item.id)}" title="删除">🗑️</button>
             </div>
             <div class="anni-display" id="anni-display-${item.id}">
+              <span class="anni-floral anni-floral-tl" aria-hidden="true">${ANNI_FLORAL_SVG}</span>
+              <span class="anni-floral anni-floral-br" aria-hidden="true">${ANNI_FLORAL_SVG}</span>
+              <span class="anni-cal-icon" aria-hidden="true">${iconSvg}</span>
+              <div class="anni-cal-ym">${escapeHtml(yy)} · ${escapeHtml(mm)} · ${escapeHtml(dd)}</div>
+              <div class="anni-cal-week font-wenkai">${weekCN}</div>
+              <div class="anni-cal-day">${diff}</div>
+              <div class="anni-cal-day-unit font-wenkai">天</div>
+              <div class="anni-cal-divider" aria-hidden="true"><i></i><b>✿</b><i></i></div>
               <div class="anni-info">
                 <div class="anni-name font-serif">${escapeHtml(item.title)}</div>
                 ${item.description ? `<div class="anni-desc font-wenkai">${escapeHtml(item.description)}</div>` : ''}
-                <div class="anni-date font-system">${escapeHtml(item.date)}</div>
               </div>
-              <div class="anni-days">${diff} <span style="font-size:12px;font-weight:400;color:rgba(45,45,90,0.6)">天</span></div>
+              <div class="anni-stamp" aria-hidden="true"><span class="anni-stamp-heart">❤</span></div>
             </div>
             <div class="anni-edit-form" id="anni-edit-form-${item.id}">
               <form class="edit-form" onsubmit="event.preventDefault(); window.saveAnniversaryEdit('${item.id}');">
