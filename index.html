@@ -7314,6 +7314,8 @@
         imageInput.value = '';
         autoResizeTextarea(input);
         showToast('留言发送成功 💌');
+        // 微信通知对方（fire-and-forget，不 await，不影响后续刷新，失败静默）
+        sendMessageWallPush(author, content, false, !!imageUrl);
         loadMessages();
         loadLatestMessage();
         loadMemorySources();
@@ -7426,6 +7428,8 @@
         const form = document.getElementById(`reply-form-${parentId}`);
         if (form) form.classList.remove('active');
         showToast('回复发送成功 💌');
+        // 微信通知对方（fire-and-forget，不 await，不影响后续刷新，失败静默）
+        sendMessageWallPush(author, content, true, false);
         await loadMessages();
         loadLatestMessage();
         loadMemorySources();
@@ -10115,6 +10119,33 @@
         });
       } catch (e) {
         console.error('PushPlus 推送失败（已静默降级，记录已照常保存）：', e);
+      }
+    }
+    
+    /* 留言墙新留言/新回复微信通知：只推给对方（发送者自己不收），失败静默降级 */
+    async function sendMessageWallPush(author, content, isReply, hasImage) {
+      if (author !== '北斗' && author !== '笑笑') return;
+      const targetToken = author === '北斗' ? PUSH_TOKEN_XIAOXIAO : PUSH_TOKEN_BEIDOU;
+      if (!targetToken) return;
+      const title = isReply ? '💌 北笑南欢 · 留言墙新回复' : '💌 北笑南欢 · 留言墙新留言';
+      let preview = String(content || '').trim();
+      if (preview.length > 50) preview = preview.slice(0, 50) + '…';
+      let pushContent = `${author} 在留言墙${isReply ? '回复' : ''}说：`;
+      if (preview) pushContent += `\n${preview}`;
+      if (hasImage) pushContent += `\n📷 还贴了一张图，快去看看～`;
+      pushContent += `\n🕐 ${formatMissPushTime(new Date())}`;
+      try {
+        await fetch('https://www.pushplus.plus/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token: targetToken,
+            title,
+            content: pushContent
+          })
+        });
+      } catch (e) {
+        console.error('PushPlus 推送失败（已静默降级，留言已照常保存）：', e);
       }
     }
     
